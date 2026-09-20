@@ -1,4 +1,4 @@
-# Task 2 — error review (zoyeb_waghu)
+# Task 2 — error review (zoheb_waghu)
 
 <!-- 20 errors from YOUR model: 5 confident FP, 5 confident FN, 5 near-threshold,
      5 slice-specific. Assign an error type to each and propose one testable fix. -->

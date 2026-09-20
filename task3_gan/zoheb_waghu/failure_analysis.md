@@ -1,4 +1,4 @@
-# Task 3 — failure analysis (zoyeb_waghu)
+# Task 3 — failure analysis (zoheb_waghu)
 
 <!-- Visual quality, cycle-consistency check, training stability, shortcomings. -->
 

@@ -1,4 +1,4 @@
-# Task 3 — CycleGAN style transfer — results (zoyeb_waghu)
+# Task 3 — CycleGAN style transfer — results (zoheb_waghu)
 
 <!-- Your own write-up. Architecture + hyperparameter justification, tying your
      metrics together. This must be your own work: you will defend it at the viva. -->
@@ -12,7 +12,7 @@
 ## Metrics
 
 See `metrics_report.csv`. Evidence: loss curves in `outputs/plots/`, raw logs in
-`reproducibility/raw_logs/zoyeb_waghu/`, checkpoint IDs listed below.
+`reproducibility/raw_logs/zoheb_waghu/`, checkpoint IDs listed below.
 
 | Result | Checkpoint | Raw log |
 | --- | --- | --- |

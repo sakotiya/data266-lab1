@@ -1,4 +1,4 @@
-# Task 1 — failure analysis (zoyeb_waghu)
+# Task 1 — failure analysis (zoheb_waghu)
 
 <!-- Three failure cases from YOUR generated text. Paste the actual snippet. -->
 

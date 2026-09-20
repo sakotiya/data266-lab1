@@ -2,7 +2,7 @@
 
 LLM pretraining · sentiment classification · CycleGAN style transfer.
 
-**Members:** shreya_akotiya, zoyeb_waghu
+**Members:** shreya_akotiya, zoheb_waghu
 
 Each member builds their own model for all three tasks — own architecture, own
 hyperparameters, own results — and commits under their own named folder inside each
@@ -69,11 +69,11 @@ anywhere in the repo.
 | Task | Member | Metrics | Write-up | Failure analysis |
 | --- | --- | --- | --- | --- |
 | 1 | shreya_akotiya | `task1_llm/shreya_akotiya/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 1 | zoyeb_waghu | `task1_llm/zoyeb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
+| 1 | zoheb_waghu | `task1_llm/zoheb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
 | 2 | shreya_akotiya | `task2_sentiment/shreya_akotiya/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 2 | zoyeb_waghu | `task2_sentiment/zoyeb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
+| 2 | zoheb_waghu | `task2_sentiment/zoheb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
 | 3 | shreya_akotiya | `task3_gan/shreya_akotiya/full_metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 3 | zoyeb_waghu | `task3_gan/zoyeb_waghu/full_metrics_report.csv` | `results.md` | `failure_analysis.md` |
+| 3 | zoheb_waghu | `task3_gan/zoheb_waghu/full_metrics_report.csv` | `results.md` | `failure_analysis.md` |
 
 ## Evidence trail
 
