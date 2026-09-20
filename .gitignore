@@ -1,0 +1,28 @@
+# Raw datasets - fetched, never committed. See each task's data/README.md.
+task1_llm/data/*
+task2_sentiment/data/*
+task3_gan/data/monet_jpg/*
+task3_gan/data/photo_jpg/*
+!**/.gitkeep
+!**/README.md
+
+# Per-member preprocessing output - never shared (brief, section 5)
+*/**/data_processed/*
+!*/**/data_processed/.gitkeep
+
+# Model weights - too large for git; record checkpoint IDs in results.md instead
+*/**/checkpoints/*
+!*/**/checkpoints/.gitkeep
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
