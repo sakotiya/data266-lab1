@@ -1,0 +1,14 @@
+[    0.014s] run_start    run_id=t1_smoke_20260919-232407 utc=2026-09-20T06:24:07.694412+00:00 git_commit=89068f2 python=3.9.6 argv=task1_llm/zohebw/src/train.py --config task1_llm/zohebw/configs/_smoke.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[    6.689s] data         train_chars=20000 val_chars=2000 vocab_size=61 val_oov_chars=1
+[    6.689s] schedule     steps_per_epoch=19 total_steps=19
+[    6.854s] model        param_count=112000 vocab_size=61
+[    8.033s] causal_mask_probe probe_position=32 max_logit_delta_before_j=0.0 min_logit_delta_from_j=0.4028450846672058 passed=True
+[   11.287s] step         step=0 epoch=0 loss=4.1332 lr=3e-05 grad_norm=3.2562
+[   11.341s] step         step=5 epoch=0 loss=4.0098 lr=0.00018 grad_norm=2.8929
+[   11.387s] step         step=10 epoch=0 loss=3.788 lr=0.0003 grad_norm=1.6262
+[   11.432s] step         step=15 epoch=0 loss=3.7258 lr=0.000142 grad_norm=1.4975
+[   11.634s] epoch        epoch=0 train_loss=3.8756 val_loss=3.6565 val_ppl=38.725 val_bpc=5.2752 val_top1=0.2031
+[   11.650s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_smoke_20260919-232407_best.pt epoch=0 val_loss=3.6565
+[   14.785s] generation   n_samples=3 gen_tokens_per_sec=97.57 distinct_1=0.1686 distinct_2=0.6103 distinct_3=0.6466 repeated_4gram_rate=0.3343
+[   14.787s] metrics      run_id=t1_smoke_20260919-232407 model_name=t1_smoke config_path=task1_llm/zohebw/configs/_smoke.yaml checkpoint_id=t1_smoke_20260919-232407_best.pt train_loss=3.67784 val_loss=3.65648 perplexity=38.7247 bits_per_char=5.27518 generalization_gap=-0.02136 top1_next_char_acc=0.20312 distinct_1=0.16857 distinct_2=0.61032 distinct_3=0.64655 repeated_4gram_rate=0.33429 grad_norm_mean=2.15931 grad_norm_max=3.26703 loss_spikes=0 nan_count=0 param_count=112000 train_tokens_per_sec=6120.69 gen_tokens_per_sec=97.57 peak_memory_gb=0.0629 total_train_seconds=3.18 device=mps hardware=arm
+[   14.787s] run_end      status=ok wall_seconds=14.787 wall=14.77

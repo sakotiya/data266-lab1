@@ -1,0 +1,35 @@
+# Model 3 of 3 - EXPERIMENTAL: architecture + capacity + optimisation change.
+# Baseline encoder deepened and given additive attention pooling, wider embeddings,
+# and a cosine schedule with warm-up. Isolates "does learned token weighting help
+# on long reviews", which is the baseline's weakest slice.
+extends: task2_sentiment/zoheb_waghu/configs/_shared.yaml
+
+run:
+  tag: t2_m3_bilstm_attn
+
+embedding:
+  dim: 256               # differs from _shared on purpose
+
+model:
+  name: bilstm_attention
+  arch: bilstm
+  hidden_size: 256
+  num_layers: 2
+  bidirectional: true
+  pooling: additive_attention
+  attention_dim: 128
+  dropout: 0.4
+  classifier_hidden: 128
+
+train:
+  epochs: 12
+  batch_size: 32
+  optimizer: adamw
+  lr: 2.0e-3
+  min_lr: 1.0e-5
+  weight_decay: 0.01
+  grad_clip: 1.0
+  scheduler: cosine
+  warmup_steps: 300
+  early_stopping_patience: 3
+  monitor: val_macro_f1

@@ -1,0 +1,13 @@
+[    0.016s] run_start    run_id=t2_m3_bilstm_attn_20260919-233621 utc=2026-09-20T06:36:21.746828+00:00 git_commit=89068f2 python=3.9.6 argv=task2_sentiment/zohebw/src/train.py --config task2_sentiment/zohebw/configs/m3_bilstm_attention.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[    0.165s] data_cache   status=hit train_rows=89997 val_rows=9999 test_rows=38000 vocab_size=30000
+[    0.165s] eda          train_rows=89997 val_rows=9999 test_rows=38000 train_pos_frac=0.5018611731502162 test_pos_frac=0.5 vocab_size=30000 token_len_mean=70.12688200717801 token_len_median=51.0 token_len_p95=194.0 token_len_max=558 truncated_frac=0.021900730024334146 stopwords_removed=158 oov_rate_test=0.012770055898222952
+[    0.268s] model        name=bilstm_attention param_count=10441217
+[  539.978s] epoch        epoch=0 train_loss=0.22818 val_acc=0.93909 val_f1_macro=0.93909 val_roc_auc=0.98505
+[  540.061s] checkpoint   epoch=0 val_macro_f1=0.93909
+[ 1193.546s] epoch        epoch=1 train_loss=0.11748 val_acc=0.93819 val_f1_macro=0.93819 val_roc_auc=0.98444
+[ 1795.534s] epoch        epoch=2 train_loss=0.06804 val_acc=0.93299 val_f1_macro=0.93299 val_roc_auc=0.98251
+[ 2391.869s] epoch        epoch=3 train_loss=0.036 val_acc=0.93309 val_f1_macro=0.93309 val_roc_auc=0.98166
+[ 2391.871s] early_stop   epoch=3 patience=3
+[ 2460.659s] mcnemar      statistic=32.94222462203024 pvalue=9.493868801494626e-09 baseline_only_correct=802 experimental_only_correct=1050 exact=False
+[ 2460.667s] metrics      run_id=t2_m3_bilstm_attn_20260919-233621 model_name=bilstm_attention config_path=task2_sentiment/zohebw/configs/m3_bilstm_attention.yaml checkpoint_id=t2_m3_bilstm_attn_20260919-233621_best.pt split=test accuracy=0.93966 precision_macro=0.93972 recall_macro=0.93966 f1_macro=0.93966 precision_micro=0.93966 recall_micro=0.93966 f1_micro=0.93966 precision_weighted=0.93972 recall_weighted=0.93966 f1_weighted=0.93966 tn=17740 fp=1260 fn=1033 tp=17967 roc_auc=0.9855 pr_auc=0.98559 mcc=0.87938 brier_score=0.04484 ece=0.00367 acc_ci_low=0.93726 acc_ci_high=0.94208 f1_macro_ci_low=0.93725 f1_macro_ci_high=0.94208 mcc_ci_low=0.87455 mcc_ci_high=0.88422 mcnemar_stat_vs_baseline=32.9422 mcnemar_p_vs_baseline=9.494e-09 slice_short_f1_macro=0.93997 slice_short_error_rate=0.05896 slice_long_f1_macro=0.91659 slice_long_error_rate=0.07484 slice_negation_f1_macro=0.93498 slice_negation_error_rate=0.06089 slice_highpunct_f1_macro=0.95814 slice_highpunct_error_rate=0.04061 param_count=10441217 train_seconds=2391.2 examples_per_sec=150.55 peak_memory_gb=5.6823 device=mps hardware=arm
+[ 2460.667s] run_end      status=ok wall_seconds=2460.667

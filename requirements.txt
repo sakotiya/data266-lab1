@@ -1,0 +1,36 @@
+# DATA266 Lab 1 - zohebw
+# Versions below are the ones actually used for the reported Task 1 and Task 2 runs
+# (captured 2026-09-20). Full freeze per run: <task>/zohebw/logs/env_freeze_*.txt
+#
+# IMPORTANT: create the venv with /usr/bin/python3 (arm64, 3.9.6). Every other Python
+# on this machine is x86_64 under Rosetta, which caps torch at 2.2.x and has no MPS.
+
+# Core
+torch==2.5.1
+numpy==2.0.2
+pyyaml==6.0.3
+tqdm==4.70.1
+
+# Data
+datasets==4.5.0
+pandas==2.3.3
+pillow==11.3.0
+
+# Task 2 preprocessing / metrics
+nltk==3.9.2
+scikit-learn==1.6.1
+statsmodels==0.14.6
+
+# Plots / notebooks
+matplotlib==3.9.4
+seaborn==0.13.2
+jupyter==1.1.1
+ipykernel==6.31.0
+nbconvert==7.17.1
+
+# Task 3 only - not installed yet, CycleGAN needs a GPU
+# torchvision
+# torchmetrics
+# torch-fidelity
+# lpips
+# scipy

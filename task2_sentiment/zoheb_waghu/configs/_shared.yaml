@@ -1,0 +1,57 @@
+# Shared preprocessing + evaluation protocol for all three of my Task 2 models.
+# Kept in one file so the three models differ ONLY where I intend them to differ,
+# and so my numbers stay comparable with my teammates' (workplan section 0).
+
+run:
+  member: zoheb_waghu
+  seed: 1337
+  device: auto          # portable: cuda on the GPU Lab, mps locally
+
+data:
+  dataset: yelp_polarity   # brief's task text says Yelp polarity; folder tree says IMDB - see README
+  train_size: 100000       # subsample of the 560K train split; set null for full
+  val_fraction: 0.1        # held out of TRAIN. Official test split is touched once, at the end.
+  test_size: null          # null = full 38K test split
+  cache_dir: task2_sentiment/zoheb_waghu/data_processed
+
+preprocess:
+  lowercase: true
+  strip_punctuation: true
+  strip_special_chars: true
+  stopwords: nltk_english_minus_negations   # see negation_policy below
+  negation_policy: keep                     # keep not/no/never/n't - they invert sentiment
+  negation_marking: none                    # alternative: append _NEG until next punctuation
+  normalize_contractions: true              # "don't" -> "do not" BEFORE stopword removal
+  lemmatize: true
+  stemmer: none                             # lemmatize XOR stem, not both
+  min_token_freq: 2
+  max_vocab: 30000
+  max_len: 256
+  pad_token: "<pad>"
+  unk_token: "<unk>"
+
+embedding:
+  source: from_scratch    # HARD CONSTRAINT: no pretrained embeddings, no pretrained LMs
+  dim: 128
+  freeze: false
+  padding_idx: 0
+
+eval:
+  bootstrap_samples: 2000     # 95% CI for accuracy, macro-F1, MCC
+  calibration_bins: 15        # expected calibration error
+  mcnemar: baseline_vs_each   # paired test, exact
+  slices:                     # per-slice macro-F1 and error rate (robustness)
+    - {name: short_reviews, rule: "len_tokens <= 50"}
+    - {name: long_reviews, rule: "len_tokens > 200"}
+    - {name: contains_negation, rule: "has_token in {not,no,never,nt}"}
+    - {name: high_punctuation, rule: "exclamation_count >= 3"}
+
+paths:
+  # Raw logs live in the team-wide evidence trail, not inside the member folder.
+  log_dir: reproducibility/raw_logs/zoheb_waghu/task2_sentiment
+  checkpoint_dir: task2_sentiment/zoheb_waghu/checkpoints
+  output_dir: task2_sentiment/zoheb_waghu/outputs
+  plot_dir: task2_sentiment/zoheb_waghu/outputs/plots
+  confusion_dir: task2_sentiment/zoheb_waghu/outputs/confusion_matrices
+  metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report.csv
+  extended_metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report_extended.csv

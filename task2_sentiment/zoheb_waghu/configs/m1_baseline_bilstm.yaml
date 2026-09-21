@@ -1,0 +1,27 @@
+# Model 1 of 3 - BASELINE. Everything else is measured against this.
+# Inherits configs/_shared.yaml; only the keys below differ.
+extends: task2_sentiment/zoheb_waghu/configs/_shared.yaml
+
+run:
+  tag: t2_m1_baseline
+
+model:
+  name: bilstm_mean
+  arch: bilstm
+  hidden_size: 128
+  num_layers: 1
+  bidirectional: true
+  pooling: mean          # mean over time, no attention
+  dropout: 0.3
+  classifier_hidden: 0   # linear head straight off the pooled vector
+
+train:
+  epochs: 8
+  batch_size: 64
+  optimizer: adam
+  lr: 1.0e-3
+  weight_decay: 0.0
+  grad_clip: 5.0
+  scheduler: none
+  early_stopping_patience: 2
+  monitor: val_macro_f1

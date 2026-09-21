@@ -37,8 +37,35 @@ Per member, per task:
 git clone <repo-url>
 cd data266-lab1
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt          # TODO: add once the team agrees on versions
+pip install -r requirements.txt
 ```
+
+`requirements.txt` pins the versions used for zoheb_waghu's Task 1 and Task 2 runs.
+
+> **Apple Silicon note (zoheb_waghu's machine).** Every Python on PATH there - Homebrew
+> `/usr/local`, miniforge - is **x86_64 under Rosetta**, which caps torch at 2.2.x and has
+> **no MPS support**. Only Apple's `/usr/bin/python3` (3.9.6) is native arm64, so that venv
+> must be created with `/usr/bin/python3 -m venv .venv`. Verify with:
+> `python -c "import torch; print(torch.backends.mps.is_available())"` -> must print `True`.
+> On CUDA machines this does not apply; `device: auto` in every config resolves cuda > mps > cpu.
+
+For notebooks, register the venv as its own kernel:
+
+```bash
+python -m ipykernel install --user --name lab1-arm64 --display-name "DATA266 Lab1 (arm64 py3.9)"
+```
+
+## Open items for the team
+
+- [ ] GPU Lab booking, Kaggle competition registration
+- [ ] Agree per-member architectures and data splits so no two models match
+- [ ] **Task 2 dataset ambiguity:** the brief's task text says Yelp polarity, its folder tree
+      says IMDB. zoheb_waghu proceeded on **Yelp polarity**; one config field switches it
+- [ ] **Task 3 submission format:** the brief's tree shows `submission.csv`, but the Kaggle
+      Monet competition expects a zip of generated images scored by MiFID
+- [ ] Confirm measurement-only pretrained nets (InceptionV3 for FID/KID, AlexNet for LPIPS) are
+      acceptable - those metrics cannot be computed otherwise
+- [ ] Widen or confirm the Task 2 / Task 3 metric headers (see above)
 
 ## Data
 
@@ -54,26 +81,70 @@ Raw datasets are not committed — they are too large for git. Each task's
 
 ## Reproducing a run
 
-<!-- TODO: one documented command that runs a smoke test of ONE member's run.
-     This is graded (section 5): a grader must be able to clone and run it. -->
+**Harness smoke test** - no GPU, no dataset download, a few seconds. Verifies that every
+config loads and inherits correctly, that the run logger writes an append-only trail, and that
+the metrics writers reject incomplete rows:
 
 ```bash
-# e.g. python task1_llm/shreya_akotiya/src/train.py --config <config> --smoke-test
+python common/smoke_test.py
 ```
+
+**Full reproduction of zoheb_waghu's Task 1 run** - one command, ~3.5 min on an Apple M5,
+downloads TinyStories on first use:
+
+```bash
+python task1_llm/zoheb_waghu/src/train.py --config task1_llm/zoheb_waghu/configs/gpt_baseline.yaml
+python task1_llm/zoheb_waghu/src/plots.py --history task1_llm/zoheb_waghu/outputs/history_<run_id>.json
+```
+
+**Task 2** - run the baseline first; the two experimental runs read its saved test predictions
+to compute the paired McNemar test against it:
+
+```bash
+for m in m1_baseline_bilstm m2_cnn_multikernel m3_bilstm_attention; do
+  python task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/$m.yaml
+done
+python task2_sentiment/zoheb_waghu/src/plots.py        --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml
+python task2_sentiment/zoheb_waghu/src/error_review.py --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml --model t2_m1_baseline
+```
+
+Shared, task-agnostic utilities live in `common/`: config loading with `extends:` inheritance,
+seeding, device selection, the append-only run logger, and the metrics writers.
 
 Runs must be config-driven. No hard-coded personal paths, credentials or API keys
 anywhere in the repo.
 
 ## Where results live
 
-| Task | Member | Metrics | Write-up | Failure analysis |
-| --- | --- | --- | --- | --- |
-| 1 | shreya_akotiya | `task1_llm/shreya_akotiya/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 1 | zoheb_waghu | `task1_llm/zoheb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 2 | shreya_akotiya | `task2_sentiment/shreya_akotiya/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 2 | zoheb_waghu | `task2_sentiment/zoheb_waghu/metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 3 | shreya_akotiya | `task3_gan/shreya_akotiya/full_metrics_report.csv` | `results.md` | `failure_analysis.md` |
-| 3 | zoheb_waghu | `task3_gan/zoheb_waghu/full_metrics_report.csv` | `results.md` | `failure_analysis.md` |
+| Task | Member | Status | Headline |
+| --- | --- | --- | --- |
+| 1 | shreya_akotiya | not started | - |
+| 1 | zoheb_waghu | **complete** | val loss 1.4194 · ppl 4.13 · bpc 2.048 · top-1 58.3% |
+| 2 | shreya_akotiya | not started | - |
+| 2 | zoheb_waghu | **complete** | M1 93.31% · M2 93.55% (n.s.) · M3 **93.89%** |
+| 3 | shreya_akotiya | not started | - |
+| 3 | zoheb_waghu | scaffold only | needs GPU |
+
+Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysis.md`.
+
+### Metrics schema
+
+`metrics_report.csv` uses the **team-agreed column schema** in every member folder, so the two
+members' numbers can be placed side by side in the report without reconciliation.
+
+The team header omits some metrics the brief's "metrics to report" list requires, so
+zoheb_waghu's folders also carry `metrics_report_extended.csv` with the full set. Each training
+run writes both files from the same in-memory row, so they cannot drift.
+
+| Task | Team header | Missing from it, kept in the extended table |
+| --- | --- | --- |
+| 1 | 22 cols | `config_path`, `device`, `model_name` |
+| 2 | 31 cols | confusion-matrix cells (`tn`/`fp`/`fn`/`tp`), all 8 per-slice robustness columns, `split`, `config_path`, `device` |
+
+**For the team to decide:** whether to widen the agreed Task 2 header to include the
+confusion-matrix and per-slice columns, since the brief lists both as required metrics. Task 3's
+header is one row per direction, which differs from the one-row-per-run shape used in Tasks 1
+and 2 - worth confirming before anyone trains a CycleGAN.
 
 ## Evidence trail
 

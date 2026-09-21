@@ -1,0 +1,56 @@
+{
+  "worst_slice": "long_reviews",
+  "buckets": {
+    "confident_false_positives": [
+      29330,
+      23815,
+      17756,
+      37771,
+      26423
+    ],
+    "confident_false_negatives": [
+      26172,
+      31329,
+      30793,
+      6520,
+      22807
+    ],
+    "near_threshold_errors": [
+      9612,
+      7737,
+      19747,
+      9177,
+      12475
+    ],
+    "slice_errors": [
+      439,
+      770,
+      1256,
+      1340,
+      2048
+    ],
+    "slice_name": "long_reviews"
+  },
+  "slices": {
+    "short_reviews": {
+      "n": 18860,
+      "f1_macro": 0.9368652274747038,
+      "error_rate": 0.06203605514316013
+    },
+    "long_reviews": {
+      "n": 1697,
+      "f1_macro": 0.9053061706035406,
+      "error_rate": 0.08249852681202122
+    },
+    "contains_negation": {
+      "n": 22583,
+      "f1_macro": 0.9303836205077696,
+      "error_rate": 0.06482752512952221
+    },
+    "high_punctuation": {
+      "n": 6944,
+      "f1_macro": 0.9531497995682222,
+      "error_rate": 0.045650921658986175
+    }
+  }
+}

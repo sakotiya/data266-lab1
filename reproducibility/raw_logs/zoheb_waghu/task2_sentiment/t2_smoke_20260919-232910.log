@@ -1,0 +1,11 @@
+[    0.023s] run_start    run_id=t2_smoke_20260919-232910 utc=2026-09-20T06:29:10.968056+00:00 git_commit=89068f2 python=3.9.6 argv=task2_sentiment/zohebw/src/train.py --config task2_sentiment/zohebw/configs/_smoke.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[    0.030s] data_cache   status=hit train_rows=2700 val_rows=300 test_rows=1000 vocab_size=7962
+[    0.030s] eda          train_rows=2700 val_rows=300 test_rows=1000 train_pos_frac=0.4937037037037037 test_pos_frac=0.482 vocab_size=7962 token_len_mean=71.51074074074074 token_len_median=51.0 token_len_p95=202.0 token_len_max=503 truncated_frac=0.1425925925925926 stopwords_removed=158 oov_rate_test=0.06556370569037387
+[    0.052s] model        name=bilstm_mean param_count=1283585
+[    1.717s] epoch        epoch=0 train_loss=0.65125 val_acc=0.76333 val_f1_macro=0.76257 val_roc_auc=0.84545
+[    1.726s] checkpoint   epoch=0 val_macro_f1=0.76257
+[    2.638s] epoch        epoch=1 train_loss=0.32254 val_acc=0.86333 val_f1_macro=0.86315 val_roc_auc=0.92553
+[    2.649s] checkpoint   epoch=1 val_macro_f1=0.86315
+[    3.270s] mcnemar      statistic=BASELINE pvalue=BASELINE
+[    3.274s] metrics      run_id=t2_smoke_20260919-232910 model_name=bilstm_mean config_path=task2_sentiment/zohebw/configs/_smoke.yaml checkpoint_id=t2_smoke_20260919-232910_best.pt split=test accuracy=0.853 precision_macro=0.85322 recall_macro=0.85364 f1_macro=0.85298 precision_micro=0.853 recall_micro=0.853 f1_micro=0.853 precision_weighted=0.85399 recall_weighted=0.853 f1_weighted=0.85304 tn=433 fp=85 fn=62 tp=420 roc_auc=0.92964 pr_auc=0.93048 mcc=0.70685 brier_score=0.10604 ece=0.02919 acc_ci_low=0.832 acc_ci_high=0.87303 f1_macro_ci_low=0.832 f1_macro_ci_high=0.87283 mcc_ci_low=0.66611 mcc_ci_high=0.74583 mcnemar_stat_vs_baseline=BASELINE mcnemar_p_vs_baseline=BASELINE slice_short_f1_macro=0.8801 slice_short_error_rate=0.1185 slice_long_f1_macro=0.64055 slice_long_error_rate=0.34615 slice_negation_f1_macro=0.83528 slice_negation_error_rate=0.15385 slice_highpunct_f1_macro=0.90575 slice_highpunct_error_rate=0.09286 param_count=1283585 train_seconds=2.11 examples_per_sec=2560.78 peak_memory_gb=1.6285 device=mps hardware=arm
+[    3.274s] run_end      status=ok wall_seconds=3.274

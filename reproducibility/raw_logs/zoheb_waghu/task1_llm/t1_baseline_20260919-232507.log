@@ -1,0 +1,176 @@
+[    0.015s] run_start    run_id=t1_baseline_20260919-232507 utc=2026-09-20T06:25:07.018323+00:00 git_commit=89068f2 python=3.9.6 argv=task1_llm/zohebw/src/train.py --config task1_llm/zohebw/configs/gpt_baseline.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[    6.849s] data         train_chars=100000 val_chars=10000 vocab_size=73 val_oov_chars=0
+[    6.849s] schedule     steps_per_epoch=120 total_steps=1440 tokens_per_epoch=983040 corpus_passes_per_epoch=9.83 nonoverlapping_batches_per_epoch=12
+[    6.907s] model        param_count=3262464 vocab_size=73
+[    7.388s] causal_mask_probe probe_position=128 max_logit_delta_before_j=0.0 min_logit_delta_from_j=0.7062493562698364 passed=True
+[    8.783s] step         step=0 epoch=0 loss=4.3678 lr=2e-06 grad_norm=9.5953
+[   10.151s] step         step=10 epoch=0 loss=3.7243 lr=2.2e-05 grad_norm=5.0418
+[   11.534s] step         step=20 epoch=0 loss=3.3164 lr=4.2e-05 grad_norm=2.0664
+[   12.955s] step         step=30 epoch=0 loss=3.0304 lr=6.2e-05 grad_norm=1.7741
+[   14.359s] step         step=40 epoch=0 loss=2.8379 lr=8.2e-05 grad_norm=1.2679
+[   15.756s] step         step=50 epoch=0 loss=2.7047 lr=0.000102 grad_norm=1.557
+[   17.154s] step         step=60 epoch=0 loss=2.606 lr=0.000122 grad_norm=0.9286
+[   18.566s] step         step=70 epoch=0 loss=2.5421 lr=0.000142 grad_norm=0.7553
+[   19.971s] step         step=80 epoch=0 loss=2.4595 lr=0.000162 grad_norm=0.6139
+[   21.357s] step         step=90 epoch=0 loss=2.4237 lr=0.000182 grad_norm=0.7254
+[   22.760s] step         step=100 epoch=0 loss=2.394 lr=0.000202 grad_norm=0.6086
+[   24.138s] step         step=110 epoch=0 loss=2.3854 lr=0.000222 grad_norm=0.6606
+[   25.459s] epoch        epoch=0 train_loss=2.8244 val_loss=2.3741 val_ppl=10.742 val_bpc=3.4252 val_top1=0.3196
+[   25.499s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=0 val_loss=2.3741
+[   25.635s] step         step=120 epoch=1 loss=2.3355 lr=0.000242 grad_norm=0.5437
+[   27.016s] step         step=130 epoch=1 loss=2.3259 lr=0.000262 grad_norm=0.7867
+[   28.407s] step         step=140 epoch=1 loss=2.3514 lr=0.000282 grad_norm=0.7148
+[   29.780s] step         step=150 epoch=1 loss=2.3089 lr=0.0003 grad_norm=0.5152
+[   31.155s] step         step=160 epoch=1 loss=2.3124 lr=0.0003 grad_norm=0.5251
+[   32.542s] step         step=170 epoch=1 loss=2.3056 lr=0.0003 grad_norm=0.6057
+[   33.918s] step         step=180 epoch=1 loss=2.2971 lr=0.0003 grad_norm=0.6092
+[   35.296s] step         step=190 epoch=1 loss=2.3062 lr=0.000299 grad_norm=0.5016
+[   36.664s] step         step=200 epoch=1 loss=2.2508 lr=0.000299 grad_norm=0.6894
+[   38.053s] step         step=210 epoch=1 loss=2.2614 lr=0.000299 grad_norm=0.5749
+[   39.427s] step         step=220 epoch=1 loss=2.2614 lr=0.000298 grad_norm=0.6725
+[   40.799s] step         step=230 epoch=1 loss=2.2539 lr=0.000297 grad_norm=0.6243
+[   42.078s] epoch        epoch=1 train_loss=2.299 val_loss=2.2642 val_ppl=9.623 val_bpc=3.2665 val_top1=0.3362
+[   42.107s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=1 val_loss=2.2642
+[   42.247s] step         step=240 epoch=2 loss=2.2643 lr=0.000297 grad_norm=0.5593
+[   43.655s] step         step=250 epoch=2 loss=2.2492 lr=0.000296 grad_norm=0.5668
+[   45.027s] step         step=260 epoch=2 loss=2.2304 lr=0.000295 grad_norm=0.7517
+[   46.421s] step         step=270 epoch=2 loss=2.2004 lr=0.000294 grad_norm=0.6665
+[   47.811s] step         step=280 epoch=2 loss=2.2148 lr=0.000293 grad_norm=0.6859
+[   49.208s] step         step=290 epoch=2 loss=2.2177 lr=0.000292 grad_norm=0.6049
+[   50.574s] step         step=300 epoch=2 loss=2.2306 lr=0.000291 grad_norm=1.0654
+[   51.949s] step         step=310 epoch=2 loss=2.1744 lr=0.00029 grad_norm=0.5481
+[   53.354s] step         step=320 epoch=2 loss=2.1896 lr=0.000289 grad_norm=0.9918
+[   54.721s] step         step=330 epoch=2 loss=2.1352 lr=0.000287 grad_norm=0.8106
+[   56.093s] step         step=340 epoch=2 loss=2.1513 lr=0.000286 grad_norm=1.0883
+[   57.545s] step         step=350 epoch=2 loss=2.1193 lr=0.000284 grad_norm=0.7847
+[   58.877s] epoch        epoch=2 train_loss=2.2013 val_loss=2.1235 val_ppl=8.361 val_bpc=3.0636 val_top1=0.3658
+[   58.908s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=2 val_loss=2.1235
+[   59.047s] step         step=360 epoch=3 loss=2.1377 lr=0.000283 grad_norm=1.3364
+[   60.418s] step         step=370 epoch=3 loss=2.1219 lr=0.000281 grad_norm=1.0437
+[   61.792s] step         step=380 epoch=3 loss=2.118 lr=0.000279 grad_norm=0.9955
+[   63.184s] step         step=390 epoch=3 loss=2.0927 lr=0.000278 grad_norm=0.9184
+[   64.562s] step         step=400 epoch=3 loss=2.0619 lr=0.000276 grad_norm=0.952
+[   65.933s] step         step=410 epoch=3 loss=2.0645 lr=0.000274 grad_norm=0.8259
+[   67.308s] step         step=420 epoch=3 loss=2.0763 lr=0.000272 grad_norm=1.1522
+[   68.697s] step         step=430 epoch=3 loss=2.0467 lr=0.00027 grad_norm=0.8606
+[   70.064s] step         step=440 epoch=3 loss=2.0384 lr=0.000268 grad_norm=1.0455
+[   71.432s] step         step=450 epoch=3 loss=2.0035 lr=0.000266 grad_norm=1.4576
+[   72.820s] step         step=460 epoch=3 loss=2.0143 lr=0.000263 grad_norm=1.3208
+[   74.195s] step         step=470 epoch=3 loss=1.9662 lr=0.000261 grad_norm=1.0217
+[   75.484s] epoch        epoch=3 train_loss=2.0566 val_loss=1.9502 val_ppl=7.03 val_bpc=2.8135 val_top1=0.4185
+[   75.506s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=3 val_loss=1.9502
+[   75.643s] step         step=480 epoch=4 loss=1.9985 lr=0.000259 grad_norm=1.3183
+[   77.018s] step         step=490 epoch=4 loss=1.9315 lr=0.000256 grad_norm=1.1653
+[   78.410s] step         step=500 epoch=4 loss=1.9637 lr=0.000254 grad_norm=1.4757
+[   79.786s] step         step=510 epoch=4 loss=1.9227 lr=0.000251 grad_norm=1.4609
+[   81.166s] step         step=520 epoch=4 loss=1.9126 lr=0.000249 grad_norm=1.2536
+[   82.606s] step         step=530 epoch=4 loss=1.9035 lr=0.000246 grad_norm=1.1264
+[   84.000s] step         step=540 epoch=4 loss=1.8679 lr=0.000244 grad_norm=1.2782
+[   85.389s] step         step=550 epoch=4 loss=1.8349 lr=0.000241 grad_norm=1.2071
+[   86.818s] step         step=560 epoch=4 loss=1.8755 lr=0.000238 grad_norm=1.1452
+[   88.404s] step         step=570 epoch=4 loss=1.8789 lr=0.000235 grad_norm=1.3973
+[   89.808s] step         step=580 epoch=4 loss=1.8556 lr=0.000232 grad_norm=1.4071
+[   91.265s] step         step=590 epoch=4 loss=1.8039 lr=0.00023 grad_norm=1.6881
+[   92.583s] epoch        epoch=4 train_loss=1.8909 val_loss=1.7862 val_ppl=5.967 val_bpc=2.577 val_top1=0.4688
+[   92.613s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=4 val_loss=1.7862
+[   92.757s] step         step=600 epoch=5 loss=1.7886 lr=0.000227 grad_norm=1.3502
+[   94.153s] step         step=610 epoch=5 loss=1.7955 lr=0.000224 grad_norm=1.3767
+[   95.550s] step         step=620 epoch=5 loss=1.766 lr=0.000221 grad_norm=1.5651
+[   96.925s] step         step=630 epoch=5 loss=1.7565 lr=0.000218 grad_norm=1.2572
+[   98.351s] step         step=640 epoch=5 loss=1.767 lr=0.000215 grad_norm=1.2285
+[   99.731s] step         step=650 epoch=5 loss=1.7227 lr=0.000212 grad_norm=1.2236
+[  101.132s] step         step=660 epoch=5 loss=1.7519 lr=0.000209 grad_norm=1.5867
+[  102.592s] step         step=670 epoch=5 loss=1.7101 lr=0.000205 grad_norm=1.3858
+[  103.989s] step         step=680 epoch=5 loss=1.7366 lr=0.000202 grad_norm=1.6009
+[  105.410s] step         step=690 epoch=5 loss=1.7048 lr=0.000199 grad_norm=1.5743
+[  106.834s] step         step=700 epoch=5 loss=1.6496 lr=0.000196 grad_norm=1.61
+[  108.298s] step         step=710 epoch=5 loss=1.6961 lr=0.000193 grad_norm=1.2542
+[  109.618s] epoch        epoch=5 train_loss=1.7302 val_loss=1.6642 val_ppl=5.281 val_bpc=2.4009 val_top1=0.5062
+[  109.642s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=5 val_loss=1.6642
+[  109.793s] step         step=720 epoch=6 loss=1.6526 lr=0.00019 grad_norm=1.545
+[  111.211s] step         step=730 epoch=6 loss=1.6604 lr=0.000186 grad_norm=1.3046
+[  112.671s] step         step=740 epoch=6 loss=1.6502 lr=0.000183 grad_norm=1.4312
+[  114.115s] step         step=750 epoch=6 loss=1.6543 lr=0.00018 grad_norm=1.3073
+[  115.556s] step         step=760 epoch=6 loss=1.6339 lr=0.000176 grad_norm=1.5211
+[  116.964s] step         step=770 epoch=6 loss=1.6101 lr=0.000173 grad_norm=1.3889
+[  118.453s] step         step=780 epoch=6 loss=1.6013 lr=0.00017 grad_norm=1.4627
+[  119.883s] step         step=790 epoch=6 loss=1.5741 lr=0.000167 grad_norm=1.4739
+[  121.303s] step         step=800 epoch=6 loss=1.6085 lr=0.000163 grad_norm=1.5485
+[  122.768s] step         step=810 epoch=6 loss=1.6047 lr=0.00016 grad_norm=1.5563
+[  124.203s] step         step=820 epoch=6 loss=1.5483 lr=0.000157 grad_norm=1.5697
+[  125.656s] step         step=830 epoch=6 loss=1.5489 lr=0.000154 grad_norm=1.6704
+[  126.964s] epoch        epoch=6 train_loss=1.6087 val_loss=1.5793 val_ppl=4.851 val_bpc=2.2784 val_top1=0.5325
+[  126.989s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=6 val_loss=1.5793
+[  127.128s] step         step=840 epoch=7 loss=1.5927 lr=0.00015 grad_norm=1.4408
+[  128.689s] step         step=850 epoch=7 loss=1.5472 lr=0.000147 grad_norm=1.5374
+[  130.142s] step         step=860 epoch=7 loss=1.5125 lr=0.000144 grad_norm=1.7306
+[  131.544s] step         step=870 epoch=7 loss=1.5321 lr=0.00014 grad_norm=1.4693
+[  132.951s] step         step=880 epoch=7 loss=1.5081 lr=0.000137 grad_norm=1.6089
+[  134.350s] step         step=890 epoch=7 loss=1.5304 lr=0.000134 grad_norm=1.6134
+[  135.752s] step         step=900 epoch=7 loss=1.5195 lr=0.000131 grad_norm=1.5532
+[  137.223s] step         step=910 epoch=7 loss=1.4629 lr=0.000128 grad_norm=1.4562
+[  138.650s] step         step=920 epoch=7 loss=1.5277 lr=0.000125 grad_norm=1.8288
+[  140.080s] step         step=930 epoch=7 loss=1.5128 lr=0.000121 grad_norm=1.5576
+[  141.480s] step         step=940 epoch=7 loss=1.4927 lr=0.000118 grad_norm=1.3794
+[  142.954s] step         step=950 epoch=7 loss=1.4919 lr=0.000115 grad_norm=1.7782
+[  144.261s] epoch        epoch=7 train_loss=1.5139 val_loss=1.5193 val_ppl=4.569 val_bpc=2.1918 val_top1=0.5533
+[  144.289s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=7 val_loss=1.5193
+[  144.427s] step         step=960 epoch=8 loss=1.4964 lr=0.000112 grad_norm=1.4063
+[  145.926s] step         step=970 epoch=8 loss=1.4747 lr=0.000109 grad_norm=1.5447
+[  147.381s] step         step=980 epoch=8 loss=1.444 lr=0.000106 grad_norm=1.4942
+[  148.870s] step         step=990 epoch=8 loss=1.4476 lr=0.000103 grad_norm=1.4378
+[  150.338s] step         step=1000 epoch=8 loss=1.4032 lr=0.0001 grad_norm=1.5615
+[  151.825s] step         step=1010 epoch=8 loss=1.4289 lr=9.8e-05 grad_norm=1.4965
+[  153.294s] step         step=1020 epoch=8 loss=1.4382 lr=9.5e-05 grad_norm=1.5586
+[  154.741s] step         step=1030 epoch=8 loss=1.4319 lr=9.2e-05 grad_norm=1.5031
+[  156.227s] step         step=1040 epoch=8 loss=1.4448 lr=8.9e-05 grad_norm=1.3498
+[  157.747s] step         step=1050 epoch=8 loss=1.4001 lr=8.6e-05 grad_norm=1.8814
+[  159.228s] step         step=1060 epoch=8 loss=1.3944 lr=8.4e-05 grad_norm=1.5713
+[  160.727s] step         step=1070 epoch=8 loss=1.4103 lr=8.1e-05 grad_norm=1.6432
+[  162.163s] epoch        epoch=8 train_loss=1.4419 val_loss=1.4804 val_ppl=4.395 val_bpc=2.1357 val_top1=0.5607
+[  162.195s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=8 val_loss=1.4804
+[  162.354s] step         step=1080 epoch=9 loss=1.4507 lr=7.9e-05 grad_norm=1.7494
+[  163.828s] step         step=1090 epoch=9 loss=1.4311 lr=7.6e-05 grad_norm=1.7908
+[  165.301s] step         step=1100 epoch=9 loss=1.4179 lr=7.4e-05 grad_norm=1.4524
+[  166.802s] step         step=1110 epoch=9 loss=1.3768 lr=7.1e-05 grad_norm=1.6819
+[  168.411s] step         step=1120 epoch=9 loss=1.4501 lr=6.9e-05 grad_norm=1.8046
+[  169.901s] step         step=1130 epoch=9 loss=1.3878 lr=6.7e-05 grad_norm=1.7089
+[  171.363s] step         step=1140 epoch=9 loss=1.4233 lr=6.4e-05 grad_norm=1.5763
+[  172.808s] step         step=1150 epoch=9 loss=1.3778 lr=6.2e-05 grad_norm=1.6494
+[  174.258s] step         step=1160 epoch=9 loss=1.3896 lr=6e-05 grad_norm=1.6125
+[  175.732s] step         step=1170 epoch=9 loss=1.3891 lr=5.8e-05 grad_norm=1.699
+[  177.180s] step         step=1180 epoch=9 loss=1.3824 lr=5.6e-05 grad_norm=1.5595
+[  178.718s] step         step=1190 epoch=9 loss=1.384 lr=5.4e-05 grad_norm=1.8224
+[  180.144s] epoch        epoch=9 train_loss=1.3943 val_loss=1.4521 val_ppl=4.272 val_bpc=2.095 val_top1=0.5726
+[  180.168s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=9 val_loss=1.4521
+[  180.316s] step         step=1200 epoch=10 loss=1.3474 lr=5.2e-05 grad_norm=1.6527
+[  181.805s] step         step=1210 epoch=10 loss=1.3848 lr=5.1e-05 grad_norm=1.5022
+[  183.286s] step         step=1220 epoch=10 loss=1.397 lr=4.9e-05 grad_norm=1.6804
+[  184.761s] step         step=1230 epoch=10 loss=1.3938 lr=4.7e-05 grad_norm=1.6252
+[  186.198s] step         step=1240 epoch=10 loss=1.3471 lr=4.6e-05 grad_norm=1.6373
+[  187.656s] step         step=1250 epoch=10 loss=1.352 lr=4.4e-05 grad_norm=1.5408
+[  189.205s] step         step=1260 epoch=10 loss=1.3893 lr=4.3e-05 grad_norm=1.5209
+[  190.719s] step         step=1270 epoch=10 loss=1.3441 lr=4.1e-05 grad_norm=1.5952
+[  192.227s] step         step=1280 epoch=10 loss=1.3603 lr=4e-05 grad_norm=1.6635
+[  194.270s] step         step=1290 epoch=10 loss=1.3637 lr=3.9e-05 grad_norm=1.5855
+[  195.738s] step         step=1300 epoch=10 loss=1.3128 lr=3.8e-05 grad_norm=1.7662
+[  197.183s] step         step=1310 epoch=10 loss=1.3206 lr=3.7e-05 grad_norm=1.6728
+[  198.547s] epoch        epoch=10 train_loss=1.356 val_loss=1.4328 val_ppl=4.19 val_bpc=2.0671 val_top1=0.5791
+[  198.578s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=10 val_loss=1.4328
+[  198.724s] step         step=1320 epoch=11 loss=1.2953 lr=3.6e-05 grad_norm=1.6961
+[  200.211s] step         step=1330 epoch=11 loss=1.3185 lr=3.5e-05 grad_norm=1.8133
+[  201.749s] step         step=1340 epoch=11 loss=1.3565 lr=3.4e-05 grad_norm=1.7373
+[  203.249s] step         step=1350 epoch=11 loss=1.2991 lr=3.3e-05 grad_norm=1.5133
+[  204.829s] step         step=1360 epoch=11 loss=1.3697 lr=3.3e-05 grad_norm=1.9869
+[  206.305s] step         step=1370 epoch=11 loss=1.3059 lr=3.2e-05 grad_norm=1.6039
+[  208.000s] step         step=1380 epoch=11 loss=1.308 lr=3.1e-05 grad_norm=1.5636
+[  209.717s] step         step=1390 epoch=11 loss=1.315 lr=3.1e-05 grad_norm=1.6083
+[  211.437s] step         step=1400 epoch=11 loss=1.3561 lr=3.1e-05 grad_norm=1.6772
+[  213.046s] step         step=1410 epoch=11 loss=1.3136 lr=3e-05 grad_norm=1.5138
+[  214.615s] step         step=1420 epoch=11 loss=1.3245 lr=3e-05 grad_norm=1.601
+[  216.170s] step         step=1430 epoch=11 loss=1.3125 lr=3e-05 grad_norm=1.5995
+[  217.680s] epoch        epoch=11 train_loss=1.3266 val_loss=1.4194 val_ppl=4.135 val_bpc=2.0478 val_top1=0.5826
+[  217.740s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/Lab1/task1_llm/zohebw/checkpoints/t1_baseline_20260919-232507_best.pt epoch=11 val_loss=1.4194
+[  256.318s] generation   n_samples=9 gen_tokens_per_sec=95.3 distinct_1=0.0139 distinct_2=0.1077 distinct_3=0.2949 repeated_4gram_rate=0.5319
+[  256.323s] metrics      run_id=t1_baseline_20260919-232507 model_name=t1_baseline config_path=task1_llm/zohebw/configs/gpt_baseline.yaml checkpoint_id=t1_baseline_20260919-232507_best.pt train_loss=1.17207 val_loss=1.41941 perplexity=4.1347 bits_per_char=2.04778 generalization_gap=0.24734 top1_next_char_acc=0.58264 distinct_1=0.01386 distinct_2=0.1077 distinct_3=0.29493 repeated_4gram_rate=0.53188 grad_norm_mean=1.38882 grad_norm_max=9.81623 loss_spikes=0 nan_count=0 param_count=3262464 train_tokens_per_sec=56194.16 gen_tokens_per_sec=95.3 peak_memory_gb=2.345 total_train_seconds=209.92 device=mps hardware=arm
+[  256.323s] run_end      status=ok wall_seconds=256.323 wall=256.31

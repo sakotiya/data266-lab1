@@ -1,0 +1,27 @@
+# Model 2 of 3 - EXPERIMENTAL: architecture change.
+# Swaps recurrence for parallel n-gram convolutions. Tests whether local n-gram
+# evidence is enough for polarity, vs the baseline's sequential encoding.
+extends: task2_sentiment/zoheb_waghu/configs/_shared.yaml
+
+run:
+  tag: t2_m2_cnn
+
+model:
+  name: cnn_multikernel
+  arch: textcnn
+  kernel_sizes: [2, 3, 4, 5]
+  num_filters: 128       # per kernel size
+  pooling: max           # global max over time
+  dropout: 0.5
+  classifier_hidden: 128
+
+train:
+  epochs: 8
+  batch_size: 64
+  optimizer: adam
+  lr: 1.0e-3
+  weight_decay: 1.0e-5
+  grad_clip: 5.0
+  scheduler: none
+  early_stopping_patience: 2
+  monitor: val_macro_f1

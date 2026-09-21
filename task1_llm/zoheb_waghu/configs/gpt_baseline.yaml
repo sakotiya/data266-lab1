@@ -1,0 +1,68 @@
+# Task 1 - GPT-style character-level LM trained from scratch on TinyStories.
+# Constraint: no nn.Transformer*, no nn.MultiheadAttention, no fused SDPA.
+# Runs on the local Apple M5 (mps). Nothing below may be hard-coded in the notebook.
+
+run:
+  tag: t1_baseline
+  member: zoheb_waghu
+  seed: 1337
+  device: auto          # auto -> cuda > mps > cpu
+
+data:
+  dataset: roneneldan/TinyStories
+  split_source: train
+  train_chars: 100000   # workplan 1.1: 100K train
+  val_chars: 10000      # workplan 1.1: 10K validation
+  block_size: 256       # context length; targets are inputs shifted right by 1
+  vocab_from: train_only   # build char_to_idx from the training split only
+  cache_dir: task1_llm/zoheb_waghu/data_processed
+
+model:
+  n_layer: 4
+  n_head: 4
+  n_embd: 256           # must be divisible by n_head
+  dropout: 0.1
+  pos_embedding: learned   # learnable token AND position embeddings
+  tie_weights: false
+  bias: true
+
+train:
+  epochs: 12            # workplan minimum is 10
+  # A non-overlapping pass over 100K chars is only ~6 batches, which is far too
+  # few optimiser steps. An epoch here is defined explicitly as 120 randomly
+  # offset batches (120*32*256 = 983K tokens ~= 9.8 passes over the corpus).
+  steps_per_epoch: 120
+  batch_size: 32
+  optimizer: adamw
+  lr: 3.0e-4
+  min_lr: 3.0e-5
+  betas: [0.9, 0.95]
+  weight_decay: 0.1
+  grad_clip: 1.0
+  warmup_steps: 150
+  schedule: cosine
+  eval_interval_steps: 100
+  log_interval_steps: 10
+
+generate:
+  prompts: ["Once upon a time", "The little girl", "Tom and Jane went"]
+  max_new_tokens: 400
+  strategies:
+    - {name: greedy}
+    - {name: temperature, temperature: 0.8}
+    - {name: temperature, temperature: 1.2}
+
+eval:
+  ngram_max: 3          # distinct-1/2/3
+  repeat_ngram_n: 4     # repeated 4-gram rate
+  causal_mask_probe: true   # behavioural check: perturb token j, assert logits i<j unchanged
+
+paths:
+  # Raw logs live in the team-wide evidence trail, not inside the member folder.
+  log_dir: reproducibility/raw_logs/zoheb_waghu/task1_llm
+  checkpoint_dir: task1_llm/zoheb_waghu/checkpoints
+  output_dir: task1_llm/zoheb_waghu/outputs
+  plot_dir: task1_llm/zoheb_waghu/outputs/plots
+  sample_dir: task1_llm/zoheb_waghu/outputs/samples
+  metrics_csv_path: task1_llm/zoheb_waghu/metrics_report.csv
+  extended_metrics_csv_path: task1_llm/zoheb_waghu/metrics_report_extended.csv

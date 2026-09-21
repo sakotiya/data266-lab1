@@ -1,0 +1,75 @@
+# Task 3 - CycleGAN, photo <-> Monet (Kaggle gan-getting-started).
+# Domain A = photo (7038 imgs), Domain B = monet (300 imgs), unpaired.
+# Device stays `auto` - this run is NOT intended for the local M5; benchmark a few
+# hundred steps first, then commit to a machine (workplan 3.1).
+
+run:
+  tag: t3_baseline
+  member: zoheb_waghu
+  seed: 1337
+  device: auto
+
+data:
+  domain_a_dir: task3_gan/data/photo_jpg
+  domain_b_dir: task3_gan/data/monet_jpg
+  image_size: 256          # benchmark 256 vs 128 before the real run
+  load_size: 286           # resize then random-crop to image_size
+  random_flip: true
+  num_workers: 4
+  # 300 Monet vs 7038 photos: one "epoch" is defined by the LARGER domain,
+  # with the smaller domain resampled. State which definition the metrics use.
+  epoch_definition: domain_a
+
+model:
+  generator: resnet         # resnet | unet
+  gen_blocks: 9             # 9 residual blocks at 256px, 6 at 128px
+  gen_filters: 64
+  discriminator: patchgan
+  disc_layers: 3            # 70x70 receptive field
+  disc_filters: 64
+  norm: instance
+  init: normal
+  init_gain: 0.02
+
+loss:
+  gan_mode: lsgan           # lsgan | vanilla
+  lambda_cycle_a: 10.0
+  lambda_cycle_b: 10.0
+  lambda_identity: 0.5      # scaled by lambda_cycle, as in the CycleGAN paper
+  image_pool_size: 50       # discriminator history buffer
+
+train:
+  epochs: 100
+  epochs_decay: 100         # linear LR decay to zero over these epochs
+  batch_size: 1
+  optimizer: adam
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+  log_interval_steps: 50
+  sample_interval_steps: 500
+  checkpoint_interval_epochs: 5
+  amp: false
+
+eval:
+  fid_batch_size: 32
+  kid_subset_size: 100      # < 300, the Monet domain size
+  lpips_net: alex
+  cycle_l1_samples: 200
+  content_cosine_backbone: inception_v3   # measurement only - never touches submitted images
+  human_audit:
+    n_samples: 30
+    n_raters: 2
+    blind: true             # shuffle + strip model identity before rating
+    axes: [style, content, artifacts]
+
+submission:
+  direction: photo_to_monet     # the Kaggle competition scores photo -> Monet
+  n_images: 7038
+  format: zip                   # competition expects images.zip; brief's tree says submission.csv - see README
+  out_dir: task3_gan/zoheb_waghu/outputs/pred_A2B
+
+paths:
+  log_dir: reproducibility/raw_logs/zoheb_waghu/task3_gan
+  checkpoint_dir: task3_gan/zoheb_waghu/checkpoints
+  output_dir: task3_gan/zoheb_waghu/outputs
+  metrics_csv_path: task3_gan/zoheb_waghu/full_metrics_report.csv

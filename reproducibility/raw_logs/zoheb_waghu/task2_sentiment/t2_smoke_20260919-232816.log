@@ -1,0 +1,8 @@
+[    0.039s] run_start    run_id=t2_smoke_20260919-232816 utc=2026-09-20T06:28:16.693827+00:00 git_commit=89068f2 python=3.9.6 argv=task2_sentiment/zohebw/src/train.py --config task2_sentiment/zohebw/configs/_smoke.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[   26.761s] prepare      split=train_full kept=3000 dropped=0
+[   27.100s] prepare      split=test kept=1000 dropped=0
+[   27.367s] data_cache   status=built train_rows=2700 val_rows=300 test_rows=1000 vocab_size=7962
+[   27.367s] eda          train_rows=2700 val_rows=300 test_rows=1000 train_pos_frac=0.4937037037037037 test_pos_frac=0.482 vocab_size=7962 token_len_mean=71.51074074074074 token_len_median=51.0 token_len_p95=202.0 token_len_max=503 truncated_frac=0.1425925925925926 stopwords_removed=158 oov_rate_test=0.06556370569037387
+[   27.809s] model        name=bilstm_mean param_count=1283585
+[   34.261s] epoch        epoch=0 train_loss=0.65125 val_acc=0.76333 val_f1_macro=0.76257 val_roc_auc=0.84545
+[   34.261s] run_end      status=error wall_seconds=34.261 error=KeyError('macro_f1')

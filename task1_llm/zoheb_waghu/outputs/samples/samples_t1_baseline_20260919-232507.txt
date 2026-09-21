@@ -1,0 +1,69 @@
+### greedy | prompt='Once upon a time'
+Once upon a time, there was a little girl named Lily. She loved to play and said, "What is a looked around and said, "I will you can be starte."
+
+The little girl named Lily was so happy. They loved to the bird and said, "I will you can be to the careful and said, "I will you you can to the careful and said, "I will you you can to the careful and said, "I will you you can to the care and said, "I will you you can 
+
+### temperature=0.8 | prompt='Once upon a time'
+Once upon a time, the the prink, it was priteds coming the rinceds.
+
+Once upon a time, there was alwas so little girl named One day, Timmy whanted to grabbe bad so the rave meazing. He laughed to the bally hof with a saw so careful the birds never when him he got he was he onexind to fun. He saw happy an Aftelw a sign the asked the chear on her happy it a bird in the who conther an the it.
+
+They loved ther and sa
+
+### temperature=1.2 | prompt='Once upon a time'
+Once upon a time wias so happy came medmy?"'s is goting something?"
+ noved got whapped to carefat, a genterbe cuse beautifal. Dis's all chiken in the's go! Mallieved that he becated a fihnis it. She lird so happy. Then yoke to eelIt's cgivice there."
+
+As they aliked. She was shoured and Dave talf the right and for deeppare. The making reariong to their. The over rovel and shought" Sudenly to them seesh.
+
+The walk
+
+### greedy | prompt='The little girl'
+The little girl named the playing and said, "I will you can be starte and said, "I will you can be starte."
+
+The little girl named Lily and said, "That's is of the park. It was so so her and said, "I will you so to the cookie to the cookies and saw a big ston. It was a smiled and said, "I will you can starte to the could and said, "I will you you can to the careful and said, "I will you you can to the care and s
+
+### temperature=0.8 | prompt='The little girl'
+The little girl not her day. They happy it wing in the phatt. It was a like angrion.
+
+"Can I good to the coop it?" asked. They said, "It's sorre to go and behorses."
+
+Lila and Anna with is smaring. It was so havol and head rom it. She careful were have you that?" Lily was scared to like the sto the round were spried with it it doo. He loved to his gan for it.
+
+Once uppon a time, there wellitte girl in a doide to
+
+### temperature=1.2 | prompt='The little girl'
+The little girl very slovemped to hat were flop outside owor and peplen. He dhot himsey looked afwit. She tey their not yare so run and cared him the birds. One day, a bocky Thimmy mun run't off cly. Some, this mommy with all of fun it?â€ She had Sam ws heas to she didn't dowed agch Tim.
+
+She tIlw y didn't know bragh! She rawip its a drask, 'IRst dad luck bust home fluse. He greg again, theye all new brack. He s
+
+### greedy | prompt='Tom and Jane went'
+Tom and Jane went to the back and said, "I will you can be starte to play outside. I like the park and said, "I will you can be stoon." 
+
+The pirl said, "I know!" Lila said. "It is a smiled. It is friends."
+
+"It is it it it it it it." Lily said. "It is it it it."
+
+"Lila said. "It is is is is too."
+
+"Lila said. "It is is is is is too."
+
+"It is is is too." Lila said. "It is is is is it."
+
+"It is is is it. It is is i
+
+### temperature=0.8 | prompt='Tom and Jane went'
+Tom and Jane went to didn't know buy his hught to pecare and something and magne.
+
+Sarah and she more what her soutd a grun and cried and said, "Plee shourd find to ga peple aped out the fore," Lily said, "Mia smiled brave for and to go be more."
+
+So she went delearned in a tis decided to girl. When could saw her want the couldn't stoop?"
+
+The rean and felt the fliked on the prowers home. They knew yelp of the cou
+
+### temperature=1.2 | prompt='Tom and Jane went'
+Tom and Jane went dill. They luttle glay judned?" asked LilyShe was okay bous?"
+
+Lila V0. key didew, then mover fell. Mom arie over anver the levery his the tarted bry purot and decifuld of agaze her forte." Millie and â€œMou will some is suriong there fun raslly it of or to catheres loved ress the mom."
+
+Once upon a time, there see ttrieng there worw alkiking it. They put opter thegatther, wSy to sives how to saw
