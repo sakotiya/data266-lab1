@@ -1,0 +1,19 @@
+===== T0.5 · sample 0 · prompt='Once upon a time' =====
+Once upon a time, there was a little girl named Lily. She loved to play outside in the sunshine. One day, she went to the park to play on the swings. She saw a big slide and wanted to play with it.
+
+Lily's mom said, "Let's play with it together." They went to the swings and the slide. They saw a big tree with many branches and leaves. Lily said, "Look, Mommy! Look!" Her mom said, "Yes, it is a star. It is a big s
+
+===== T0.5 · sample 1 · prompt='Once upon a time' =====
+Once upon a time, there was a little girl named Lily. She loved to play outside in the sunshine. One day, she saw a big pile of leaves on the ground. She wanted to play with it, but she didn't know how.
+
+The leaves went into a park and Lily saw a big tree. She wanted to reach it but her mother said, "Let's go and get the leaves from the tree!" They went to the tree and got the leaves and the ground barked. Lily w
+
+===== T0.5 · sample 2 · prompt='Once upon a time' =====
+Once upon a time, there was a little girl named Lily. She loved to play outside in the garden. One day, she went to the park with her mommy. They saw a big tree with many leaves. Lily wanted to play with the leaves, but she was scared.
+
+"Mommy, look at the leaves!" she said.
+
+"It's a leaves that we can do things with the leaves," mommy said.
+
+Lily thought for a moment. She wanted to play with the leaves and the l
+

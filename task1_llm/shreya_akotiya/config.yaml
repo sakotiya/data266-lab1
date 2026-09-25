@@ -1,0 +1,137 @@
+# =============================================================================
+# DATA266 Lab 1 - Task 1: Character-level GPT on TinyStories
+# Member: shreya_akotiya
+#
+# Every knob the run depends on lives here. The notebook reads this file and
+# never hard-codes a value or a personal path. Change a number here, re-run the
+# notebook top-to-bottom, and you get a different (fully reproducible) model.
+#
+# NOTE FOR THE VIVA: you will be asked *why* these values. Do not accept them
+# blindly - read PIPELINE_EXPLAINED.md section 9, then tune them yourself so the
+# numbers you defend are numbers you chose.
+# =============================================================================
+
+run:
+  member: shreya_akotiya
+  run_name: deep_narrow         # goes into log / checkpoint / manifest filenames
+  # true  -> writes the canonical metrics_report.csv / outputs/ / checkpoints/
+  # false -> sandboxed under outputs/_scratch_<run_name>/ so a quick test can never
+  #          overwrite the reports from a real run.
+  reported: true
+  seed: 1337
+  device: auto                  # auto | mps | cuda | cpu
+
+data:
+  # The raw corpus is a TEAM asset, downloaded once by task1_llm/fetch_data.py into
+  # the shared task1_llm/data/ folder. This config decides only how much of that
+  # pool THIS run consumes -- disk size and run size are deliberately separate.
+  raw_filename: tinystories_raw.txt
+  story_separator: "\n\n"       # how consecutive stories are glued together
+
+  # Characters this run reads, starting at member_offset_chars. Must cover
+  #   (train_sequences * stride) / (1 - val_story_fraction)
+  # = (100_000 * 256) / 0.9 = 28.4M, so 34M leaves ~20% headroom.
+  use_chars: 34_000_000
+  # Skip this many characters first, so each member trains on a DISJOINT slice of
+  # the same shared download (spec 1.1.4: "each member creates their own split").
+  #
+  #   *** TEAMMATES: DO NOT LEAVE THIS AT 0. ***
+  #   shreya  -> 0            (this file)
+  #   member2 -> 100_000_000
+  #   member3 -> 200_000_000
+  # The 1.894B-character pool supports ~55 non-overlapping 34M slices, so pick any
+  # multiple of 100M. If two members share an offset they train on identical text and
+  # the team comparison table is measuring noise, not model differences.
+  member_offset_chars: 0
+
+  val_story_fraction: 0.10      # last 10% of *stories* in the slice are held out
+
+  # Vocabulary = {chars with freq >= min_char_freq} UNION core_vocab.
+  # The floor alone is not safe: measured on a 30M-char slice, 'Q' occurs 146x and
+  # 'X' 27x, so a floor of 200 would delete two letters of the alphabet, and it
+  # keeps digit '3' (677x, from "3 years old") while dropping '4','6','7','9'.
+  # The core set guarantees a complete, slice-independent alphabet -- which also
+  # means every team member gets the SAME vocab size, so perplexity and
+  # bits-per-character are directly comparable across members.
+  min_char_freq: 50
+  force_core_vocab: true        # always keep A-Z a-z 0-9 space newline . , ! ? ' " - : ;
+  normalize_unicode: true       # smart quotes/dashes/thin spaces -> ASCII equivalents
+
+sequences:
+  seq_len: 256                  # context window T
+  stride: 256                   # 256 == non-overlapping windows
+  train_sequences: 100_000      # spec: "training (100K)"
+  val_sequences: 10_000         # spec: "validation (10K)"
+
+# =============================================================================
+# ARCHITECTURE: the standard from-scratch GPT decoder (spec 1.2), deliberately
+# shaped DEEP AND NARROW rather than using the conventional 384x6 default.
+#
+# Why this shape (this is the justification you defend):
+#   Character-level modelling is a COMPOSITION problem. The model has to build
+#   morphemes out of characters, words out of morphemes, and phrases out of words.
+#   Each Transformer block is one round of composition, so depth buys composition
+#   steps while width buys capacity per step. At character granularity the useful
+#   units are small and hierarchical, so I traded width for depth: 12 layers at
+#   d_model 256 instead of 6 at 384.
+#   The cost is a longer gradient path (12 residual blocks) and ~30% slower steps
+#   for slightly fewer parameters; pre-norm plus a longer warm-up covers the first.
+#
+# Measured on Apple M5 Max / MPS before choosing:
+#   384 x  6  ->  10.81M params, 169 ms/step, ~44 min for 10 epochs
+#   256 x 12  ->   9.58M params, 225 ms/step, ~59 min   <-- this config
+#   256 x 10  ->   8.00M params, 187 ms/step, ~49 min
+#   512 x  4  ->  12.84M params, 173 ms/step, ~45 min
+#
+# TEAM: this shape must differ from every teammate's (spec section 7 checklist,
+# "No two members' models share the same architecture + hyperparameters").
+# 512x4 wide-shallow and 384x6 are both still unclaimed - tell your teammates.
+# =============================================================================
+model:
+  d_model: 256                  # embedding / residual-stream width
+  n_layers: 12                  # DEEP: 12 composition steps (default would be 6)
+  n_heads: 8                    # 256 / 8 = 32 dims per head - more, smaller heads,
+                                #   on the theory that char-level attention wants many
+                                #   narrowly-specialised local patterns
+  d_ff: 1024                    # 4 * d_model, the ratio from Attention Is All You Need
+  dropout: 0.05                 # LOWERED from the usual 0.1. Evidence: the reference
+                                #   384x6 run ended 10 epochs with a generalization gap
+                                #   of +0.004 and its BEST epoch was its LAST - i.e. it
+                                #   was under-fitting, not over-fitting. Less
+                                #   regularisation lets the model fit more.
+  tie_embeddings: false         # share token-embedding matrix with the LM head
+  attn_bias: false              # bias terms in Q/K/V/out projections
+
+train:
+  epochs: 10                    # spec: minimum 10
+  batch_size: 64
+  lr: 2.5e-4                    # peak LR after warm-up. Lowered from 3e-4 because a
+                                #   12-block residual stream accumulates more update
+                                #   variance per step than a 6-block one.
+  min_lr: 2.5e-5                # cosine floor (lr / 10)
+  warmup_ratio: 0.05            # 5%, up from 3%: more depth = more to stabilise before
+                                #   the LR reaches its peak.
+  weight_decay: 0.1             # applied to matrices only, not norms/biases/embeds
+  betas: [0.9, 0.95]
+  grad_clip: 1.0
+  log_every: 50                 # steps between raw-log lines
+  eval_batches: 40              # val batches per mid-epoch eval (full val at epoch end)
+  spike_sigma: 3.0              # loss > rolling_mean + sigma*rolling_std => "spike"
+
+generation:
+  prompt: "Once upon a time"
+  max_new_tokens: 400
+  temperatures: [0.5, 0.8, 1.0, 1.2]
+  top_k: 0                      # 0 disables top-k; >0 truncates the sampling pool
+  n_samples_per_setting: 3
+  # Tokens generated purely for the distinct-n / repeated-4-gram statistics.
+  # These metrics are SAMPLE-SIZE DEPENDENT: on a 1,000-word sample distinct-3
+  # saturates near 0.96 regardless of model quality, because almost every trigram
+  # in a short text is unique. 20,000 chars is ~4,000 words, where distinct-2/3
+  # actually discriminate. Every team member must use the SAME value or the
+  # diversity columns of the comparison table are meaningless.
+  # Cost: ~20000/gen_tok_per_sec seconds (~4 min at 88 tok/s).
+  diversity_tokens: 20_000
+  # distinct-n is additionally reported at a fixed word count so it stays
+  # comparable even if someone changes diversity_tokens.
+  diversity_fixed_words: 2_000

@@ -108,6 +108,17 @@ python task2_sentiment/zoheb_waghu/src/plots.py        --config task2_sentiment/
 python task2_sentiment/zoheb_waghu/src/error_review.py --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml --model t2_m1_baseline
 ```
 
+**shreya_akotiya's Task 1 and Task 2** - one notebook per task, driven by the `config.yaml`
+next to it. Fetch the data once, then run the notebook top to bottom:
+
+```bash
+python task1_llm/shreya_akotiya/src/fetch_data.py --chars 36000000 --stream
+jupyter lab task1_llm/shreya_akotiya/src/task1_char_gpt.ipynb
+
+python task2_sentiment/shreya_akotiya/src/fetch_data.py
+jupyter lab task2_sentiment/shreya_akotiya/src/task2_sentiment.ipynb
+```
+
 Shared, task-agnostic utilities live in `common/`: config loading with `extends:` inheritance,
 seeding, device selection, the append-only run logger, and the metrics writers.
 
@@ -118,9 +129,9 @@ anywhere in the repo.
 
 | Task | Member | Status | Headline |
 | --- | --- | --- | --- |
-| 1 | shreya_akotiya | not started | - |
+| 1 | shreya_akotiya | **complete** | val loss 0.6327 · ppl 1.88 · bpc 0.913 · top-1 79.9% |
 | 1 | zoheb_waghu | **complete** | val loss 1.4194 · ppl 4.13 · bpc 2.048 · top-1 58.3% |
-| 2 | shreya_akotiya | not started | - |
+| 2 | shreya_akotiya | **complete** | baseline 93.14% · TextCNN 94.35% · BiLSTM **94.85%** |
 | 2 | zoheb_waghu | **complete** | M1 93.31% · M2 93.55% (n.s.) · M3 **93.89%** |
 | 3 | shreya_akotiya | not started | - |
 | 3 | zoheb_waghu | scaffold only | needs GPU |
@@ -133,7 +144,7 @@ Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysi
 members' numbers can be placed side by side in the report without reconciliation.
 
 The team header omits some metrics the brief's "metrics to report" list requires, so
-zoheb_waghu's folders also carry `metrics_report_extended.csv` with the full set. Each training
+each member's folders also carry `metrics_report_extended.csv` with the full set. Each training
 run writes both files from the same in-memory row, so they cannot drift.
 
 | Task | Team header | Missing from it, kept in the extended table |

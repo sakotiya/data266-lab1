@@ -25,3 +25,12 @@ the team even though the character counts and splits are per member.
 
 Do not put preprocessing output here — that goes in your own `<member>/data_processed/`,
 which is never shared (brief, section 5).
+
+## shreya_akotiya
+
+`shreya_akotiya` reads a local text file instead of streaming. This writes
+`tinystories_raw.txt` here, with stories separated by blank lines:
+
+```bash
+python task1_llm/shreya_akotiya/src/fetch_data.py --chars 36000000 --stream
+```

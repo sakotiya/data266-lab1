@@ -1,0 +1,6 @@
+setting,non_word_rate,story_breaks,immediate_reps,immediate_segment,cyclic_reps,cyclic_phrase,sentence_reps,repeated_sentence,odd_tokens
+greedy,0.0,5,0,,2,"Once upon a time, there was a little",2,"Once upon a time, there was a little girl named Lily.",
+T0.5,0.0,4,0,,2,"Once upon a time, there was a little",2,"Once upon a time, there was a little girl named Lily.",
+T0.8,0.004219409282700422,5,0,,0,,0,,spec
+T1.0,0.012875536480686695,5,0,,0,,0,,"strets, shaked, en"
+T1.2,0.030434782608695653,6,0,,0,,0,,"too.s, pasty, knowled, pumpins, a-, pancaking, p"

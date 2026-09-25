@@ -25,3 +25,12 @@ python -c "from datasets import load_dataset; load_dataset('yelp_polarity')"
   McNemar test between them is invalid.
 
 Do not put preprocessing output here — that goes in your own `<member>/data_processed/`.
+
+## shreya_akotiya
+
+`shreya_akotiya` reads local CSVs. This writes `train.csv` and `test.csv`
+here (columns `label,text`, 0 = negative, 1 = positive):
+
+```bash
+python task2_sentiment/shreya_akotiya/src/fetch_data.py
+```

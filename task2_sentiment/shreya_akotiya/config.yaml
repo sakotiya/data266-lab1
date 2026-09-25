@@ -1,0 +1,62 @@
+# DATA266 Lab 1 - Task 2: Yelp Polarity sentiment classification
+# Member: shreya_akotiya
+#
+# Three models, all trained from scratch (no pretrained embeddings or LMs).
+# Embedding dim is held at 200 for all three so the comparison isolates
+# architecture rather than capacity.
+
+run:
+  member: shreya_akotiya
+  run_name: main
+  seed: 1337
+  device: auto          # auto | mps | cuda | cpu
+
+data:
+  train_csv: train.csv
+  test_csv: test.csv
+  n_train: 0            # 0 = all 560k (minus n_val)
+  n_val: 20000          # held out from the train split, not from test
+  n_test: 0             # 0 = the full official 38k test set
+
+preprocess:
+  lowercase: true
+  strip_punctuation: true
+  remove_stopwords: true
+  keep_negations: true  # don't drop not/no/never - they flip sentiment
+  stem: true            # light suffix stripper, see the notebook
+  min_word_freq: 5
+  max_vocab: 50000
+  max_len: 200          # words kept per review; check the length percentiles first
+
+train:
+  epochs: 3
+  batch_size: 256
+  lr: 1.0e-3
+  weight_decay: 0.0
+  grad_clip: 1.0
+
+# Baseline + two experimental models (spec 2.2.1)
+models:
+  baseline_meanpool:
+    type: meanpool
+    emb_dim: 200
+    dropout: 0.3
+
+  exp_textcnn:
+    type: textcnn
+    emb_dim: 200
+    n_filters: 100
+    kernel_sizes: [3, 4, 5]
+    dropout: 0.5
+
+  exp_bilstm:
+    type: bilstm
+    emb_dim: 200
+    hidden: 128
+    n_layers: 1
+    dropout: 0.3
+
+eval:
+  bootstrap_samples: 1000
+  ece_bins: 10
+  n_errors_per_bucket: 5   # spec 2.2.4 wants 5 each of 4 error types
