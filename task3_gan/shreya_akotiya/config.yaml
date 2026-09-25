@@ -1,0 +1,82 @@
+# Task 3 - CycleGAN, photo <-> Monet (Kaggle gan-getting-started).
+# Member: shreya_akotiya
+# Domain A = photo (7038 imgs), Domain B = monet (300 imgs), unpaired.
+#
+# Architecture differs from zoheb_waghu:
+#   - UNet generator (instead of ResNet)
+#   - 128px resolution (instead of 256)
+#   - Deeper discriminator (4 layers instead of 3)
+# Faster training at 128px allows more epochs in same GPU budget.
+
+run:
+  tag: t3_shreya_unet_128
+  member: shreya_akotiya
+  seed: 42
+  device: auto          # auto | cuda | mps | cpu
+
+data:
+  domain_a_dir: task3_gan/data/photo_jpg
+  domain_b_dir: task3_gan/data/monet_jpg
+  image_size: 128          # smaller than zoheb's 256 - faster training
+  load_size: 142           # resize then random-crop to image_size
+  random_flip: true
+  num_workers: 4
+  epoch_definition: domain_a   # 7038 photos = one epoch
+
+model:
+  # Generator: UNet with skip connections (vs zoheb's ResNet)
+  generator: unet
+  gen_down_blocks: 7       # encoder depth
+  gen_filters: 64
+  gen_use_dropout: true
+
+  # Discriminator: deeper PatchGAN
+  discriminator: patchgan
+  disc_layers: 4           # 4 layers for 34x34 receptive field (zoheb uses 3)
+  disc_filters: 64
+  norm: instance
+  init: normal
+  init_gain: 0.02
+
+loss:
+  gan_mode: lsgan
+  lambda_cycle_a: 10.0
+  lambda_cycle_b: 10.0
+  lambda_identity: 0.5     # scaled by lambda_cycle
+  image_pool_size: 50
+
+train:
+  epochs: 150              # more epochs since 128px is faster
+  epochs_decay: 50         # linear LR decay over last 50 epochs
+  batch_size: 1
+  optimizer: adam
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+  log_interval_steps: 50
+  sample_interval_steps: 500
+  checkpoint_interval_epochs: 10
+  amp: false
+
+eval:
+  fid_batch_size: 32
+  kid_subset_size: 100
+  lpips_net: alex
+  cycle_l1_samples: 200
+  content_cosine_backbone: inception_v3
+  human_audit:
+    n_samples: 30
+    n_raters: 2
+    blind: true
+    axes: [style, content, artifacts]
+
+submission:
+  direction: photo_to_monet
+  n_images: 7038
+  format: zip
+  out_dir: task3_gan/shreya_akotiya/outputs/pred_A2B
+
+paths:
+  log_dir: reproducibility/raw_logs/shreya_akotiya/task3_gan
+  checkpoint_dir: task3_gan/shreya_akotiya/checkpoints
+  output_dir: task3_gan/shreya_akotiya/outputs
+  metrics_csv_path: task3_gan/shreya_akotiya/full_metrics_report.csv

@@ -1,0 +1,73 @@
+# Smoke test config for Task 3 - runs in ~2 minutes
+# Usage: LAB1_CONFIG=task3_gan/shreya_akotiya/config.smoke.yaml jupyter lab ...
+
+run:
+  tag: t3_smoke
+  member: shreya_akotiya
+  seed: 42
+  device: auto
+  reported: false   # sandboxes outputs to _scratch/
+
+data:
+  domain_a_dir: task3_gan/data/photo_jpg
+  domain_b_dir: task3_gan/data/monet_jpg
+  image_size: 64       # tiny for speed
+  load_size: 72
+  random_flip: false
+  num_workers: 2
+  epoch_definition: domain_a
+
+model:
+  generator: unet
+  gen_down_blocks: 5    # fewer layers for 64px
+  gen_filters: 32       # fewer filters
+  gen_use_dropout: false
+  discriminator: patchgan
+  disc_layers: 2
+  disc_filters: 32
+  norm: instance
+  init: normal
+  init_gain: 0.02
+
+loss:
+  gan_mode: lsgan
+  lambda_cycle_a: 10.0
+  lambda_cycle_b: 10.0
+  lambda_identity: 0.0   # skip for speed
+  image_pool_size: 10
+
+train:
+  epochs: 2
+  epochs_decay: 0
+  batch_size: 4
+  optimizer: adam
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+  log_interval_steps: 10
+  sample_interval_steps: 50
+  checkpoint_interval_epochs: 1
+  amp: false
+
+eval:
+  fid_batch_size: 32
+  kid_subset_size: 50
+  lpips_net: alex
+  cycle_l1_samples: 20
+  content_cosine_backbone: inception_v3
+  human_audit:
+    n_samples: 5
+    n_raters: 1
+    blind: false
+    axes: [style]
+
+submission:
+  direction: photo_to_monet
+  n_images: 100
+  format: zip
+  out_dir: task3_gan/shreya_akotiya/outputs/_scratch/pred_A2B
+
+paths:
+  log_dir: task3_gan/shreya_akotiya/outputs/_scratch
+  checkpoint_dir: task3_gan/shreya_akotiya/outputs/_scratch/checkpoints
+  output_dir: task3_gan/shreya_akotiya/outputs/_scratch
+  metrics_csv_path: task3_gan/shreya_akotiya/outputs/_scratch/metrics.csv
