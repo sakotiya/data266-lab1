@@ -75,17 +75,17 @@ def main() -> int:
         train_b = SequenceBatcher(splits["train_ids"], blk, bs, device, cfg["run"]["seed"])
         val_b = SequenceBatcher(splits["val_ids"], blk, bs, device, cfg["run"]["seed"])
 
-        # The corpus is only 100K characters, so a non-overlapping pass is ~6
-        # batches - far too few optimiser steps to train. `steps_per_epoch` makes
-        # the epoch definition explicit instead of implicit: each epoch is N
-        # randomly-offset batches, so each token is seen several times per epoch.
-        # State this in the report; it is what "12 epochs" means for this run.
-        steps_per_epoch = cfg["train"].get("steps_per_epoch") or train_b.batches_per_epoch
+        # One epoch = one pass over every training sequence. With 100K sequences
+        # at batch 32 that is 3,125 optimiser steps, so no override is needed;
+        # `steps_per_epoch` stays supported only for smoke configs.
+        steps_per_epoch = (cfg["train"].get("steps_per_epoch")
+                           or cfg["data"]["train_sequences"] // cfg["train"]["batch_size"])
         total_steps = steps_per_epoch * cfg["train"]["epochs"]
         cfg["train"]["_total_steps"] = total_steps
         tokens_per_epoch = steps_per_epoch * bs * blk
         log.event("schedule", steps_per_epoch=steps_per_epoch, total_steps=total_steps,
                   tokens_per_epoch=tokens_per_epoch,
+                  train_sequences=cfg["data"]["train_sequences"],
                   corpus_passes_per_epoch=round(tokens_per_epoch / len(splits["train_ids"]), 2),
                   nonoverlapping_batches_per_epoch=train_b.batches_per_epoch)
 

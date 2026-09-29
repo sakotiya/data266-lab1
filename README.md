@@ -130,13 +130,31 @@ anywhere in the repo.
 | Task | Member | Status | Headline |
 | --- | --- | --- | --- |
 | 1 | shreya_akotiya | **complete** | val loss 0.6327 · ppl 1.88 · bpc 0.913 · top-1 79.9% |
-| 1 | zoheb_waghu | **complete** | val loss 1.4194 · ppl 4.13 · bpc 2.048 · top-1 58.3% |
+| 1 | zoheb_waghu | **complete** | val loss 0.7029 · ppl 2.02 · bpc 1.014 · top-1 77.7% |
 | 2 | shreya_akotiya | **complete** | baseline 93.14% · TextCNN 94.35% · BiLSTM **94.85%** |
 | 2 | zoheb_waghu | **complete** | M1 93.31% · M2 93.55% (n.s.) · M3 **93.89%** |
 | 3 | shreya_akotiya | not started | - |
 | 3 | zoheb_waghu | scaffold only | needs GPU |
 
 Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysis.md`.
+
+### Spec 1.1: "training (100K) and validation (10K)"
+
+Read as **sequences**, not characters - so at `block_size`/`seq_len` 256 with non-overlapping
+windows that is ~25.6M training characters per member, not 100K.
+
+Both members read one canonical download, `task1_llm/data/tinystories_raw.txt`, at different
+`member_offset_chars`, so the two training slices are **disjoint** ("each member creates their
+own split", spec 1.1.4):
+
+| Member | Slice | Train / val |
+| --- | --- | --- |
+| shreya_akotiya | chars [0, 34M) | 100,000 / 10,000 sequences |
+| zoheb_waghu | chars [34M, 62.2M) | 100,000 / 10,000 sequences |
+
+zoheb_waghu's first submission mistakenly read those counts as *characters* and trained on
+100,000 characters; that run is superseded and documented in
+`reproducibility/manifests/zoheb_waghu/task1_llm_manifest.md`.
 
 ### Metrics schema
 

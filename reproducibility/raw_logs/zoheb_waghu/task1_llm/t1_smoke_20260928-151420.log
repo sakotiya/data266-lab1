@@ -1,0 +1,13 @@
+[    0.017s] run_start    run_id=t1_smoke_20260928-151420 utc=2026-09-28T22:14:20.690486+00:00 git_commit=e108e73 python=3.9.6 argv=task1_llm/zoheb_waghu/src/train.py --config task1_llm/zoheb_waghu/configs/_smoke.yaml hardware={'device': 'mps', 'torch': '2.5.1', 'platform': 'macOS-26.3.1-arm64-arm-64bit', 'processor': 'arm'}
+[    0.020s] data         train_sequences=400 val_sequences=60 stride=64 member_offset_chars=34000000 train_chars=25601 val_chars=3603 vocab_size=59 val_oov_chars=0
+[    0.022s] schedule     steps_per_epoch=25 total_steps=25 tokens_per_epoch=25600 train_sequences=400 corpus_passes_per_epoch=1.0 nonoverlapping_batches_per_epoch=24
+[    0.059s] model        param_count=111744 vocab_size=59
+[    0.243s] causal_mask_probe probe_position=32 max_logit_delta_before_j=0.0 min_logit_delta_from_j=0.3328051269054413 passed=True
+[    1.124s] step         step=0 epoch=0 loss=4.0993 lr=6e-05 grad_norm=2.3528
+[    1.238s] step         step=10 epoch=0 loss=3.738 lr=0.00026 grad_norm=1.5796
+[    1.336s] step         step=20 epoch=0 loss=3.63 lr=7e-05 grad_norm=1.5136
+[    1.405s] epoch        epoch=0 train_loss=3.7713 val_loss=3.6138 val_ppl=37.107 val_bpc=5.2136 val_top1=0.1963
+[    1.415s] checkpoint   path=/Users/zohebw/Desktop/DATA 266/data266-lab1/task1_llm/zoheb_waghu/checkpoints/t1_smoke_20260928-151420_best.pt epoch=0 val_loss=3.6138
+[    3.589s] generation   n_samples=3 gen_tokens_per_sec=115.55 distinct_1=0.1724 distinct_2=0.5848 distinct_3=0.6319 repeated_4gram_rate=0.3589
+[    3.590s] metrics      run_id=t1_smoke_20260928-151420 model_name=t1_smoke config_path=task1_llm/zoheb_waghu/configs/_smoke.yaml checkpoint_id=t1_smoke_20260928-151420_best.pt train_loss=3.59942 val_loss=3.6138 perplexity=37.1069 bits_per_char=5.21362 generalization_gap=0.01438 top1_next_char_acc=0.19629 distinct_1=0.17241 distinct_2=0.58478 distinct_3=0.63194 repeated_4gram_rate=0.35889 grad_norm_mean=1.75961 grad_norm_max=2.47468 loss_spikes=0 nan_count=0 param_count=111744 train_tokens_per_sec=34414.38 gen_tokens_per_sec=115.55 peak_memory_gb=0.0629 total_train_seconds=0.74 device=mps hardware=arm
+[    3.590s] run_end      status=ok wall_seconds=3.59 wall=3.57

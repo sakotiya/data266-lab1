@@ -1,9 +1,18 @@
 """TinyStories character-level data pipeline.
 
-Workplan 1.1: 100K training characters / 10K validation characters, my own
-char_to_idx / idx_to_char maps, fixed-length input-target pairs where the target
-is the input shifted right by one, and a vocabulary built from the TRAINING
-SPLIT ONLY so no held-out information leaks into the embeddings.
+Spec 1.1: "training (100K) and validation (10K)". The team reads those counts as
+**sequences**, not characters, so with seq_len 256 and non-overlapping windows a
+100K-sequence training split is ~25.6M characters. `train_sequences` /
+`val_sequences` in the config are therefore the authoritative numbers and the
+character count is derived from them.
+
+Also per 1.1: my own char_to_idx / idx_to_char maps, fixed-length input-target
+pairs where the target is the input shifted right by one, and a vocabulary built
+from the TRAINING SPLIT ONLY so no held-out information leaks into the embeddings.
+
+"Each member creates their own split": both members read the same shared pool at
+task1_llm/data/tinystories_raw.txt but at different `member_offset_chars`, so the
+slices are disjoint - my slice starts after my teammate's ends.
 """
 from __future__ import annotations
 
@@ -52,34 +61,54 @@ class CharVocab:
         return cls(c2i, {i: c for c, i in c2i.items()})
 
 
-def fetch_text(dataset: str, split: str, n_chars: int, seed: int) -> str:
-    """Stream stories until n_chars is reached. Streaming avoids materialising
-    the full 2GB corpus for a 110K-character experiment."""
-    from datasets import load_dataset
+def read_pool_slice(pool_path: str | Path, offset: int, n_chars: int) -> str:
+    """Read `n_chars` characters starting at `offset` from the shared corpus.
 
-    ds = load_dataset(dataset, split=split, streaming=True).shuffle(
-        seed=seed, buffer_size=10_000)
-    parts, total = [], 0
-    for row in ds:
-        text = row["text"].strip() + "\n\n"
-        parts.append(text)
-        total += len(text)
-        if total >= n_chars:
-            break
-    return "".join(parts)[:n_chars]
+    The pool is the team's single canonical download
+    (task1_llm/data/tinystories_raw.txt); each member reads a disjoint slice of
+    it. Reads only the slice, not the whole file.
+    """
+    pool = Path(pool_path)
+    if not pool.exists():
+        raise FileNotFoundError(
+            f"shared corpus missing: {pool}\n"
+            f"fetch it once with:\n"
+            f"  python task1_llm/shreya_akotiya/src/fetch_data.py --chars {offset + n_chars + 1_000_000}")
+    size = pool.stat().st_size
+    if offset + n_chars > size:
+        raise ValueError(
+            f"pool has {size:,} bytes but this config needs {offset + n_chars:,} "
+            f"(member_offset_chars {offset:,} + {n_chars:,}). Re-fetch with a larger --chars.")
+    with pool.open("r", encoding="utf-8", errors="replace") as fh:
+        fh.seek(offset)
+        text = fh.read(n_chars)
+    # Start at a story boundary so the slice does not begin mid-word.
+    cut = text.find("\n\n")
+    return text[cut + 2:] if 0 <= cut < 2000 else text
+
+
+def sequence_char_budget(d: dict) -> tuple:
+    """Characters needed for the configured sequence counts.
+
+    Non-overlapping windows (stride == seq_len) means one sequence consumes
+    `stride` characters; +1 so the last target character exists.
+    """
+    stride = d.get("stride", d["block_size"])
+    n_train = d["train_sequences"] * stride + 1
+    n_val = d["val_sequences"] * stride + 1
+    return n_train, n_val, stride
 
 
 def build_splits(cfg: dict) -> dict:
-    """Fetch, split and encode. Returns arrays plus the vocab.
+    """Read the member's slice, split and encode. Returns arrays plus the vocab.
 
-    The validation slice is taken from a DISJOINT region of the stream, and the
-    vocabulary is fitted on train only (cfg.data.vocab_from == 'train_only').
+    Validation is a DISJOINT region that follows the training region inside my
+    own slice, and the vocabulary is fitted on train only.
     """
     d = cfg["data"]
-    seed = cfg["run"]["seed"]
-    n_train, n_val = d["train_chars"], d["val_chars"]
+    n_train, n_val, stride = sequence_char_budget(d)
 
-    raw = fetch_text(d["dataset"], d["split_source"], n_train + n_val, seed)
+    raw = read_pool_slice(d["pool_path"], d["member_offset_chars"], n_train + n_val)
     train_text, val_text = raw[:n_train], raw[n_train:n_train + n_val]
 
     if d["vocab_from"] != "train_only":
@@ -95,6 +124,10 @@ def build_splits(cfg: dict) -> dict:
         "train_text": train_text,
         "val_text": val_text,
         "val_oov_chars": oov,
+        "train_sequences": d["train_sequences"],
+        "val_sequences": d["val_sequences"],
+        "stride": stride,
+        "member_offset_chars": d["member_offset_chars"],
     }
 
 
@@ -105,6 +138,10 @@ def save_processed(splits: dict, cache_dir: str) -> dict:
     np.save(cache / "val_ids.npy", splits["val_ids"])
     splits["vocab"].save(cache / "vocab.json")
     stats = {
+        "train_sequences": splits["train_sequences"],
+        "val_sequences": splits["val_sequences"],
+        "stride": splits["stride"],
+        "member_offset_chars": splits["member_offset_chars"],
         "train_chars": int(splits["train_ids"].size),
         "val_chars": int(splits["val_ids"].size),
         "vocab_size": splits["vocab"].size,

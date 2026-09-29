@@ -11,9 +11,20 @@ run:
 data:
   dataset: roneneldan/TinyStories
   split_source: train
-  train_chars: 100000   # workplan 1.1: 100K train
-  val_chars: 10000      # workplan 1.1: 10K validation
+  # Shared team download, fetched once (see task1_llm/data/README.md).
+  pool_path: task1_llm/data/tinystories_raw.txt
+
+  # Spec 1.1 "training (100K) / validation (10K)" read as SEQUENCES, which is the
+  # team's agreed reading - so this is ~25.6M training characters, not 100K.
+  train_sequences: 100000
+  val_sequences: 10000
   block_size: 256       # context length; targets are inputs shifted right by 1
+  stride: 256           # == block_size, so windows are non-overlapping
+
+  # "Each member creates their own split": shreya_akotiya reads chars [0, 34M);
+  # my slice starts after theirs ends, so the two splits are disjoint.
+  member_offset_chars: 34000000
+
   vocab_from: train_only   # build char_to_idx from the training split only
   cache_dir: task1_llm/zoheb_waghu/data_processed
 
@@ -27,11 +38,10 @@ model:
   bias: true
 
 train:
-  epochs: 12            # workplan minimum is 10
-  # A non-overlapping pass over 100K chars is only ~6 batches, which is far too
-  # few optimiser steps. An epoch here is defined explicitly as 120 randomly
-  # offset batches (120*32*256 = 983K tokens ~= 9.8 passes over the corpus).
-  steps_per_epoch: 120
+  epochs: 10            # spec minimum is 10
+  # With 100K training sequences an epoch is a real pass over the data:
+  # 100000 / 32 = 3125 optimiser steps per epoch, 31250 total. The
+  # steps_per_epoch override the 100K-character version needed is gone.
   batch_size: 32
   optimizer: adamw
   lr: 3.0e-4
@@ -39,10 +49,10 @@ train:
   betas: [0.9, 0.95]
   weight_decay: 0.1
   grad_clip: 1.0
-  warmup_steps: 150
+  warmup_steps: 1000   # ~1/3 of one epoch
   schedule: cosine
-  eval_interval_steps: 100
-  log_interval_steps: 10
+  eval_interval_steps: 500
+  log_interval_steps: 100
 
 generate:
   prompts: ["Once upon a time", "The little girl", "Tom and Jane went"]
