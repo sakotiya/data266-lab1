@@ -57,9 +57,9 @@ python -m ipykernel install --user --name lab1-arm64 --display-name "DATA266 Lab
 
 ## Assignment source of truth
 
-- [`DATA266_Lab1_Fall_2026.pdf`](DATA266_Lab1_Fall_2026.pdf) - the brief itself. Where any
+- [`temp/DATA266_Lab1_Fall_2026.pdf`](temp/DATA266_Lab1_Fall_2026.pdf) - the brief itself. Where any
   derived checklist disagrees with it, the PDF wins.
-- [`task3_gan/Part3_Evaluation_Script.ipynb`](task3_gan/Part3_Evaluation_Script.ipynb) - the
+- [`temp/Part3_Evaluation_Script.ipynb`](temp/Part3_Evaluation_Script.ipynb) - the
   **instructor-provided CycleGAN evaluator**. Task 3 numbers should come from this, not from a
   home-grown metric script. It expects:
 
