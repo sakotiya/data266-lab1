@@ -53,11 +53,11 @@ class CharVocab:
 
     def save(self, path: Path) -> None:
         Path(path).write_text(json.dumps(
-            {"char_to_idx": self.char_to_idx}, ensure_ascii=False))
+            {"char_to_idx": self.char_to_idx}, ensure_ascii=False), encoding="utf-8")
 
     @classmethod
     def load(cls, path: Path) -> "CharVocab":
-        c2i = json.loads(Path(path).read_text())["char_to_idx"]
+        c2i = json.loads(Path(path).read_text(encoding="utf-8"))["char_to_idx"]
         return cls(c2i, {i: c for c, i in c2i.items()})
 
 
@@ -111,9 +111,7 @@ def build_splits(cfg: dict) -> dict:
     raw = read_pool_slice(d["pool_path"], d["member_offset_chars"], n_train + n_val)
     train_text, val_text = raw[:n_train], raw[n_train:n_train + n_val]
 
-    if d["vocab_from"] != "train_only":
-        raise ValueError("vocab_from must be 'train_only' (workplan 1.1)")
-    vocab = CharVocab.from_text(train_text)
+    vocab = CharVocab.from_text(train_text)   # train split only (workplan 1.1)
 
     train_ids, val_ids = vocab.encode(train_text), vocab.encode(val_text)
     oov = int((val_ids == vocab.char_to_idx[UNK]).sum())
@@ -124,24 +122,22 @@ def build_splits(cfg: dict) -> dict:
         "train_text": train_text,
         "val_text": val_text,
         "val_oov_chars": oov,
-        "train_sequences": d["train_sequences"],
-        "val_sequences": d["val_sequences"],
         "stride": stride,
-        "member_offset_chars": d["member_offset_chars"],
     }
 
 
-def save_processed(splits: dict, cache_dir: str) -> dict:
-    cache = Path(cache_dir)
+def save_processed(splits: dict, d: dict) -> dict:
+    """`d` is cfg["data"]."""
+    cache = Path(d["cache_dir"])
     cache.mkdir(parents=True, exist_ok=True)
     np.save(cache / "train_ids.npy", splits["train_ids"])
     np.save(cache / "val_ids.npy", splits["val_ids"])
     splits["vocab"].save(cache / "vocab.json")
     stats = {
-        "train_sequences": splits["train_sequences"],
-        "val_sequences": splits["val_sequences"],
+        "train_sequences": d["train_sequences"],
+        "val_sequences": d["val_sequences"],
         "stride": splits["stride"],
-        "member_offset_chars": splits["member_offset_chars"],
+        "member_offset_chars": d["member_offset_chars"],
         "train_chars": int(splits["train_ids"].size),
         "val_chars": int(splits["val_ids"].size),
         "vocab_size": splits["vocab"].size,
@@ -154,9 +150,9 @@ def save_processed(splits: dict, cache_dir: str) -> dict:
 class SequenceBatcher:
     """Fixed-length (x, y) pairs where y is x shifted right by one.
 
-    An "epoch" is defined as ceil(n_tokens / (batch_size * block_size)) batches -
-    i.e. one pass over as many tokens as the corpus holds - with offsets drawn at
-    random. Stated explicitly because epoch counts are graded (minimum 10).
+    Training offsets are drawn at random; train.py defines an epoch as
+    train_sequences // batch_size batches. Stated explicitly because epoch counts
+    are graded (minimum 10).
     """
 
     def __init__(self, ids: np.ndarray, block_size: int, batch_size: int,
@@ -167,10 +163,6 @@ class SequenceBatcher:
         self.device = device
         self.rng = np.random.default_rng(seed)
         self.n_positions = len(ids) - block_size - 1
-
-    @property
-    def batches_per_epoch(self) -> int:
-        return max(1, self.n_positions // (self.batch_size * self.block_size))
 
     def sample(self) -> tuple:
         ix = self.rng.integers(0, self.n_positions, size=self.batch_size)

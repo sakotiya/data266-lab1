@@ -36,23 +36,21 @@ Per member, per task:
 ```bash
 git clone <repo-url>
 cd data266-lab1
-python3 -m venv .venv && source .venv/bin/activate
+python -m venv .venv
+# Windows: .venv\Scripts\activate   ·   macOS/Linux: source .venv/bin/activate
+pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
+python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
 ```
 
-`requirements.txt` pins the versions used for zoheb_waghu's Task 1 and Task 2 runs.
-
-> **Apple Silicon note (zoheb_waghu's machine).** Every Python on PATH there - Homebrew
-> `/usr/local`, miniforge - is **x86_64 under Rosetta**, which caps torch at 2.2.x and has
-> **no MPS support**. Only Apple's `/usr/bin/python3` (3.9.6) is native arm64, so that venv
-> must be created with `/usr/bin/python3 -m venv .venv`. Verify with:
-> `python -c "import torch; print(torch.backends.mps.is_available())"` -> must print `True`.
-> On CUDA machines this does not apply; `device: auto` in every config resolves cuda > mps > cpu.
+`requirements.txt` pins the versions used for zoheb_waghu's reported runs (RTX 4090,
+Python 3.12.10). Install torch from the CUDA index first - PyPI's Windows torch wheel is
+CPU-only. `device: auto` in every config resolves cuda > mps > cpu.
 
 For notebooks, register the venv as its own kernel:
 
 ```bash
-python -m ipykernel install --user --name lab1-arm64 --display-name "DATA266 Lab1 (arm64 py3.9)"
+python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 Lab1 (py3.12 CUDA)"
 ```
 
 ## Assignment source of truth
@@ -113,7 +111,7 @@ the metrics writers reject incomplete rows:
 python common/smoke_test.py
 ```
 
-**Full reproduction of zoheb_waghu's Task 1 run** - one command, ~3.5 min on an Apple M5,
+**Full reproduction of zoheb_waghu's Task 1 run** - one command, ~7 min on an RTX 4090,
 downloads TinyStories on first use:
 
 ```bash
@@ -125,6 +123,7 @@ python task1_llm/zoheb_waghu/src/plots.py --history task1_llm/zoheb_waghu/output
 to compute the paired McNemar test against it:
 
 ```bash
+python -c "import nltk; [nltk.download(p) for p in ('stopwords', 'wordnet', 'omw-1.4')]"   # once
 for m in m1_baseline_bilstm m2_cnn_multikernel m3_bilstm_attention; do
   python task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/$m.yaml
 done
@@ -154,11 +153,11 @@ anywhere in the repo.
 | Task | Member | Status | Headline |
 | --- | --- | --- | --- |
 | 1 | shreya_akotiya | **complete** | val loss 0.6327 · ppl 1.88 · bpc 0.913 · top-1 79.9% |
-| 1 | zoheb_waghu | **complete** | val loss 0.7029 · ppl 2.02 · bpc 1.014 · top-1 77.7% |
+| 1 | zoheb_waghu | **complete** (RTX 4090) | val loss 0.7019 · ppl 2.02 · bpc 1.013 · top-1 77.7% |
 | 2 | shreya_akotiya | **complete** | baseline 93.14% · TextCNN 94.35% · BiLSTM **94.85%** |
-| 2 | zoheb_waghu | **complete** | M1 93.31% · M2 93.55% (n.s.) · M3 **93.89%** |
+| 2 | zoheb_waghu | **complete** (RTX 4090) | M1 93.46% · M2 93.57% (n.s.) · M3 **94.02%** |
 | 3 | shreya_akotiya | not started | - |
-| 3 | zoheb_waghu | scaffold only | needs GPU |
+| 3 | zoheb_waghu | scaffold only | - |
 
 Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysis.md`.
 

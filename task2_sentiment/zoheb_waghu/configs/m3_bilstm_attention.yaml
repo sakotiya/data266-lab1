@@ -11,12 +11,10 @@ embedding:
   dim: 256               # differs from _shared on purpose
 
 model:
-  name: bilstm_attention
-  arch: bilstm
+  name: bilstm_attention # bidirectional LSTM
+  pooling: additive_attention
   hidden_size: 256
   num_layers: 2
-  bidirectional: true
-  pooling: additive_attention
   attention_dim: 128
   dropout: 0.4
   classifier_hidden: 128
@@ -32,4 +30,4 @@ train:
   scheduler: cosine
   warmup_steps: 300
   early_stopping_patience: 3
-  monitor: val_macro_f1
+  monitor: f1_macro      # on validation

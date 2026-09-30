@@ -17,30 +17,20 @@ from pathlib import Path
 
 import numpy as np
 
-CONTRACTIONS = {
-    "won't": "will not", "can't": "can not", "n't": " not", "'re": " are",
-    "'s": " is", "'d": " would", "'ll": " will", "'ve": " have", "'m": " am",
-}
 NEGATIONS = {"not", "no", "nor", "never", "none", "neither", "cannot", "without"}
 PAD, UNK = "<pad>", "<unk>"
 
 
-def get_stopwords(policy: str) -> set:
-    """`nltk_english_minus_negations` keeps every sentiment-inverting word."""
+def get_stopwords() -> set:
+    """NLTK English stopwords minus every sentiment-inverting word."""
     from nltk.corpus import stopwords
 
     sw = set(stopwords.words("english"))
-    if policy == "nltk_english":
-        return sw
-    if policy == "nltk_english_minus_negations":
-        keep = {w for w in sw if w in NEGATIONS or w.endswith("n't")
-                or w in {"ain", "aren", "couldn", "didn", "doesn", "hadn", "hasn",
-                         "haven", "isn", "mightn", "mustn", "needn", "shan",
-                         "shouldn", "wasn", "weren", "won", "wouldn", "don"}}
-        return sw - keep
-    if policy == "none":
-        return set()
-    raise ValueError(f"unknown stopword policy: {policy}")
+    keep = {w for w in sw if w in NEGATIONS or w.endswith("n't")
+            or w in {"ain", "aren", "couldn", "didn", "doesn", "hadn", "hasn",
+                     "haven", "isn", "mightn", "mustn", "needn", "shan",
+                     "shouldn", "wasn", "weren", "won", "wouldn", "don"}}
+    return sw - keep
 
 
 def slice_features(raw_text: str) -> dict:
@@ -97,11 +87,11 @@ def build_dataset(cfg: dict, log=None) -> dict:
     if d["test_size"]:
         raw_test = raw_test.select(range(min(d["test_size"], len(raw_test))))
 
-    stop = get_stopwords(pp["stopwords"])
+    stop = get_stopwords()
     lem = WordNetLemmatizer() if pp["lemmatize"] else None
 
     def prepare(ds, name):
-        texts, labels, feats, dropped = [], [], [], 0
+        texts, labels, feats, raws, dropped = [], [], [], [], 0
         for row in ds:
             text, label = row["text"], row["label"]
             if is_malformed(text, label):
@@ -113,15 +103,16 @@ def build_dataset(cfg: dict, log=None) -> dict:
                 continue
             texts.append(toks)
             labels.append(int(label))
+            raws.append(text)
             f = slice_features(text)
             f["len_tokens"] = len(toks)
             feats.append(f)
         if log:
             log.event("prepare", split=name, kept=len(texts), dropped=dropped)
-        return texts, np.array(labels), feats
+        return texts, np.array(labels), feats, raws
 
-    tr_toks, tr_y, tr_f = prepare(raw_train, "train_full")
-    te_toks, te_y, te_f = prepare(raw_test, "test")
+    tr_toks, tr_y, tr_f, _ = prepare(raw_train, "train_full")
+    te_toks, te_y, te_f, te_raw = prepare(raw_test, "test")
 
     # validation carved out of TRAIN, stratified by label
     n_val = int(len(tr_toks) * d["val_fraction"])
@@ -144,16 +135,12 @@ def build_dataset(cfg: dict, log=None) -> dict:
     def encode(toks_list):
         L = pp["max_len"]
         out = np.zeros((len(toks_list), L), dtype=np.int64)
-        lens = np.zeros(len(toks_list), dtype=np.int64)
         for i, toks in enumerate(toks_list):
             ids = [stoi.get(w, 1) for w in toks[:L]]
             out[i, :len(ids)] = ids
-            lens[i] = max(len(ids), 1)
-        return out, lens
+        return out
 
-    Xtr, Ltr = encode(tr2_toks)
-    Xva, Lva = encode(va_toks)
-    Xte, Lte = encode(te_toks)
+    Xtr, Xva, Xte = encode(tr2_toks), encode(va_toks), encode(te_toks)
 
     eda = {
         "train_rows": len(tr2_toks), "val_rows": len(va_toks), "test_rows": len(te_toks),
@@ -170,9 +157,9 @@ def build_dataset(cfg: dict, log=None) -> dict:
     }
     return {
         "stoi": stoi, "eda": eda,
-        "train": (Xtr, Ltr, tr2_y, tr2_f),
-        "val": (Xva, Lva, va_y, va_f),
-        "test": (Xte, Lte, te_y, te_f),
+        "train": (Xtr, tr2_y), "val": (Xva, va_y), "test": (Xte, te_y),
+        "feats": {"val": va_f, "test": te_f},
+        "test_texts": te_raw,   # raw reviews, in the order the arrays hold them
     }
 
 
@@ -199,7 +186,9 @@ def save_processed(bundle: dict, cache_dir: str) -> None:
     cache = Path(cache_dir)
     cache.mkdir(parents=True, exist_ok=True)
     for split in ("train", "val", "test"):
-        X, L, y, _ = bundle[split]
-        np.savez_compressed(cache / f"{split}.npz", X=X, L=L, y=y)
+        X, y = bundle[split]
+        np.savez_compressed(cache / f"{split}.npz", X=X, y=y)
     (cache / "vocab.json").write_text(json.dumps(bundle["stoi"]))
     (cache / "eda.json").write_text(json.dumps(bundle["eda"], indent=2))
+    (cache / "feats.json").write_text(json.dumps(bundle["feats"]))
+    (cache / "test_texts.json").write_text(json.dumps(bundle["test_texts"]))

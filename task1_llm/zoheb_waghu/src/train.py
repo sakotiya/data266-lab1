@@ -54,6 +54,28 @@ def lr_at(step: int, cfg: dict) -> float:
     return min_lr + 0.5 * (lr - min_lr) * (1 + math.cos(math.pi * min(progress, 1.0)))
 
 
+def run_generation(model, vocab, cfg: dict, device) -> tuple:
+    """Greedy and temperature sampling (workplan 1.3), one sample per
+    (prompt, strategy). Returns (samples, tokens/sec)."""
+    g = cfg["generate"]
+    samples, total_tokens, elapsed = [], 0, 0.0
+    for prompt in g["prompts"]:
+        ids = torch.tensor([vocab.encode(prompt)], dtype=torch.long, device=device)
+        for strat in g["strategies"]:
+            greedy = strat["name"] == "greedy"
+            temp = float(strat.get("temperature", 1.0))
+            label = "greedy" if greedy else f"temperature={temp}"
+            t0 = time.time()
+            out = model.generate(ids, g["max_new_tokens"], temperature=temp, greedy=greedy)
+            if device.type == "mps":
+                torch.mps.synchronize()
+            elapsed += time.time() - t0
+            total_tokens += g["max_new_tokens"]
+            samples.append({"prompt": prompt, "label": label,
+                            "text": vocab.decode(out[0].tolist())})
+    return samples, total_tokens / max(elapsed, 1e-9)
+
+
 def main() -> int:
     args = config_arg_parser("Task 1 - train GPT from scratch").parse_args()
     cfg = load_config(args.config)
@@ -67,7 +89,7 @@ def main() -> int:
     try:
         # ---- data -------------------------------------------------------
         splits = build_splits(cfg)
-        stats = save_processed(splits, cfg["data"]["cache_dir"])
+        stats = save_processed(splits, cfg["data"])
         log.event("data", **stats)
         vocab = splits["vocab"]
 
@@ -86,8 +108,7 @@ def main() -> int:
         log.event("schedule", steps_per_epoch=steps_per_epoch, total_steps=total_steps,
                   tokens_per_epoch=tokens_per_epoch,
                   train_sequences=cfg["data"]["train_sequences"],
-                  corpus_passes_per_epoch=round(tokens_per_epoch / len(splits["train_ids"]), 2),
-                  nonoverlapping_batches_per_epoch=train_b.batches_per_epoch)
+                  corpus_passes_per_epoch=round(tokens_per_epoch / len(splits["train_ids"]), 2))
 
         # ---- model ------------------------------------------------------
         from model import GPT
@@ -163,12 +184,11 @@ def main() -> int:
         final_train = eval_loss_and_accuracy(model, train_b)
 
         # ---- generation -------------------------------------------------
-        from generate import run_generation
         samples, gen_tps = run_generation(model, vocab, cfg, device)
         Path(paths["sample_dir"]).mkdir(parents=True, exist_ok=True)
         (Path(paths["sample_dir"]) / f"samples_{run_id}.txt").write_text(
             "\n\n".join(f"### {s['label']} | prompt={s['prompt']!r}\n{s['text']}"
-                        for s in samples))
+                        for s in samples), encoding="utf-8")
         gen_m = generation_metrics([s["text"] for s in samples],
                                    cfg["eval"]["ngram_max"], cfg["eval"]["repeat_ngram_n"])
         log.event("generation", n_samples=len(samples),

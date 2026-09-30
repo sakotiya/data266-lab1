@@ -30,8 +30,6 @@ from metrics import (bootstrap_ci, core_metrics, error_buckets,  # noqa: E402
                      expected_calibration_error, mcnemar_test, slice_metrics)
 from models import build_model  # noqa: E402
 
-CACHE_VERSION = "v1"
-
 # team-agreed metrics_report.csv columns -> the keys this script produces.
 # The team header omits the confusion-matrix cells and the per-slice columns the
 # brief requires, so those go to metrics_report_extended.csv alongside it.
@@ -54,27 +52,21 @@ TEAM_SCHEMA = {
     "hardware": "hardware",
 }
 
-# config `monitor:` values -> core_metrics keys
-MONITOR_KEYS = {"val_macro_f1": "f1_macro", "val_f1_macro": "f1_macro",
-                "val_accuracy": "accuracy", "val_acc": "accuracy",
-                "val_roc_auc": "roc_auc", "val_mcc": "mcc"}
 
-
-def iterate(X, L, y, batch_size, device, shuffle, rng=None):
+def iterate(X, y, batch_size, device, shuffle, rng=None):
     idx = rng.permutation(len(y)) if shuffle else np.arange(len(y))
     for s in range(0, len(idx), batch_size):
         b = idx[s:s + batch_size]
         yield (torch.from_numpy(X[b]).to(device),
-               torch.from_numpy(L[b]).to(device),
                torch.from_numpy(y[b]).float().to(device))
 
 
 @torch.no_grad()
-def predict(model, X, L, y, batch_size, device):
+def predict(model, X, y, batch_size, device):
     model.eval()
     out = []
-    for xb, lb, _ in iterate(X, L, y, batch_size, device, shuffle=False):
-        out.append(torch.sigmoid(model(xb, lb)).float().cpu().numpy())
+    for xb, _ in iterate(X, y, batch_size, device, shuffle=False):
+        out.append(torch.sigmoid(model(xb)).float().cpu().numpy())
     return np.concatenate(out)
 
 
@@ -94,12 +86,11 @@ def load_or_build(cfg, log):
     """Build the dataset once and cache it - all three models must consume the
     identical vocabulary and splits or the paired McNemar test is invalid."""
     cache = Path(cfg["data"]["cache_dir"])
-    stamp = cache / f"ready_{CACHE_VERSION}.json"
-    if stamp.exists():
+    if (cache / "test_texts.json").exists():   # written last by save_processed
         d = {}
         for split in ("train", "val", "test"):
             z = np.load(cache / f"{split}.npz")
-            d[split] = (z["X"], z["L"], z["y"], None)
+            d[split] = (z["X"], z["y"])
         d["stoi"] = json.loads((cache / "vocab.json").read_text())
         d["eda"] = json.loads((cache / "eda.json").read_text())
         d["feats"] = json.loads((cache / "feats.json").read_text())
@@ -108,10 +99,6 @@ def load_or_build(cfg, log):
         return d
     bundle = build_dataset(cfg, log)
     save_processed(bundle, cfg["data"]["cache_dir"])
-    (cache / "feats.json").write_text(json.dumps(
-        {"test": bundle["test"][3], "val": bundle["val"][3]}))
-    bundle["feats"] = {"test": bundle["test"][3], "val": bundle["val"][3]}
-    stamp.write_text(json.dumps({"version": CACHE_VERSION}))
     log.event("data_cache", status="built", **{k: bundle["eda"][k] for k in
                                                ("train_rows", "val_rows", "test_rows", "vocab_size")})
     return bundle
@@ -129,9 +116,9 @@ def main() -> int:
 
     try:
         data = load_or_build(cfg, log)
-        Xtr, Ltr, ytr, _ = data["train"]
-        Xva, Lva, yva, _ = data["val"]
-        Xte, Lte, yte, _ = data["test"]
+        Xtr, ytr = data["train"]
+        Xva, yva = data["val"]
+        Xte, yte = data["test"]
         vocab_size = len(data["stoi"])
         log.event("eda", **{k: v for k, v in data["eda"].items() if not isinstance(v, list)})
 
@@ -155,10 +142,10 @@ def main() -> int:
         for epoch in range(t["epochs"]):
             model.train()
             ep_loss, nb = 0.0, 0
-            for xb, lb, yb in iterate(Xtr, Ltr, ytr, t["batch_size"], device, True, rng):
+            for xb, yb in iterate(Xtr, ytr, t["batch_size"], device, True, rng):
                 for g in opt.param_groups:
                     g["lr"] = lr_at(step, total_steps, cfg)
-                loss = lossf(model(xb, lb), yb)
+                loss = lossf(model(xb), yb)
                 opt.zero_grad(set_to_none=True)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), t["grad_clip"])
@@ -167,7 +154,7 @@ def main() -> int:
                 nb += 1
                 step += 1
 
-            val_probs = predict(model, Xva, Lva, yva, 256, device)
+            val_probs = predict(model, Xva, yva, 256, device)
             vm = core_metrics(yva, val_probs)
             history.append({"epoch": epoch, "train_loss": ep_loss / nb, **{
                 k: vm[k] for k in ("accuracy", "f1_macro", "roc_auc")}})
@@ -175,10 +162,7 @@ def main() -> int:
                       val_acc=round(vm["accuracy"], 5), val_f1_macro=round(vm["f1_macro"], 5),
                       val_roc_auc=round(vm["roc_auc"], 5))
 
-            if t["monitor"] not in MONITOR_KEYS:
-                raise ValueError(f"unknown monitor {t['monitor']!r}; "
-                                 f"expected one of {sorted(MONITOR_KEYS)}")
-            score = vm[MONITOR_KEYS[t["monitor"]]]
+            score = vm[t["monitor"]]
             if score > best:
                 best, bad_epochs = score, 0
                 torch.save({"model": model.state_dict(), "config": cfg,
@@ -195,7 +179,7 @@ def main() -> int:
 
         # ---- final test evaluation, on the best checkpoint, ONCE -------------
         model.load_state_dict(torch.load(ckpt, map_location=device)["model"])
-        te_probs = predict(model, Xte, Lte, yte, 256, device)
+        te_probs = predict(model, Xte, yte, 256, device)
         # Two files on purpose: a stable per-tag name (the baseline lookup below
         # depends on it) and an immutable per-run name, so a second run of the
         # same config cannot silently overwrite the predictions a reported

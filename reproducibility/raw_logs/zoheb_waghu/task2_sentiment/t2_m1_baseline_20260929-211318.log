@@ -1,0 +1,16 @@
+[    0.002s] run_start    run_id=t2_m1_baseline_20260929-211318 utc=2026-09-30T04:13:18.561014+00:00 git_commit=unknown python=3.12.10 argv=task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml hardware={'device': 'cuda', 'torch': '2.5.1+cu124', 'platform': 'Windows-11-10.0.26200-SP0', 'processor': 'AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD', 'gpu_name': 'NVIDIA GeForce RTX 4090', 'gpu_mem_gb': '25.8'}
+[   32.364s] prepare      split=train_full kept=99996 dropped=4
+[   41.512s] prepare      split=test kept=38000 dropped=0
+[   48.674s] data_cache   status=built train_rows=89997 val_rows=9999 test_rows=38000 vocab_size=30000
+[   48.674s] eda          train_rows=89997 val_rows=9999 test_rows=38000 train_pos_frac=0.5018611731502162 test_pos_frac=0.5 vocab_size=30000 token_len_mean=70.12688200717801 token_len_median=51.0 token_len_p95=194.0 token_len_max=558 truncated_frac=0.021900730024334146 stopwords_removed=158 oov_rate_test=0.012770055898222952
+[   48.830s] model        name=bilstm_mean param_count=4104449
+[   55.610s] epoch        epoch=0 train_loss=0.2294 val_acc=0.92699 val_f1_macro=0.92697 val_roc_auc=0.98003
+[   55.624s] checkpoint   epoch=0 f1_macro=0.92697
+[   60.386s] epoch        epoch=1 train_loss=0.13886 val_acc=0.93459 val_f1_macro=0.93459 val_roc_auc=0.98276
+[   60.398s] checkpoint   epoch=1 f1_macro=0.93459
+[   65.187s] epoch        epoch=2 train_loss=0.09338 val_acc=0.93349 val_f1_macro=0.93349 val_roc_auc=0.98201
+[   69.972s] epoch        epoch=3 train_loss=0.06152 val_acc=0.92619 val_f1_macro=0.92619 val_roc_auc=0.97941
+[   69.972s] early_stop   epoch=3 patience=2
+[   82.360s] mcnemar      statistic=BASELINE pvalue=BASELINE
+[   82.375s] metrics      run_id=t2_m1_baseline_20260929-211318 model_name=bilstm_mean config_path=task2_sentiment\zoheb_waghu\configs\m1_baseline_bilstm.yaml checkpoint_id=t2_m1_baseline_20260929-211318_best.pt split=test accuracy=0.93463 precision_macro=0.93463 recall_macro=0.93463 f1_macro=0.93463 precision_micro=0.93463 recall_micro=0.93463 f1_micro=0.93463 precision_weighted=0.93463 recall_weighted=0.93463 f1_weighted=0.93463 tn=17766 fp=1234 fn=1250 tp=17750 roc_auc=0.983 pr_auc=0.98352 mcc=0.86926 brier_score=0.04891 ece=0.01341 acc_ci_low=0.9321 acc_ci_high=0.93705 f1_macro_ci_low=0.9321 f1_macro_ci_high=0.93705 mcc_ci_low=0.86421 mcc_ci_high=0.87411 mcnemar_stat_vs_baseline=BASELINE mcnemar_p_vs_baseline=BASELINE slice_short_f1_macro=0.93492 slice_short_error_rate=0.064 slice_long_f1_macro=0.91511 slice_long_error_rate=0.07484 slice_negation_f1_macro=0.92936 slice_negation_error_rate=0.06589 slice_highpunct_f1_macro=0.95468 slice_highpunct_error_rate=0.04407 param_count=4104449 train_seconds=19.39 examples_per_sec=18568.83 peak_memory_gb=1.2803 device=cuda hardware=AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD
+[   82.375s] run_end      status=ok wall_seconds=82.375

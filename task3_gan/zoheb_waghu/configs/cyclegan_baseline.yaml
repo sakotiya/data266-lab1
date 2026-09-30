@@ -51,7 +51,6 @@ train:
   amp: false
 
 eval:
-  fid_batch_size: 32
   kid_subset_size: 100      # < 300, the Monet domain size
   lpips_net: alex
   cycle_l1_samples: 200

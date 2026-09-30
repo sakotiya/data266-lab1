@@ -79,17 +79,21 @@ def mcnemar_test(y_true, probs_a, probs_b) -> dict:
     disagreements carry information, which is what makes it more sensitive than
     comparing two independent accuracy CIs.
     """
-    from statsmodels.stats.contingency_tables import mcnemar
+    from scipy.stats import binomtest, chi2
 
     y = np.asarray(y_true)
     ca = ((np.asarray(probs_a) >= 0.5).astype(int) == y)
     cb = ((np.asarray(probs_b) >= 0.5).astype(int) == y)
-    tbl = np.array([[int((ca & cb).sum()), int((ca & ~cb).sum())],
-                    [int((~ca & cb).sum()), int((~ca & ~cb).sum())]])
-    exact = tbl[0, 1] + tbl[1, 0] < 25
-    res = mcnemar(tbl, exact=exact, correction=not exact)
-    return {"statistic": float(res.statistic), "pvalue": float(res.pvalue),
-            "baseline_only_correct": tbl[0, 1], "experimental_only_correct": tbl[1, 0],
+    b01, b10 = int((ca & ~cb).sum()), int((~ca & cb).sum())
+    exact = b01 + b10 < 25
+    if exact:   # statistic = smaller discordant count, two-sided binomial p
+        stat = min(b01, b10)
+        p = binomtest(stat, b01 + b10, 0.5).pvalue if b01 + b10 else 1.0
+    else:       # chi-square with continuity correction, 1 dof
+        stat = (abs(b01 - b10) - 1) ** 2 / (b01 + b10)
+        p = chi2.sf(stat, 1)
+    return {"statistic": float(stat), "pvalue": float(p),
+            "baseline_only_correct": b01, "experimental_only_correct": b10,
             "exact": exact}
 
 
@@ -112,7 +116,7 @@ def slice_metrics(y_true, probs, masks: dict) -> dict:
     return out
 
 
-def error_buckets(y_true, probs, texts=None, masks=None,
+def error_buckets(y_true, probs, masks=None,
                   worst_slice: str | None = None) -> dict:
     """The four groups of five the workplan's error review requires:
     confident FPs, confident FNs, near-threshold errors, worst-slice errors."""

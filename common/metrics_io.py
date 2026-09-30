@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 MISSING = "NOT_MEASURED"
 
@@ -18,23 +18,18 @@ def read_header(csv_path: str | Path) -> list[str]:
         return next(csv.reader(fh))
 
 
-def write_metrics(csv_path: str | Path, row: dict[str, Any],
-                  allow_missing: Iterable[str] = ()) -> None:
-    """Append one model's metrics. Every header column must be present in `row`
-    unless explicitly listed in allow_missing (which is then recorded as
-    NOT_MEASURED rather than left blank)."""
+def write_metrics(csv_path: str | Path, row: dict[str, Any]) -> None:
+    """Append one model's metrics. Every header column must be present in `row`."""
     csv_path = Path(csv_path)
     header = read_header(csv_path)
-    allowed = set(allow_missing)
-    missing = [c for c in header if c not in row and c not in allowed]
+    missing = [c for c in header if c not in row]
     if missing:
         raise ValueError(f"metrics row is missing required columns: {missing}")
     unknown = [k for k in row if k not in header]
     if unknown:
         raise ValueError(f"metrics row has columns not in {csv_path.name}: {unknown}")
-    out = {c: row.get(c, MISSING) for c in header}
     with csv_path.open("a", newline="") as fh:
-        csv.DictWriter(fh, fieldnames=header).writerow(out)
+        csv.DictWriter(fh, fieldnames=header).writerow(row)
 
 
 def write_team_row(csv_path: str | Path, row: dict, mapping: dict,

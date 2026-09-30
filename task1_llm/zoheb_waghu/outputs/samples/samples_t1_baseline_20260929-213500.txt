@@ -1,0 +1,47 @@
+### greedy | prompt='Once upon a time'
+Once upon a time, there was a little girl named Lily. She loved to play outside in the sunshine. One day, she went to the park with her mommy and daddy. They saw a big box of cars and a big box. The box was so happy and the box was so happy to see the box. 
+Lily was so happy that she had been so brave and she was so happy to have her box before. She was happy to have her box before and she was proud of herself. 
+
+
+### temperature=0.8 | prompt='Once upon a time'
+Once upon a time there was a little girl named Lily. She loved to play outside in the sunshine.
+One day, Lily's mommy asked her to run away. They said she would go out to the sky and have it showed it to her. Lily learned that her mommy and daddy was not happy. But then she saw a big red ball in the sky. She was so sad and lonely.
+Lily wanted the ball. She told her mommy about her and wrapped it in her ball. She 
+
+### temperature=1.2 | prompt='Once upon a time'
+Once upon a time, there was a little girl who loved very melty. She wanted a new hidden aboven the ground and said "Bob! MPleaf!" Her pocket seemed sad to melt. Lily loved to. One day, the sun came across a face of the shiny things. He approached it and cheered. He had the things she, spreadying to eat them.
+"Uh-ohw, Lily! Grump! Don't be careful now and hurt!" he screamed.
+Lily was scared. She didn't know what M
+
+### greedy | prompt='The little girl'
+The little girl was so happy to have her friends to help her friends and they all laughed and smiled. They had lots of fun together and the little girl was happy to have a new friend to play with.
+
+Once upon a time, there was a little girl named Lily. She loved to play outside in the sunshine. One day, she went to the park with her mommy. She saw a big box of colors and she wanted to play with it. She wanted to 
+
+### temperature=0.8 | prompt='The little girl'
+The little girl said, "It's okay, because they have a better one!" 
+The end.
+
+Once upon a time, there was a clever plane. It was very brave and had a happy little friend. One day, the people were walking in the forest. He saw a few birds in the grass, who smiled at Ben as he pointed at his pan. He was so proud that he was so happy to see them the beautiful sky.
+But then, he heard a loud noise coming from the sky
+
+### temperature=1.2 | prompt='The little girl'
+The little girl fed the little duck got its clown, and the stSarah were always raising around even more brighter.
+Everyone elderly had hello up Jill onhe money, Bob waoked into him. She told Jenny and Mary about how his friend's ullets looked interesting, and tisying really inviting him to do. Jenny was so grateful to her mum and she had succeeded yum! She had never seen like her best, feeling very rich that Tim
+
+### greedy | prompt='Tom and Jane went'
+Tom and Jane went to the park to play. They saw a big box of cars and a big box. They were so happy and proud of their box.
+They were happy and proud of their box. They had a great time and their box was a big box. They were happy and proud of their box.
+
+Lily and Ben were playing in the park. They liked to play in the park with their toys. They had many toys and books and books. They had many toys and books. They
+
+### temperature=0.8 | prompt='Tom and Jane went'
+Tom and Jane went to the park to play. They played together and had lots of fun. They wanted to see who saw a big tree with many trees.
+But then, a soldier came to the park. The tree had an useful tree to lift behind the tree. The trees was not being very proud of her. It was so angry and heavy!
+"Wow, this tree!" the tree said. "Wow!"
+The tree and the tree heard the tree and smiled. It was dirty and hadn't so hot.
+
+### temperature=1.2 | prompt='Tom and Jane went'
+Tom and Jane went to a trip to eat but Abby was tired. Abby kept driving until they noticed the busy happily.
+In the eaeson, Tom started to scream and startch around his parents. It started feeling sad for Tom, but he could not stop shouting. Tom lifted the nosy bushes, and he thought for being kind and she proud of cleaning pieces of creatures. Tom was able to do.
+Tom, he showed Tom the next day. Tom was a great 

@@ -8,7 +8,6 @@ from __future__ import annotations
 import argparse
 import os
 import random
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -118,25 +117,3 @@ def config_arg_parser(description: str) -> argparse.ArgumentParser:
     ap.add_argument("--config", required=True, help="path to the run's YAML config")
     ap.add_argument("--run-id", default=None, help="override the auto-generated run id")
     return ap
-
-
-@dataclass(frozen=True)
-class RunPaths:
-    """Where one run writes. Created eagerly so a crash still leaves the log."""
-    run_id: str
-    log_dir: Path
-    ckpt_dir: Path
-    out_dir: Path
-
-    @staticmethod
-    def build(cfg: dict[str, Any], run_id: str) -> "RunPaths":
-        paths = cfg["paths"]
-        rp = RunPaths(
-            run_id=run_id,
-            log_dir=Path(paths["log_dir"]),
-            ckpt_dir=Path(paths["checkpoint_dir"]),
-            out_dir=Path(paths["output_dir"]),
-        )
-        for d in (rp.log_dir, rp.ckpt_dir, rp.out_dir):
-            d.mkdir(parents=True, exist_ok=True)
-        return rp

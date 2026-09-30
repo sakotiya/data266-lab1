@@ -7,11 +7,10 @@ run:
   tag: t2_m2_cnn
 
 model:
-  name: cnn_multikernel
-  arch: textcnn
+  name: cnn_multikernel  # TextCNN
+  pooling: max           # global max over time
   kernel_sizes: [2, 3, 4, 5]
   num_filters: 128       # per kernel size
-  pooling: max           # global max over time
   dropout: 0.5
   classifier_hidden: 128
 
@@ -24,4 +23,4 @@ train:
   grad_clip: 5.0
   scheduler: none
   early_stopping_patience: 2
-  monitor: val_macro_f1
+  monitor: f1_macro      # on validation

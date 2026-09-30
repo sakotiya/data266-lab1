@@ -45,7 +45,7 @@ class CausalSelfAttention(nn.Module):
             persistent=False,
         )
 
-    def forward(self, x: torch.Tensor, return_attn: bool = False):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         B, T, C = x.shape
         q, k, v = self.qkv(x).split(C, dim=2)
         # (B, T, C) -> (B, n_head, T, head_dim)
@@ -60,8 +60,7 @@ class CausalSelfAttention(nn.Module):
 
         y = att @ v                                            # (B, nh, T, hd)
         y = y.transpose(1, 2).contiguous().view(B, T, C)       # merge heads
-        y = self.resid_dropout(self.proj(y))
-        return (y, att) if return_attn else y
+        return self.resid_dropout(self.proj(y))
 
 
 class FeedForward(nn.Module):
@@ -137,11 +136,8 @@ class GPT(nn.Module):
         elif isinstance(module, nn.Embedding):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def num_params(self, non_embedding: bool = False) -> int:
-        n = sum(p.numel() for p in self.parameters())
-        if non_embedding:
-            n -= self.pos_emb.weight.numel()
-        return n
+    def num_params(self) -> int:
+        return sum(p.numel() for p in self.parameters())
 
     def forward(self, idx: torch.Tensor,
                 targets: Optional[torch.Tensor] = None):
@@ -161,8 +157,7 @@ class GPT(nn.Module):
 
     @torch.no_grad()
     def generate(self, idx: torch.Tensor, max_new_tokens: int,
-                 temperature: float = 1.0, greedy: bool = False,
-                 top_k: Optional[int] = None) -> torch.Tensor:
+                 temperature: float = 1.0, greedy: bool = False) -> torch.Tensor:
         """Autoregressive sampling. greedy=True ignores temperature (argmax)."""
         self.eval()
         for _ in range(max_new_tokens):
@@ -173,9 +168,6 @@ class GPT(nn.Module):
                 nxt = logits.argmax(dim=-1, keepdim=True)
             else:
                 logits = logits / max(temperature, 1e-8)
-                if top_k is not None:
-                    kth = torch.topk(logits, top_k, dim=-1).values[:, [-1]]
-                    logits = logits.masked_fill(logits < kth, float("-inf"))
                 nxt = torch.multinomial(F.softmax(logits, dim=-1), num_samples=1)
             idx = torch.cat([idx, nxt], dim=1)
         return idx

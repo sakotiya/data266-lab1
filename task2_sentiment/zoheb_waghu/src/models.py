@@ -20,6 +20,14 @@ class _Base(nn.Module):
         with torch.no_grad():
             self.emb.weight[padding_idx].fill_(0)
 
+    @staticmethod
+    def _head(out_dim: int, classifier_hidden: int, dropout: float) -> nn.Module:
+        """Linear head, or a one-hidden-layer MLP when classifier_hidden > 0."""
+        if not classifier_hidden:
+            return nn.Linear(out_dim, 1)
+        return nn.Sequential(nn.Linear(out_dim, classifier_hidden), nn.ReLU(),
+                             nn.Dropout(dropout), nn.Linear(classifier_hidden, 1))
+
     def num_params(self) -> int:
         return sum(p.numel() for p in self.parameters())
 
@@ -29,18 +37,15 @@ class BiLSTMMean(_Base):
     not dilute the representation of short reviews."""
 
     def __init__(self, vocab_size, emb_dim, hidden_size, num_layers,
-                 dropout, classifier_hidden=0, **_) -> None:
+                 dropout, classifier_hidden=0) -> None:
         super().__init__(vocab_size, emb_dim)
         self.lstm = nn.LSTM(emb_dim, hidden_size, num_layers=num_layers,
                             batch_first=True, bidirectional=True,
                             dropout=dropout if num_layers > 1 else 0.0)
         self.drop = nn.Dropout(dropout)
-        out_dim = hidden_size * 2
-        self.head = (nn.Linear(out_dim, 1) if not classifier_hidden else
-                     nn.Sequential(nn.Linear(out_dim, classifier_hidden), nn.ReLU(),
-                                   nn.Dropout(dropout), nn.Linear(classifier_hidden, 1)))
+        self.head = self._head(hidden_size * 2, classifier_hidden, dropout)
 
-    def forward(self, x, lengths=None):
+    def forward(self, x):
         mask = (x != 0).unsqueeze(-1).float()
         h, _ = self.lstm(self.emb(x))
         pooled = (h * mask).sum(1) / mask.sum(1).clamp(min=1)
@@ -52,17 +57,14 @@ class TextCNN(_Base):
     strongest activation of each filter regardless of where in the review it fired."""
 
     def __init__(self, vocab_size, emb_dim, kernel_sizes, num_filters,
-                 dropout, classifier_hidden=0, **_) -> None:
+                 dropout, classifier_hidden=0) -> None:
         super().__init__(vocab_size, emb_dim)
         self.convs = nn.ModuleList(
             [nn.Conv1d(emb_dim, num_filters, k) for k in kernel_sizes])
         self.drop = nn.Dropout(dropout)
-        out_dim = num_filters * len(kernel_sizes)
-        self.head = (nn.Linear(out_dim, 1) if not classifier_hidden else
-                     nn.Sequential(nn.Linear(out_dim, classifier_hidden), nn.ReLU(),
-                                   nn.Dropout(dropout), nn.Linear(classifier_hidden, 1)))
+        self.head = self._head(num_filters * len(kernel_sizes), classifier_hidden, dropout)
 
-    def forward(self, x, lengths=None):
+    def forward(self, x):
         e = self.emb(x).transpose(1, 2)                   # (B, C, T)
         feats = [F.relu(conv(e)).max(dim=2).values for conv in self.convs]
         return self.head(self.drop(torch.cat(feats, dim=1))).squeeze(-1)
@@ -74,7 +76,7 @@ class BiLSTMAttention(_Base):
     nn.MultiheadAttention so the scoring is explicit."""
 
     def __init__(self, vocab_size, emb_dim, hidden_size, num_layers, dropout,
-                 attention_dim=128, classifier_hidden=0, **_) -> None:
+                 attention_dim=128, classifier_hidden=0) -> None:
         super().__init__(vocab_size, emb_dim)
         self.lstm = nn.LSTM(emb_dim, hidden_size, num_layers=num_layers,
                             batch_first=True, bidirectional=True,
@@ -83,26 +85,22 @@ class BiLSTMAttention(_Base):
         self.att_proj = nn.Linear(out_dim, attention_dim)
         self.att_vec = nn.Linear(attention_dim, 1, bias=False)
         self.drop = nn.Dropout(dropout)
-        self.head = (nn.Linear(out_dim, 1) if not classifier_hidden else
-                     nn.Sequential(nn.Linear(out_dim, classifier_hidden), nn.ReLU(),
-                                   nn.Dropout(dropout), nn.Linear(classifier_hidden, 1)))
+        self.head = self._head(out_dim, classifier_hidden, dropout)
 
-    def forward(self, x, lengths=None, return_attn=False):
+    def forward(self, x):
         pad_mask = (x == 0)
         h, _ = self.lstm(self.emb(x))
         scores = self.att_vec(torch.tanh(self.att_proj(h))).squeeze(-1)   # (B, T)
         scores = scores.masked_fill(pad_mask, float("-inf"))
         w = F.softmax(scores, dim=1).unsqueeze(-1)
         pooled = (h * w).sum(1)
-        logit = self.head(self.drop(pooled)).squeeze(-1)
-        return (logit, w.squeeze(-1)) if return_attn else logit
+        return self.head(self.drop(pooled)).squeeze(-1)
 
 
 def build_model(cfg: dict, vocab_size: int) -> nn.Module:
-    m, e = cfg["model"], cfg["embedding"]
-    if e["source"] != "from_scratch":
-        raise ValueError("workplan 2.0 forbids pretrained embeddings")
-    kw = dict(vocab_size=vocab_size, emb_dim=e["dim"], dropout=m["dropout"],
+    """Embeddings are always learned from scratch (workplan 2.0)."""
+    m = cfg["model"]
+    kw = dict(vocab_size=vocab_size, emb_dim=cfg["embedding"]["dim"], dropout=m["dropout"],
               classifier_hidden=m.get("classifier_hidden", 0))
     name = m["name"]
     if name == "bilstm_mean":

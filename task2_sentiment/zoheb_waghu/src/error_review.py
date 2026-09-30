@@ -21,31 +21,7 @@ sys.path.insert(0, str(SRC))
 sys.path.insert(0, str(SRC.parents[2]))
 
 from common.config import config_arg_parser, load_config  # noqa: E402
-from data import is_malformed, slice_features  # noqa: E402
-from metrics import core_metrics, error_buckets, slice_metrics  # noqa: E402
-from data import clean_text, get_stopwords  # noqa: E402
-
-
-def raw_test_texts(cfg: dict) -> list:
-    """Re-derive the test texts in the SAME order build_dataset kept them, so
-    indices from the probability array line up with review text."""
-    from datasets import load_dataset
-    from nltk.stem import WordNetLemmatizer
-
-    d, pp = cfg["data"], cfg["preprocess"]
-    ds = load_dataset(d["dataset"], split="test")
-    if d["test_size"]:
-        ds = ds.select(range(min(d["test_size"], len(ds))))
-    stop = get_stopwords(pp["stopwords"])
-    lem = WordNetLemmatizer() if pp["lemmatize"] else None
-    texts = []
-    for row in ds:
-        if is_malformed(row["text"], row["label"]):
-            continue
-        if not clean_text(row["text"], pp, stop, lem):
-            continue
-        texts.append(row["text"])
-    return texts
+from metrics import core_metrics  # noqa: E402
 
 
 def excerpt(t: str, n: int = 320) -> str:
@@ -64,16 +40,13 @@ def main() -> int:
     probs = np.load(out / f"test_probs_{a.model}.npy")
     y = np.load(cache / "test.npz")["y"]
     feats = json.loads((cache / "feats.json").read_text())["test"]
-    texts = raw_test_texts(cfg)
+    texts = json.loads((cache / "test_texts.json").read_text())
     if not (len(texts) == len(y) == len(probs)):
         raise RuntimeError(f"alignment mismatch: texts={len(texts)} y={len(y)} probs={len(probs)}")
 
-    from data import compute_slices
-    masks = compute_slices(feats, cfg["eval"]["slices"])
-    sl = slice_metrics(y, probs, masks)
-    worst = min((k for k in sl if not np.isnan(sl[k]["f1_macro"])),
-                key=lambda k: sl[k]["f1_macro"])
-    b = error_buckets(y, probs, masks=masks, worst_slice=worst)
+    # buckets and worst slice were computed by train.py on the same predictions
+    eb = json.loads((out / f"error_buckets_{a.model}.json").read_text())
+    worst, b, sl = eb["worst_slice"], eb["buckets"], eb["slices"]
     m = core_metrics(y, probs)
 
     groups = [
@@ -113,7 +86,7 @@ def main() -> int:
                 "",
             ]
             n += 1
-    (out / f"error_review_{a.model}.md").write_text("\n".join(lines))
+    (out / f"error_review_{a.model}.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out / f'error_review_{a.model}.md'} ({n - 1} errors, worst slice: {worst})")
     return 0
 

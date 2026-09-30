@@ -30,5 +30,7 @@ __pycache__/
 # Session transcripts / AI assistant logs - never committed.
 # The brief (section 8) requires the architecture decisions and analysis to be
 # the member own work, so these stay outside the graded repo.
+.claude/
+WORKPLAN.md
 chat_transcript*.md
 *_transcript.md

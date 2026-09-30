@@ -18,33 +18,27 @@ preprocess:
   lowercase: true
   strip_punctuation: true
   strip_special_chars: true
-  stopwords: nltk_english_minus_negations   # see negation_policy below
-  negation_policy: keep                     # keep not/no/never/n't - they invert sentiment
-  negation_marking: none                    # alternative: append _NEG until next punctuation
+  # Stopwords: NLTK English MINUS negations - not/no/never/n't invert sentiment,
+  # so they are kept. No _NEG marking. Lemmatize, never stem.
   normalize_contractions: true              # "don't" -> "do not" BEFORE stopword removal
   lemmatize: true
-  stemmer: none                             # lemmatize XOR stem, not both
   min_token_freq: 2
   max_vocab: 30000
-  max_len: 256
-  pad_token: "<pad>"
-  unk_token: "<unk>"
+  max_len: 256                              # <pad> = 0, <unk> = 1
 
 embedding:
-  source: from_scratch    # HARD CONSTRAINT: no pretrained embeddings, no pretrained LMs
+  # HARD CONSTRAINT: learned from scratch, trainable, no pretrained embeddings or LMs.
   dim: 128
-  freeze: false
-  padding_idx: 0
 
 eval:
   bootstrap_samples: 2000     # 95% CI for accuracy, macro-F1, MCC
   calibration_bins: 15        # expected calibration error
-  mcnemar: baseline_vs_each   # paired test, exact
-  slices:                     # per-slice macro-F1 and error rate (robustness)
-    - {name: short_reviews, rule: "len_tokens <= 50"}
-    - {name: long_reviews, rule: "len_tokens > 200"}
-    - {name: contains_negation, rule: "has_token in {not,no,never,nt}"}
-    - {name: high_punctuation, rule: "exclamation_count >= 3"}
+  # Paired McNemar: baseline vs each experimental model.
+  slices:                     # per-slice macro-F1 and error rate (robustness); rules in data.compute_slices
+    - {name: short_reviews}       # len_tokens <= 50
+    - {name: long_reviews}        # len_tokens > 200
+    - {name: contains_negation}   # not / no / never / n't in the raw review
+    - {name: high_punctuation}    # 3+ exclamation marks
 
 paths:
   # Raw logs live in the team-wide evidence trail, not inside the member folder.

@@ -27,9 +27,8 @@ from common.metrics_io import write_metrics  # noqa: E402
 from common.run_logger import RunLogger, new_run_id  # noqa: E402
 
 
-def fid(real_dir: Path, fake_dir: Path, device, batch_size: int) -> float:
-    """Frechet Inception Distance between two image folders. Report both directions."""
-    raise NotImplementedError
+# FID and MiFID (both directions) come from the instructor's evaluator,
+# temp/Part3_Evaluation_Script.ipynb - not re-implemented here.
 
 
 def kid(real_dir: Path, fake_dir: Path, device, subset_size: int) -> tuple[float, float]:

@@ -8,20 +8,17 @@ import torch
 
 
 @torch.no_grad()
-def eval_loss_and_accuracy(model, batcher, max_batches: int | None = None) -> dict:
+def eval_loss_and_accuracy(model, batcher) -> dict:
     """Cross-entropy, perplexity, bits-per-character and top-1 next-char accuracy
     over a sequential (non-overlapping) sweep, so each token is scored once."""
     model.eval()
-    tot_loss, tot_correct, tot_tokens, nb = 0.0, 0, 0, 0
+    tot_loss, tot_correct, tot_tokens = 0.0, 0, 0
     for x, y in batcher.iter_sequential():
         logits, loss = model(x, y)
         n = y.numel()
         tot_loss += loss.item() * n
         tot_correct += (logits.argmax(-1) == y).sum().item()
         tot_tokens += n
-        nb += 1
-        if max_batches and nb >= max_batches:
-            break
     mean_loss = tot_loss / max(tot_tokens, 1)
     return {
         "loss": mean_loss,
@@ -58,8 +55,7 @@ def generation_metrics(samples: list[str], ngram_max: int = 3,
 
 
 @torch.no_grad()
-def causal_mask_probe(model, vocab_size: int, seq_len: int, device,
-                      position: int | None = None, trials: int = 5) -> dict:
+def causal_mask_probe(model, vocab_size: int, seq_len: int, device) -> dict:
     """BEHAVIOURAL proof of causality (workplan 1.2, explicitly not a visual check).
 
     Perturb the token at position j and measure how much the logits move at every
@@ -67,9 +63,9 @@ def causal_mask_probe(model, vocab_size: int, seq_len: int, device,
     positions i >= j change. A non-zero max delta below j means the mask leaks.
     """
     model.eval()
-    j = position if position is not None else seq_len // 2
+    j = seq_len // 2
     max_before, min_after = 0.0, float("inf")
-    for t in range(trials):
+    for t in range(5):
         g = torch.Generator(device="cpu").manual_seed(1000 + t)
         idx = torch.randint(0, vocab_size, (1, seq_len), generator=g).to(device)
         base, _ = model(idx)

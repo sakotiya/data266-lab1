@@ -13,6 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from sklearn.calibration import calibration_curve  # noqa: E402
 
 SRC = Path(__file__).resolve().parent
 sys.path.insert(0, str(SRC))
@@ -91,14 +92,7 @@ def confusion_and_calibration(out: Path, y_true: np.ndarray,
               title=f"{name}\nacc {m['accuracy']:.4f} · F1 {m['f1_macro']:.4f}")
 
         b = ax[1, i]
-        bins = np.linspace(0, 1, 11)
-        idx = np.digitize(p, bins) - 1
-        xs, ys = [], []
-        for k in range(10):
-            msk = idx == k
-            if msk.sum() > 5:
-                xs.append(p[msk].mean())
-                ys.append(y_true[msk].mean())
+        ys, xs = calibration_curve(y_true, p, n_bins=10)
         b.plot([0, 1], [0, 1], "k--", lw=.8, label="perfect")
         b.plot(xs, ys, "o-", color="tab:orange", label="model")
         b.set(xlabel="predicted probability", ylabel="observed frequency",

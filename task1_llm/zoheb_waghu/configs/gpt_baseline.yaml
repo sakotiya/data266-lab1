@@ -1,6 +1,6 @@
 # Task 1 - GPT-style character-level LM trained from scratch on TinyStories.
 # Constraint: no nn.Transformer*, no nn.MultiheadAttention, no fused SDPA.
-# Runs on the local Apple M5 (mps). Nothing below may be hard-coded in the notebook.
+# Reported run: NVIDIA RTX 4090 (cuda). Nothing below may be hard-coded in the notebook.
 
 run:
   tag: t1_baseline
@@ -9,9 +9,8 @@ run:
   device: auto          # auto -> cuda > mps > cpu
 
 data:
-  dataset: roneneldan/TinyStories
-  split_source: train
-  # Shared team download, fetched once (see task1_llm/data/README.md).
+  # Shared team download of roneneldan/TinyStories (train split), fetched once
+  # (see task1_llm/data/README.md).
   pool_path: task1_llm/data/tinystories_raw.txt
 
   # Spec 1.1 "training (100K) / validation (10K)" read as SEQUENCES, which is the
@@ -25,15 +24,14 @@ data:
   # my slice starts after theirs ends, so the two splits are disjoint.
   member_offset_chars: 34000000
 
-  vocab_from: train_only   # build char_to_idx from the training split only
+  # char_to_idx is built from the training split only.
   cache_dir: task1_llm/zoheb_waghu/data_processed
 
 model:
   n_layer: 4
   n_head: 4
   n_embd: 256           # must be divisible by n_head
-  dropout: 0.1
-  pos_embedding: learned   # learnable token AND position embeddings
+  dropout: 0.1             # token AND position embeddings are both learned
   tie_weights: false
   bias: true
 
@@ -42,8 +40,7 @@ train:
   # With 100K training sequences an epoch is a real pass over the data:
   # 100000 / 32 = 3125 optimiser steps per epoch, 31250 total. The
   # steps_per_epoch override the 100K-character version needed is gone.
-  batch_size: 32
-  optimizer: adamw
+  batch_size: 32           # optimiser: AdamW
   lr: 3.0e-4
   min_lr: 3.0e-5
   betas: [0.9, 0.95]
@@ -51,8 +48,7 @@ train:
   grad_clip: 1.0
   warmup_steps: 1000   # ~1/3 of one epoch
   schedule: cosine
-  eval_interval_steps: 500
-  log_interval_steps: 100
+  log_interval_steps: 100   # validation runs once per epoch
 
 generate:
   prompts: ["Once upon a time", "The little girl", "Tom and Jane went"]
@@ -65,14 +61,13 @@ generate:
 eval:
   ngram_max: 3          # distinct-1/2/3
   repeat_ngram_n: 4     # repeated 4-gram rate
-  causal_mask_probe: true   # behavioural check: perturb token j, assert logits i<j unchanged
+  # A causal-mask probe always runs: perturb token j, assert logits i<j unchanged.
 
 paths:
   # Raw logs live in the team-wide evidence trail, not inside the member folder.
   log_dir: reproducibility/raw_logs/zoheb_waghu/task1_llm
   checkpoint_dir: task1_llm/zoheb_waghu/checkpoints
-  output_dir: task1_llm/zoheb_waghu/outputs
-  plot_dir: task1_llm/zoheb_waghu/outputs/plots
+  output_dir: task1_llm/zoheb_waghu/outputs   # plots.py writes to outputs/plots/
   sample_dir: task1_llm/zoheb_waghu/outputs/samples
   metrics_csv_path: task1_llm/zoheb_waghu/metrics_report.csv
   extended_metrics_csv_path: task1_llm/zoheb_waghu/metrics_report_extended.csv

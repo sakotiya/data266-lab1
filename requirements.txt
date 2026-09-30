@@ -1,9 +1,10 @@
-# DATA266 Lab 1 - zohebw
-# Versions below are the ones actually used for the reported Task 1 and Task 2 runs
-# (captured 2026-09-20). Full freeze per run: <task>/zohebw/logs/env_freeze_*.txt
+# DATA266 Lab 1 - zoheb_waghu
+# Versions used for the reported Task 1 and Task 2 runs (RTX 4090, Python 3.12.10).
+# Full freeze: reproducibility/manifests/zoheb_waghu/env_freeze_rtx4090_20260929.txt
 #
-# IMPORTANT: create the venv with /usr/bin/python3 (arm64, 3.9.6). Every other Python
-# on this machine is x86_64 under Rosetta, which caps torch at 2.2.x and has no MPS.
+# Install the CUDA build of torch FIRST - PyPI's torch wheel for Windows is CPU-only:
+#   pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
+# then: pip install -r requirements.txt   (2.5.1+cu124 satisfies the pins below)
 
 # Core
 torch==2.5.1
@@ -13,13 +14,15 @@ tqdm==4.70.1
 
 # Data
 datasets==4.5.0
+huggingface_hub==1.8.0   # newer releases reject the short "yelp_polarity" dataset id
+pyarrow==21.0.0
 pandas==2.3.3
 pillow==11.3.0
 
 # Task 2 preprocessing / metrics
-nltk==3.9.2
+nltk==3.9.2              # plus data: stopwords, wordnet, omw-1.4 (see README)
 scikit-learn==1.6.1
-statsmodels==0.14.6
+scipy==1.18.1            # McNemar test
 
 # Plots / notebooks
 matplotlib==3.9.4
@@ -28,9 +31,8 @@ jupyter==1.1.1
 ipykernel==6.31.0
 nbconvert==7.17.1
 
-# Task 3 only - not installed yet, CycleGAN needs a GPU
-# torchvision
-# torchmetrics
-# torch-fidelity
-# lpips
-# scipy
+# Task 3 - CycleGAN and its evaluation metrics
+torchvision==0.20.1
+torchmetrics==1.9.0
+torch-fidelity==0.4.0
+lpips==0.1.4

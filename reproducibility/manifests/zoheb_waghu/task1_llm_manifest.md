@@ -4,17 +4,21 @@ Maps every reported number back to the config, checkpoint and raw log that produ
 
 | run_id | config | checkpoint | raw log | env freeze | metrics row | reported in |
 |---|---|---|---|---|---|---|
-| `t1_baseline_20260928-151435` | `task1_llm/zoheb_waghu/configs/gpt_baseline.yaml` | `task1_llm/zoheb_waghu/checkpoints/t1_baseline_20260928-151435_best.pt` | `raw_logs/zoheb_waghu/task1_llm/t1_baseline_20260928-151435.jsonl` | `env_freeze_task1_20260928.txt` | `metrics_report.csv` + `_extended.csv` | `results.md` §5, `failure_analysis.md` |
+| `t1_baseline_20260929-213500` | `task1_llm/zoheb_waghu/configs/gpt_baseline.yaml` | `task1_llm/zoheb_waghu/checkpoints/t1_baseline_20260929-213500_best.pt` | `raw_logs/zoheb_waghu/task1_llm/t1_baseline_20260929-213500.jsonl` | `env_freeze_rtx4090_20260929.txt` | `metrics_report.csv` + `_extended.csv` | `results.md` §5, `failure_analysis.md` |
 
-## Superseded runs - kept as evidence, not reported
+Checkpoints are gitignored (size); the ID above identifies it.
+
+## Superseded runs - raw logs retained, results not reported
 
 | run_id | why it is not the reported run |
 |---|---|
-| `t1_baseline_20260919-232507` | Trained on 100,000 **characters**, from misreading spec 1.1's "100K/10K" as characters rather than sequences. Superseded by the run above (256x more data). Raw log retained; its metrics rows were removed from both CSVs. |
-| `t1_smoke_20260919-232407`, `t1_smoke_20260928-151420` | 1-epoch pipeline checks. Raw logs retained; no metrics rows, configs and checkpoints deleted. |
+| `t1_baseline_20260928-151435` | Same config, trained on an Apple M5 (mps). Superseded by the RTX 4090 run above; its metrics rows, checkpoint, samples, plots and history were removed. Raw log kept unedited. |
+| `t1_baseline_20260919-232507` | Apple M5. Trained on 100,000 **characters**, from misreading spec 1.1's "100K/10K" as characters rather than sequences. Raw log retained. |
+| `t1_smoke_20260919-232407`, `t1_smoke_20260928-151420` | 1-epoch pipeline checks on the M5. Raw logs retained. |
 
-The superseded run's numbers are quoted in `failure_analysis.md` as a deliberate data-scale
-comparison (bpc 2.0478 -> 1.0140, gap 0.2473 -> 0.0038), not as a reported result.
+**Device-to-device variance.** The M5 run `...20260928-151435` and the 4090 run share config,
+seed (1337), data slice and vocabulary. Validation loss 0.70286 (M5) vs 0.70191 (4090), bits-per-char
+1.01401 vs 1.01264, generalization gap 0.00377 vs 0.00373.
 
 ## Data provenance
 
@@ -34,29 +38,28 @@ committed, per the repo `.gitignore`.
 
 | Artifact | Path |
 |---|---|
-| Loss / perplexity / stability curves | `task1_llm/zoheb_waghu/outputs/plots/loss_curves_t1_baseline_20260928-151435.png` |
-| Generalization gap curve | `task1_llm/zoheb_waghu/outputs/plots/generalization_gap_t1_baseline_20260928-151435.png` |
-| Generated samples (3 prompts × 3 strategies) | `task1_llm/zoheb_waghu/outputs/samples/samples_t1_baseline_20260928-151435.txt` |
-| Per-epoch history, per-step losses, grad norms, causal probe | `task1_llm/zoheb_waghu/outputs/history_t1_baseline_20260928-151435.json` |
+| Loss / perplexity / stability curves | `task1_llm/zoheb_waghu/outputs/plots/loss_curves_t1_baseline_20260929-213500.png` |
+| Generalization gap curve | `task1_llm/zoheb_waghu/outputs/plots/generalization_gap_t1_baseline_20260929-213500.png` |
+| Generated samples (3 prompts × 3 strategies) | `task1_llm/zoheb_waghu/outputs/samples/samples_t1_baseline_20260929-213500.txt` |
+| Per-epoch history, per-step losses, grad norms, causal probe | `task1_llm/zoheb_waghu/outputs/history_t1_baseline_20260929-213500.json` |
 | Executed notebook with outputs | `task1_llm/zoheb_waghu/src/task1_gpt_from_scratch.ipynb` |
 
 ## Environment
 
-- Python **3.9.6 (arm64)**, PyTorch **2.5.1**, device **mps**, Apple M5 / 16 GB
-- Full package list: `env_freeze_task1_20260928.txt`
+- NVIDIA GeForce RTX 4090 (24 GB, driver 610.60), AMD Ryzen 9 7950X, 128 GB RAM, Windows 11
+- Python **3.12.10**, PyTorch **2.5.1+cu124**, device **cuda**
+- Full package list: `env_freeze_rtx4090_20260929.txt`
 - Git commit at run time is recorded inside the raw log (`run_start.git_commit`)
-
-> The only arm64 Python on this machine is Apple's `/usr/bin/python3` (3.9.6). Every
-> Homebrew/miniforge Python present is x86_64 under Rosetta, which caps torch at 2.2.x and has
-> **no MPS support at all**. The venv must be created with `/usr/bin/python3` to reproduce.
 
 ## Reproduce
 
 ```bash
 python task1_llm/shreya_akotiya/src/fetch_data.py --chars 66000000   # shared pool, once
-/usr/bin/python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
-./.venv/bin/python task1_llm/zoheb_waghu/src/train.py --config task1_llm/zoheb_waghu/configs/gpt_baseline.yaml
-./.venv/bin/python task1_llm/zoheb_waghu/src/plots.py --history task1_llm/zoheb_waghu/outputs/history_<run_id>.json
+python -m venv .venv
+.venv/Scripts/python -m pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
+.venv/Scripts/python -m pip install -r requirements.txt
+.venv/Scripts/python task1_llm/zoheb_waghu/src/train.py --config task1_llm/zoheb_waghu/configs/gpt_baseline.yaml
+.venv/Scripts/python task1_llm/zoheb_waghu/src/plots.py --history task1_llm/zoheb_waghu/outputs/history_<run_id>.json
 ```
 
-Wall clock: **1 h 55 m** for 31,250 steps on an Apple M5 (mps).
+Wall clock: **6 m 26 s** of training for 31,250 steps on an RTX 4090.
