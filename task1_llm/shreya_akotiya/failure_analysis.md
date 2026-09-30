@@ -43,3 +43,9 @@ quickly and strets, but the pray still wouldn't like something more.
 **Failure type:** Spelling breakdown / non-word generation
 
 **Observation:** At temperature 1.0, the model produces non-words like "strets" (likely intended "streets") and uses "pray" where "prey" or another word was intended. The non-word rate jumps from 0% at greedy/T=0.5 to 1.29% at T=1.0 and 3.04% at T=1.2. This reflects the exploration–exploitation tradeoff: higher temperature samples from the tail of the character distribution, occasionally producing plausible-looking but invalid character sequences. The model has learned English spelling patterns but not perfectly — rare bigrams get sampled under high temperature.
+
+---
+
+## Cross-cutting observations: temperature trade-off
+
+The temperature comparison shows a clear trade-off. Greedy decoding and T=0.5 produced no non-word errors, but both repeated the phrase "Once upon a time..." and the sentence about Lily. T=0.8 gave the best balance between variety and readability, with only a 0.42% non-word rate and no detected repeated phrases. At T=1.0 and T=1.2, repetition decreased, but spelling and coherence problems increased, with non-word rates of 1.29% and 3.04%. This shows that higher temperature improves diversity but makes the generated text less reliable.
