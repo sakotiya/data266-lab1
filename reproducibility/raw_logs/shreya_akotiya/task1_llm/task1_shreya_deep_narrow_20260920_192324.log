@@ -1,0 +1,11 @@
+2026-09-20 19:23:25 | INFO  | *** REPORTED RUN (run_name='deep_narrow') - writes the canonical metrics_report.csv / outputs / checkpoints ***
+2026-09-20 19:23:25 | INFO  | RUN_TAG      = task1_shreya_deep_narrow_20260920_192324
+2026-09-20 19:23:25 | INFO  | PROJECT_ROOT = /content/drive/MyDrive/DATA266_Lab1
+2026-09-20 19:23:25 | INFO  | CONFIG_PATH  = /content/drive/MyDrive/DATA266_Lab1/task1_llm/shreya/config.yaml
+2026-09-20 19:23:25 | INFO  | RAW LOG      = reproducibility/raw_logs/task1_shreya_deep_narrow_20260920_192324.log
+2026-09-20 19:23:25 | INFO  | HARDWARE     = {"device": "cuda", "platform": "Linux-6.6.122+-x86_64-with-glibc2.39", "processor": "x86_64", "python": "3.13.15", "torch": "2.11.0+cu128", "numpy": "2.1.3", "gpu_name": "Tesla T4", "gpu_total_mem_gb": 15.64}
+2026-09-20 19:23:25 | INFO  | CONFIG       = {"run": {"member": "shreya", "run_name": "deep_narrow", "reported": true, "seed": 1337, "device": "auto"}, "data": {"raw_filename": "tinystories_raw.txt", "story_separator": "\n\n", "use_chars": 34000000, "member_offset_chars": 0, "val_story_fraction": 0.1, "min_char_freq": 50, "force_core_vocab": true, "normalize_unicode": true}, "sequences": {"seq_len": 256, "stride": 256, "train_sequences": 100000, "val_sequences": 10000}, "model": {"d_model": 256, "n_layers": 12, "n_heads": 8, "d_ff": 1024, "dropout": 0.05, "tie_embeddings": false, "attn_bias": false}, "train": {"epochs": 10, "batch_size": 64, "lr": 0.00025, "min_lr": 2.5e-05, "warmup_ratio": 0.05, "weight_decay": 0.1, "betas": [0.9, 0.95], "grad_clip": 1.0, "log_every": 50, "eval_batches": 40, "spike_sigma": 3.0}, "generation": {"prompt": "Once upon a time", "max_new_tokens": 400, "temperatures": [0.5, 0.8, 1.0, 1.2], "top_k": 0, "n_samples_per_setting": 3, "diversity_tokens": 20000, "diversity_fixed_words": 2000}}
+2026-09-20 19:24:07 | INFO  | [data] pool on disk: 0.04 GB
+2026-09-20 19:24:07 | INFO  | [data] this run uses chars [0 : 33,999,907] = 33,999,907 chars (95.11% of the pool) in 0.2s
+2026-09-20 19:30:13 | INFO  | [data] pool on disk: 0.04 GB
+2026-09-20 19:30:13 | INFO  | [data] this run uses chars [0 : 33,999,907] = 33,999,907 chars (95.11% of the pool) in 0.2s
