@@ -1,0 +1,411 @@
+2026-09-18 23:11:17 | INFO  | *** REPORTED RUN (run_name='deep_narrow') - writes the canonical metrics_report.csv / outputs / checkpoints ***
+2026-09-18 23:11:17 | INFO  | RUN_TAG      = task1_shreya_deep_narrow_20260918_231117
+2026-09-18 23:11:17 | INFO  | PROJECT_ROOT = /content/drive/MyDrive/DATA266_Lab1
+2026-09-18 23:11:17 | INFO  | CONFIG_PATH  = /content/drive/MyDrive/DATA266_Lab1/task1_llm/shreya/config.yaml
+2026-09-18 23:11:17 | INFO  | RAW LOG      = reproducibility/raw_logs/task1_shreya_deep_narrow_20260918_231117.log
+2026-09-18 23:11:17 | INFO  | HARDWARE     = {"device": "cuda", "platform": "Linux-6.6.122+-x86_64-with-glibc2.39", "processor": "x86_64", "python": "3.13.15", "torch": "2.11.0+cu128", "numpy": "2.1.3", "gpu_name": "Tesla T4", "gpu_total_mem_gb": 15.64}
+2026-09-18 23:11:17 | INFO  | CONFIG       = {"run": {"member": "shreya", "run_name": "deep_narrow", "reported": true, "seed": 1337, "device": "auto"}, "data": {"raw_filename": "tinystories_raw.txt", "story_separator": "\n\n", "use_chars": 34000000, "member_offset_chars": 0, "val_story_fraction": 0.1, "min_char_freq": 50, "force_core_vocab": true, "normalize_unicode": true}, "sequences": {"seq_len": 256, "stride": 256, "train_sequences": 100000, "val_sequences": 10000}, "model": {"d_model": 256, "n_layers": 12, "n_heads": 8, "d_ff": 1024, "dropout": 0.05, "tie_embeddings": false, "attn_bias": false}, "train": {"epochs": 10, "batch_size": 64, "lr": 0.00025, "min_lr": 2.5e-05, "warmup_ratio": 0.05, "weight_decay": 0.1, "betas": [0.9, 0.95], "grad_clip": 1.0, "log_every": 50, "eval_batches": 40, "spike_sigma": 3.0}, "generation": {"prompt": "Once upon a time", "max_new_tokens": 400, "temperatures": [0.5, 0.8, 1.0, 1.2], "top_k": 0, "n_samples_per_setting": 3, "diversity_tokens": 20000, "diversity_fixed_words": 2000}}
+2026-09-18 23:11:24 | INFO  | [data] pool on disk: 0.04 GB
+2026-09-18 23:11:24 | INFO  | [data] this run uses chars [0 : 33,999,907] = 33,999,907 chars (95.11% of the pool) in 0.2s
+2026-09-18 23:11:29 | INFO  | [split] 197,250 stories -> train 177,525 | val 19,725
+2026-09-18 23:11:29 | INFO  | [split] chars      -> train 30,567,642 | val 3,432,263
+2026-09-18 23:11:42 | INFO  | [vocab] size=78 | floor=50 | force_core=True
+2026-09-18 23:11:42 | INFO  | [vocab] -> <unk>: 16 distinct chars, 93 occurrences (0.000304% of training text)
+2026-09-18 23:11:42 | INFO  | [vocab] rescued by the core set (below the floor but kept): ['2', '4', '5', '6', '7', '8', '9', 'X']
+2026-09-18 23:12:13 | INFO  | [seq] train tokens 25,600,257 (100,000 seqs) | val tokens 2,560,257 (10,000 seqs)
+2026-09-18 23:12:13 | INFO  | [seq] <unk> rate   train 0.0003% | val 0.0003%
+2026-09-18 23:12:24 | INFO  | [model] params total=9,570,816 trainable=9,570,816 non_embedding=9,485,312
+2026-09-18 23:12:43 | INFO  | [train] 10 epochs x 1562 steps = 15,620 steps | warmup 781 | batch 64 x 256 tok = 16,384 tok/step
+2026-09-18 23:12:43 | INFO  | [train] decayed tensors 51 | undecayed tensors 74
+2026-09-18 23:12:56 | INFO  | ============================================================================================
+2026-09-18 23:12:56 | INFO  | TRAINING START  task1_shreya_deep_narrow_20260918_231117
+2026-09-18 23:12:56 | INFO  | ============================================================================================
+2026-09-18 23:13:25 | INFO  | ep  1/10 | step     50/15620 | loss 3.0347 | ppl   20.79 | lr 1.60e-05 | gnorm  1.83 |   28.7k tok/s | mem    8021MB
+2026-09-18 23:13:53 | INFO  | ep  1/10 | step    100/15620 | loss 2.7401 | ppl   15.49 | lr 3.20e-05 | gnorm  1.37 |   28.8k tok/s | mem    8021MB
+2026-09-18 23:14:22 | INFO  | ep  1/10 | step    150/15620 | loss 2.5808 | ppl   13.21 | lr 4.80e-05 | gnorm  1.02 |   28.4k tok/s | mem    8021MB
+2026-09-18 23:14:52 | INFO  | ep  1/10 | step    200/15620 | loss 2.4149 | ppl   11.19 | lr 6.40e-05 | gnorm  1.54 |   27.6k tok/s | mem    8021MB
+2026-09-18 23:15:23 | INFO  | ep  1/10 | step    250/15620 | loss 2.3431 | ppl   10.41 | lr 8.00e-05 | gnorm  1.24 |   26.3k tok/s | mem    8021MB
+2026-09-18 23:15:53 | INFO  | ep  1/10 | step    300/15620 | loss 2.2586 | ppl    9.57 | lr 9.60e-05 | gnorm  1.37 |   27.0k tok/s | mem    8021MB
+2026-09-18 23:16:25 | INFO  | ep  1/10 | step    350/15620 | loss 2.1984 | ppl    9.01 | lr 1.12e-04 | gnorm  1.82 |   25.8k tok/s | mem    8021MB
+2026-09-18 23:16:57 | INFO  | ep  1/10 | step    400/15620 | loss 2.1629 | ppl    8.70 | lr 1.28e-04 | gnorm  1.81 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:17:28 | INFO  | ep  1/10 | step    450/15620 | loss 2.1349 | ppl    8.46 | lr 1.44e-04 | gnorm  2.48 |   26.2k tok/s | mem    8021MB
+2026-09-18 23:17:59 | INFO  | ep  1/10 | step    500/15620 | loss 2.0679 | ppl    7.91 | lr 1.60e-04 | gnorm  1.71 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:18:31 | INFO  | ep  1/10 | step    550/15620 | loss 1.9692 | ppl    7.17 | lr 1.76e-04 | gnorm  2.04 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:19:02 | INFO  | ep  1/10 | step    600/15620 | loss 1.8622 | ppl    6.44 | lr 1.92e-04 | gnorm  2.98 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:19:33 | INFO  | ep  1/10 | step    650/15620 | loss 1.7742 | ppl    5.90 | lr 2.08e-04 | gnorm  2.10 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:20:05 | INFO  | ep  1/10 | step    700/15620 | loss 1.6906 | ppl    5.42 | lr 2.24e-04 | gnorm  1.83 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:20:36 | INFO  | ep  1/10 | step    750/15620 | loss 1.5637 | ppl    4.78 | lr 2.40e-04 | gnorm  1.98 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:21:08 | INFO  | ep  1/10 | step    800/15620 | loss 1.4617 | ppl    4.31 | lr 2.50e-04 | gnorm  2.05 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:21:39 | INFO  | ep  1/10 | step    850/15620 | loss 1.4106 | ppl    4.10 | lr 2.50e-04 | gnorm  1.62 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:22:11 | INFO  | ep  1/10 | step    900/15620 | loss 1.3628 | ppl    3.91 | lr 2.50e-04 | gnorm  1.58 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:22:42 | INFO  | ep  1/10 | step    950/15620 | loss 1.3324 | ppl    3.79 | lr 2.50e-04 | gnorm  1.47 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:23:13 | INFO  | ep  1/10 | step   1000/15620 | loss 1.3180 | ppl    3.74 | lr 2.50e-04 | gnorm  1.70 |   26.2k tok/s | mem    8021MB
+2026-09-18 23:23:45 | INFO  | ep  1/10 | step   1050/15620 | loss 1.2118 | ppl    3.36 | lr 2.50e-04 | gnorm  1.69 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:24:16 | INFO  | ep  1/10 | step   1100/15620 | loss 1.1874 | ppl    3.28 | lr 2.50e-04 | gnorm  1.30 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:24:48 | INFO  | ep  1/10 | step   1150/15620 | loss 1.1760 | ppl    3.24 | lr 2.50e-04 | gnorm  1.32 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:25:19 | INFO  | ep  1/10 | step   1200/15620 | loss 1.1642 | ppl    3.20 | lr 2.50e-04 | gnorm  1.33 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:25:51 | INFO  | ep  1/10 | step   1250/15620 | loss 1.1317 | ppl    3.10 | lr 2.49e-04 | gnorm  1.17 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:26:22 | INFO  | ep  1/10 | step   1300/15620 | loss 1.1217 | ppl    3.07 | lr 2.49e-04 | gnorm  1.26 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:26:53 | INFO  | ep  1/10 | step   1350/15620 | loss 1.0701 | ppl    2.92 | lr 2.49e-04 | gnorm  1.08 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:27:25 | INFO  | ep  1/10 | step   1400/15620 | loss 1.0639 | ppl    2.90 | lr 2.49e-04 | gnorm  1.14 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:27:56 | INFO  | ep  1/10 | step   1450/15620 | loss 1.0774 | ppl    2.94 | lr 2.49e-04 | gnorm  1.12 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:28:28 | INFO  | ep  1/10 | step   1500/15620 | loss 1.0272 | ppl    2.79 | lr 2.49e-04 | gnorm  1.06 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:28:59 | INFO  | ep  1/10 | step   1550/15620 | loss 1.0155 | ppl    2.76 | lr 2.49e-04 | gnorm  1.01 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:29:40 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-18 23:29:40 | INFO  | EPOCH  1 | train 1.7174 | val 0.9925 | val ppl 2.70 | bpc 1.4319 | top1 69.12% | gap -0.7249 | 16.2 min | 26.4k tok/s
+2026-09-18 23:29:40 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-18 23:29:40 | INFO  | [ckpt] new best val 0.9925 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-18 23:30:04 | INFO  | ep  2/10 | step   1600/15620 | loss 0.9932 | ppl    2.70 | lr 2.48e-04 | gnorm  1.06 |   34.2k tok/s | mem    8021MB
+2026-09-18 23:30:36 | INFO  | ep  2/10 | step   1650/15620 | loss 0.9896 | ppl    2.69 | lr 2.48e-04 | gnorm  0.98 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:31:07 | INFO  | ep  2/10 | step   1700/15620 | loss 1.0141 | ppl    2.76 | lr 2.48e-04 | gnorm  1.08 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:31:39 | INFO  | ep  2/10 | step   1750/15620 | loss 0.9901 | ppl    2.69 | lr 2.48e-04 | gnorm  0.96 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:32:10 | INFO  | ep  2/10 | step   1800/15620 | loss 0.9497 | ppl    2.58 | lr 2.47e-04 | gnorm  0.90 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:32:42 | INFO  | ep  2/10 | step   1850/15620 | loss 0.9304 | ppl    2.54 | lr 2.47e-04 | gnorm  0.89 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:33:14 | INFO  | ep  2/10 | step   1900/15620 | loss 0.9510 | ppl    2.59 | lr 2.47e-04 | gnorm  0.92 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:33:45 | INFO  | ep  2/10 | step   1950/15620 | loss 0.9562 | ppl    2.60 | lr 2.47e-04 | gnorm  0.91 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:34:17 | INFO  | ep  2/10 | step   2000/15620 | loss 0.9730 | ppl    2.65 | lr 2.46e-04 | gnorm  1.00 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:34:48 | INFO  | ep  2/10 | step   2050/15620 | loss 0.8775 | ppl    2.40 | lr 2.46e-04 | gnorm  0.80 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:35:20 | INFO  | ep  2/10 | step   2100/15620 | loss 0.9228 | ppl    2.52 | lr 2.46e-04 | gnorm  0.84 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:35:51 | INFO  | ep  2/10 | step   2150/15620 | loss 0.9209 | ppl    2.51 | lr 2.45e-04 | gnorm  0.84 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:36:23 | INFO  | ep  2/10 | step   2200/15620 | loss 0.9238 | ppl    2.52 | lr 2.45e-04 | gnorm  0.79 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:36:54 | INFO  | ep  2/10 | step   2250/15620 | loss 0.8970 | ppl    2.45 | lr 2.45e-04 | gnorm  0.78 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:37:26 | INFO  | ep  2/10 | step   2300/15620 | loss 0.8839 | ppl    2.42 | lr 2.44e-04 | gnorm  0.74 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:37:57 | INFO  | ep  2/10 | step   2350/15620 | loss 0.9037 | ppl    2.47 | lr 2.44e-04 | gnorm  0.78 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:38:29 | INFO  | ep  2/10 | step   2400/15620 | loss 0.8839 | ppl    2.42 | lr 2.43e-04 | gnorm  0.77 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:39:00 | INFO  | ep  2/10 | step   2450/15620 | loss 0.8666 | ppl    2.38 | lr 2.43e-04 | gnorm  0.72 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:39:32 | INFO  | ep  2/10 | step   2500/15620 | loss 0.8596 | ppl    2.36 | lr 2.43e-04 | gnorm  0.74 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:40:03 | INFO  | ep  2/10 | step   2550/15620 | loss 0.8823 | ppl    2.42 | lr 2.42e-04 | gnorm  0.82 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:40:35 | INFO  | ep  2/10 | step   2600/15620 | loss 0.8618 | ppl    2.37 | lr 2.42e-04 | gnorm  0.74 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:41:07 | INFO  | ep  2/10 | step   2650/15620 | loss 0.8737 | ppl    2.40 | lr 2.41e-04 | gnorm  0.74 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:41:38 | INFO  | ep  2/10 | step   2700/15620 | loss 0.8166 | ppl    2.26 | lr 2.41e-04 | gnorm  0.69 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:42:10 | INFO  | ep  2/10 | step   2750/15620 | loss 0.8924 | ppl    2.44 | lr 2.40e-04 | gnorm  0.72 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:42:41 | INFO  | ep  2/10 | step   2800/15620 | loss 0.8077 | ppl    2.24 | lr 2.40e-04 | gnorm  0.70 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:42:43 | INFO  | [spike] step 2802: loss 0.9020 > mean 0.8424 + 3.0*0.0179
+2026-09-18 23:42:55 | INFO  | [spike] step 2822: loss 0.9003 > mean 0.8410 + 3.0*0.0181
+2026-09-18 23:43:12 | INFO  | ep  2/10 | step   2850/15620 | loss 0.8420 | ppl    2.32 | lr 2.39e-04 | gnorm  0.74 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:43:44 | INFO  | ep  2/10 | step   2900/15620 | loss 0.8372 | ppl    2.31 | lr 2.39e-04 | gnorm  0.66 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:44:15 | INFO  | ep  2/10 | step   2950/15620 | loss 0.7974 | ppl    2.22 | lr 2.38e-04 | gnorm  0.72 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:44:47 | INFO  | ep  2/10 | step   3000/15620 | loss 0.8327 | ppl    2.30 | lr 2.38e-04 | gnorm  0.68 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:45:18 | INFO  | ep  2/10 | step   3050/15620 | loss 0.8178 | ppl    2.27 | lr 2.37e-04 | gnorm  0.66 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:45:50 | INFO  | ep  2/10 | step   3100/15620 | loss 0.7963 | ppl    2.22 | lr 2.37e-04 | gnorm  0.69 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:46:38 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-18 23:46:38 | INFO  | EPOCH  2 | train 0.8960 | val 0.7987 | val ppl 2.22 | bpc 1.1523 | top1 74.94% | gap -0.0973 | 16.4 min | 26.0k tok/s
+2026-09-18 23:46:38 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-18 23:46:38 | INFO  | [ckpt] new best val 0.7987 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-18 23:46:55 | INFO  | ep  3/10 | step   3150/15620 | loss 0.7924 | ppl    2.21 | lr 2.36e-04 | gnorm  0.67 |   50.1k tok/s | mem    8021MB
+2026-09-18 23:47:26 | INFO  | ep  3/10 | step   3200/15620 | loss 0.8420 | ppl    2.32 | lr 2.36e-04 | gnorm  0.69 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:47:57 | INFO  | ep  3/10 | step   3250/15620 | loss 0.7727 | ppl    2.17 | lr 2.35e-04 | gnorm  0.64 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:48:29 | INFO  | ep  3/10 | step   3300/15620 | loss 0.8069 | ppl    2.24 | lr 2.34e-04 | gnorm  0.67 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:49:00 | INFO  | ep  3/10 | step   3350/15620 | loss 0.7580 | ppl    2.13 | lr 2.34e-04 | gnorm  0.65 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:49:32 | INFO  | ep  3/10 | step   3400/15620 | loss 0.7827 | ppl    2.19 | lr 2.33e-04 | gnorm  0.63 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:50:03 | INFO  | ep  3/10 | step   3450/15620 | loss 0.7957 | ppl    2.22 | lr 2.33e-04 | gnorm  0.64 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:50:35 | INFO  | ep  3/10 | step   3500/15620 | loss 0.7547 | ppl    2.13 | lr 2.32e-04 | gnorm  0.61 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:51:06 | INFO  | ep  3/10 | step   3550/15620 | loss 0.8153 | ppl    2.26 | lr 2.31e-04 | gnorm  0.62 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:51:37 | INFO  | ep  3/10 | step   3600/15620 | loss 0.7903 | ppl    2.20 | lr 2.31e-04 | gnorm  0.60 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:52:09 | INFO  | ep  3/10 | step   3650/15620 | loss 0.7740 | ppl    2.17 | lr 2.30e-04 | gnorm  0.61 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:52:40 | INFO  | ep  3/10 | step   3700/15620 | loss 0.7553 | ppl    2.13 | lr 2.29e-04 | gnorm  0.60 |   26.2k tok/s | mem    8021MB
+2026-09-18 23:53:11 | INFO  | ep  3/10 | step   3750/15620 | loss 0.7806 | ppl    2.18 | lr 2.29e-04 | gnorm  0.62 |   26.2k tok/s | mem    8021MB
+2026-09-18 23:53:43 | INFO  | ep  3/10 | step   3800/15620 | loss 0.7881 | ppl    2.20 | lr 2.28e-04 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:54:14 | INFO  | ep  3/10 | step   3850/15620 | loss 0.7602 | ppl    2.14 | lr 2.27e-04 | gnorm  0.60 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:54:46 | INFO  | ep  3/10 | step   3900/15620 | loss 0.7778 | ppl    2.18 | lr 2.26e-04 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-18 23:55:02 | INFO  | [spike] step 3925: loss 0.8300 > mean 0.7744 + 3.0*0.0164
+2026-09-18 23:55:17 | INFO  | ep  3/10 | step   3950/15620 | loss 0.7865 | ppl    2.20 | lr 2.26e-04 | gnorm  0.57 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:55:49 | INFO  | ep  3/10 | step   4000/15620 | loss 0.7717 | ppl    2.16 | lr 2.25e-04 | gnorm  0.59 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:56:20 | INFO  | ep  3/10 | step   4050/15620 | loss 0.7501 | ppl    2.12 | lr 2.24e-04 | gnorm  0.55 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:56:52 | INFO  | ep  3/10 | step   4100/15620 | loss 0.7548 | ppl    2.13 | lr 2.23e-04 | gnorm  0.57 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:57:23 | INFO  | ep  3/10 | step   4150/15620 | loss 0.7779 | ppl    2.18 | lr 2.23e-04 | gnorm  0.59 |   26.0k tok/s | mem    8021MB
+2026-09-18 23:57:55 | INFO  | ep  3/10 | step   4200/15620 | loss 0.7837 | ppl    2.19 | lr 2.22e-04 | gnorm  0.58 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:58:13 | INFO  | [spike] step 4227: loss 0.8173 > mean 0.7608 + 3.0*0.0176
+2026-09-18 23:58:27 | INFO  | ep  3/10 | step   4250/15620 | loss 0.7505 | ppl    2.12 | lr 2.21e-04 | gnorm  0.58 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:58:58 | INFO  | ep  3/10 | step   4300/15620 | loss 0.7347 | ppl    2.08 | lr 2.20e-04 | gnorm  0.55 |   25.9k tok/s | mem    8021MB
+2026-09-18 23:59:30 | INFO  | ep  3/10 | step   4350/15620 | loss 0.7410 | ppl    2.10 | lr 2.19e-04 | gnorm  0.56 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:00:01 | INFO  | ep  3/10 | step   4400/15620 | loss 0.7291 | ppl    2.07 | lr 2.19e-04 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:00:33 | INFO  | ep  3/10 | step   4450/15620 | loss 0.7457 | ppl    2.11 | lr 2.18e-04 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:01:04 | INFO  | ep  3/10 | step   4500/15620 | loss 0.7555 | ppl    2.13 | lr 2.17e-04 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:01:36 | INFO  | ep  3/10 | step   4550/15620 | loss 0.7365 | ppl    2.09 | lr 2.16e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:02:07 | INFO  | ep  3/10 | step   4600/15620 | loss 0.7597 | ppl    2.14 | lr 2.15e-04 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:02:39 | INFO  | ep  3/10 | step   4650/15620 | loss 0.7399 | ppl    2.10 | lr 2.14e-04 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:03:35 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:03:35 | INFO  | EPOCH  3 | train 0.7728 | val 0.7408 | val ppl 2.10 | bpc 1.0688 | top1 76.67% | gap -0.0320 | 16.4 min | 26.0k tok/s
+2026-09-19 00:03:35 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:03:35 | INFO  | [ckpt] new best val 0.7408 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 00:03:44 | INFO  | ep  4/10 | step   4700/15620 | loss 0.7225 | ppl    2.06 | lr 2.13e-04 | gnorm  0.54 |   92.7k tok/s | mem    8021MB
+2026-09-19 00:04:15 | INFO  | ep  4/10 | step   4750/15620 | loss 0.7336 | ppl    2.08 | lr 2.13e-04 | gnorm  0.55 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:04:47 | INFO  | ep  4/10 | step   4800/15620 | loss 0.7280 | ppl    2.07 | lr 2.12e-04 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:05:19 | INFO  | ep  4/10 | step   4850/15620 | loss 0.7233 | ppl    2.06 | lr 2.11e-04 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:05:46 | INFO  | [spike] step 4893: loss 0.7769 > mean 0.7300 + 3.0*0.0151
+2026-09-19 00:05:50 | INFO  | ep  4/10 | step   4900/15620 | loss 0.7154 | ppl    2.04 | lr 2.10e-04 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:06:22 | INFO  | ep  4/10 | step   4950/15620 | loss 0.7429 | ppl    2.10 | lr 2.09e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:06:53 | INFO  | ep  4/10 | step   5000/15620 | loss 0.7108 | ppl    2.04 | lr 2.08e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:07:24 | INFO  | ep  4/10 | step   5050/15620 | loss 0.6981 | ppl    2.01 | lr 2.07e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:07:56 | INFO  | ep  4/10 | step   5100/15620 | loss 0.7107 | ppl    2.04 | lr 2.06e-04 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:08:27 | INFO  | ep  4/10 | step   5150/15620 | loss 0.7264 | ppl    2.07 | lr 2.05e-04 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:08:59 | INFO  | ep  4/10 | step   5200/15620 | loss 0.7109 | ppl    2.04 | lr 2.04e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:09:30 | INFO  | ep  4/10 | step   5250/15620 | loss 0.7225 | ppl    2.06 | lr 2.03e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:10:01 | INFO  | ep  4/10 | step   5300/15620 | loss 0.7118 | ppl    2.04 | lr 2.02e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:10:33 | INFO  | ep  4/10 | step   5350/15620 | loss 0.7247 | ppl    2.06 | lr 2.01e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:11:04 | INFO  | ep  4/10 | step   5400/15620 | loss 0.6969 | ppl    2.01 | lr 2.00e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:11:11 | INFO  | [spike] step 5410: loss 0.7665 > mean 0.7210 + 3.0*0.0145
+2026-09-19 00:11:36 | INFO  | ep  4/10 | step   5450/15620 | loss 0.7210 | ppl    2.06 | lr 1.99e-04 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:12:07 | INFO  | ep  4/10 | step   5500/15620 | loss 0.7270 | ppl    2.07 | lr 1.98e-04 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:12:39 | INFO  | ep  4/10 | step   5550/15620 | loss 0.7164 | ppl    2.05 | lr 1.97e-04 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:13:11 | INFO  | ep  4/10 | step   5600/15620 | loss 0.7092 | ppl    2.03 | lr 1.96e-04 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:13:42 | INFO  | ep  4/10 | step   5650/15620 | loss 0.7286 | ppl    2.07 | lr 1.95e-04 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:14:14 | INFO  | ep  4/10 | step   5700/15620 | loss 0.6971 | ppl    2.01 | lr 1.94e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:14:45 | INFO  | ep  4/10 | step   5750/15620 | loss 0.7150 | ppl    2.04 | lr 1.93e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:15:17 | INFO  | ep  4/10 | step   5800/15620 | loss 0.7137 | ppl    2.04 | lr 1.92e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:15:48 | INFO  | ep  4/10 | step   5850/15620 | loss 0.7036 | ppl    2.02 | lr 1.91e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:16:20 | INFO  | ep  4/10 | step   5900/15620 | loss 0.7060 | ppl    2.03 | lr 1.90e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:16:47 | INFO  | [spike] step 5943: loss 0.7637 > mean 0.7123 + 3.0*0.0166
+2026-09-19 00:16:51 | INFO  | ep  4/10 | step   5950/15620 | loss 0.7049 | ppl    2.02 | lr 1.89e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:17:22 | INFO  | ep  4/10 | step   6000/15620 | loss 0.7014 | ppl    2.02 | lr 1.88e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:17:54 | INFO  | ep  4/10 | step   6050/15620 | loss 0.6955 | ppl    2.00 | lr 1.87e-04 | gnorm  0.51 |   26.2k tok/s | mem    8021MB
+2026-09-19 00:18:25 | INFO  | ep  4/10 | step   6100/15620 | loss 0.6892 | ppl    1.99 | lr 1.86e-04 | gnorm  0.48 |   26.2k tok/s | mem    8021MB
+2026-09-19 00:18:56 | INFO  | ep  4/10 | step   6150/15620 | loss 0.6899 | ppl    1.99 | lr 1.85e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:19:28 | INFO  | ep  4/10 | step   6200/15620 | loss 0.6830 | ppl    1.98 | lr 1.84e-04 | gnorm  0.48 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:20:31 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:20:31 | INFO  | EPOCH  4 | train 0.7193 | val 0.7020 | val ppl 2.02 | bpc 1.0128 | top1 77.76% | gap -0.0173 | 16.4 min | 26.0k tok/s
+2026-09-19 00:20:31 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:20:31 | INFO  | [ckpt] new best val 0.7020 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 00:20:33 | INFO  | ep  5/10 | step   6250/15620 | loss 0.7121 | ppl    2.04 | lr 1.83e-04 | gnorm  0.50 |  652.2k tok/s | mem    8021MB
+2026-09-19 00:21:04 | INFO  | ep  5/10 | step   6300/15620 | loss 0.7088 | ppl    2.03 | lr 1.82e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:21:35 | INFO  | ep  5/10 | step   6350/15620 | loss 0.6863 | ppl    1.99 | lr 1.80e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:22:07 | INFO  | ep  5/10 | step   6400/15620 | loss 0.6748 | ppl    1.96 | lr 1.79e-04 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:22:38 | INFO  | ep  5/10 | step   6450/15620 | loss 0.7016 | ppl    2.02 | lr 1.78e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:23:10 | INFO  | ep  5/10 | step   6500/15620 | loss 0.7070 | ppl    2.03 | lr 1.77e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:23:41 | INFO  | ep  5/10 | step   6550/15620 | loss 0.7065 | ppl    2.03 | lr 1.76e-04 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:24:12 | INFO  | ep  5/10 | step   6600/15620 | loss 0.6729 | ppl    1.96 | lr 1.75e-04 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:24:38 | INFO  | [spike] step 6639: loss 0.7368 > mean 0.6894 + 3.0*0.0151
+2026-09-19 00:24:44 | INFO  | ep  5/10 | step   6650/15620 | loss 0.6872 | ppl    1.99 | lr 1.74e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:25:15 | INFO  | ep  5/10 | step   6700/15620 | loss 0.7115 | ppl    2.04 | lr 1.73e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:25:47 | INFO  | ep  5/10 | step   6750/15620 | loss 0.7125 | ppl    2.04 | lr 1.72e-04 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:26:18 | INFO  | ep  5/10 | step   6800/15620 | loss 0.6591 | ppl    1.93 | lr 1.70e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:26:50 | INFO  | ep  5/10 | step   6850/15620 | loss 0.7027 | ppl    2.02 | lr 1.69e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:27:21 | INFO  | ep  5/10 | step   6900/15620 | loss 0.6955 | ppl    2.00 | lr 1.68e-04 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:27:42 | INFO  | [spike] step 6931: loss 0.7329 > mean 0.6880 + 3.0*0.0138
+2026-09-19 00:27:53 | INFO  | ep  5/10 | step   6950/15620 | loss 0.6956 | ppl    2.00 | lr 1.67e-04 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:28:25 | INFO  | ep  5/10 | step   7000/15620 | loss 0.6966 | ppl    2.01 | lr 1.66e-04 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:28:56 | INFO  | ep  5/10 | step   7050/15620 | loss 0.6830 | ppl    1.98 | lr 1.65e-04 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:29:28 | INFO  | ep  5/10 | step   7100/15620 | loss 0.6847 | ppl    1.98 | lr 1.63e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:29:59 | INFO  | ep  5/10 | step   7150/15620 | loss 0.6735 | ppl    1.96 | lr 1.62e-04 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:30:31 | INFO  | ep  5/10 | step   7200/15620 | loss 0.6809 | ppl    1.98 | lr 1.61e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:31:02 | INFO  | ep  5/10 | step   7250/15620 | loss 0.6815 | ppl    1.98 | lr 1.60e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:31:33 | INFO  | ep  5/10 | step   7300/15620 | loss 0.6950 | ppl    2.00 | lr 1.59e-04 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:31:42 | INFO  | [spike] step 7312: loss 0.7297 > mean 0.6811 + 3.0*0.0140
+2026-09-19 00:32:05 | INFO  | ep  5/10 | step   7350/15620 | loss 0.6919 | ppl    2.00 | lr 1.58e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:32:11 | INFO  | [spike] step 7359: loss 0.7297 > mean 0.6795 + 3.0*0.0154
+2026-09-19 00:32:36 | INFO  | ep  5/10 | step   7400/15620 | loss 0.6560 | ppl    1.93 | lr 1.56e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:33:08 | INFO  | ep  5/10 | step   7450/15620 | loss 0.6749 | ppl    1.96 | lr 1.55e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:33:39 | INFO  | ep  5/10 | step   7500/15620 | loss 0.6635 | ppl    1.94 | lr 1.54e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:33:44 | INFO  | [spike] step 7506: loss 0.7322 > mean 0.6794 + 3.0*0.0155
+2026-09-19 00:34:11 | INFO  | ep  5/10 | step   7550/15620 | loss 0.6609 | ppl    1.94 | lr 1.53e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:34:42 | INFO  | ep  5/10 | step   7600/15620 | loss 0.6683 | ppl    1.95 | lr 1.52e-04 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:35:14 | INFO  | ep  5/10 | step   7650/15620 | loss 0.6797 | ppl    1.97 | lr 1.51e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:35:45 | INFO  | ep  5/10 | step   7700/15620 | loss 0.6767 | ppl    1.97 | lr 1.49e-04 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:36:17 | INFO  | ep  5/10 | step   7750/15620 | loss 0.6729 | ppl    1.96 | lr 1.48e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:36:48 | INFO  | ep  5/10 | step   7800/15620 | loss 0.6793 | ppl    1.97 | lr 1.47e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:37:28 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:37:28 | INFO  | EPOCH  5 | train 0.6855 | val 0.6805 | val ppl 1.97 | bpc 0.9818 | top1 78.44% | gap -0.0050 | 16.4 min | 26.0k tok/s
+2026-09-19 00:37:28 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:37:28 | INFO  | [ckpt] new best val 0.6805 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 00:37:53 | INFO  | ep  6/10 | step   7850/15620 | loss 0.6776 | ppl    1.97 | lr 1.46e-04 | gnorm  0.52 |   32.4k tok/s | mem    8021MB
+2026-09-19 00:38:25 | INFO  | ep  6/10 | step   7900/15620 | loss 0.7088 | ppl    2.03 | lr 1.45e-04 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:38:56 | INFO  | [spike] step 7948: loss 0.7142 > mean 0.6643 + 3.0*0.0152
+2026-09-19 00:38:56 | INFO  | ep  6/10 | step   7950/15620 | loss 0.6619 | ppl    1.94 | lr 1.43e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:39:28 | INFO  | ep  6/10 | step   8000/15620 | loss 0.6551 | ppl    1.93 | lr 1.42e-04 | gnorm  0.48 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:39:59 | INFO  | ep  6/10 | step   8050/15620 | loss 0.6474 | ppl    1.91 | lr 1.41e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:40:31 | INFO  | ep  6/10 | step   8100/15620 | loss 0.6841 | ppl    1.98 | lr 1.40e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:41:02 | INFO  | ep  6/10 | step   8150/15620 | loss 0.6331 | ppl    1.88 | lr 1.39e-04 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:41:33 | INFO  | ep  6/10 | step   8200/15620 | loss 0.6522 | ppl    1.92 | lr 1.38e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:42:05 | INFO  | ep  6/10 | step   8250/15620 | loss 0.6489 | ppl    1.91 | lr 1.36e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:42:36 | INFO  | ep  6/10 | step   8300/15620 | loss 0.6329 | ppl    1.88 | lr 1.35e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:43:08 | INFO  | ep  6/10 | step   8350/15620 | loss 0.6283 | ppl    1.87 | lr 1.34e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:43:39 | INFO  | ep  6/10 | step   8400/15620 | loss 0.6755 | ppl    1.97 | lr 1.33e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:44:11 | INFO  | ep  6/10 | step   8450/15620 | loss 0.6535 | ppl    1.92 | lr 1.32e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:44:42 | INFO  | ep  6/10 | step   8500/15620 | loss 0.6696 | ppl    1.95 | lr 1.30e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:45:14 | INFO  | ep  6/10 | step   8550/15620 | loss 0.6812 | ppl    1.98 | lr 1.29e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:45:45 | INFO  | ep  6/10 | step   8600/15620 | loss 0.6662 | ppl    1.95 | lr 1.28e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:46:17 | INFO  | ep  6/10 | step   8650/15620 | loss 0.6555 | ppl    1.93 | lr 1.27e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:46:48 | INFO  | ep  6/10 | step   8700/15620 | loss 0.6583 | ppl    1.93 | lr 1.26e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:47:20 | INFO  | ep  6/10 | step   8750/15620 | loss 0.6656 | ppl    1.95 | lr 1.24e-04 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:47:27 | INFO  | [spike] step 8760: loss 0.7141 > mean 0.6603 + 3.0*0.0160
+2026-09-19 00:47:51 | INFO  | ep  6/10 | step   8800/15620 | loss 0.6562 | ppl    1.93 | lr 1.23e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:48:23 | INFO  | ep  6/10 | step   8850/15620 | loss 0.6721 | ppl    1.96 | lr 1.22e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:48:54 | INFO  | ep  6/10 | step   8900/15620 | loss 0.6736 | ppl    1.96 | lr 1.21e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:49:26 | INFO  | ep  6/10 | step   8950/15620 | loss 0.6397 | ppl    1.90 | lr 1.20e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:49:58 | INFO  | ep  6/10 | step   9000/15620 | loss 0.6600 | ppl    1.93 | lr 1.19e-04 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:50:01 | INFO  | [spike] step 9004: loss 0.7048 > mean 0.6570 + 3.0*0.0152
+2026-09-19 00:50:29 | INFO  | ep  6/10 | step   9050/15620 | loss 0.6499 | ppl    1.92 | lr 1.17e-04 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:51:01 | INFO  | ep  6/10 | step   9100/15620 | loss 0.6185 | ppl    1.86 | lr 1.16e-04 | gnorm  0.48 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:51:32 | INFO  | ep  6/10 | step   9150/15620 | loss 0.6660 | ppl    1.95 | lr 1.15e-04 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:52:04 | INFO  | ep  6/10 | step   9200/15620 | loss 0.6712 | ppl    1.96 | lr 1.14e-04 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:52:35 | INFO  | ep  6/10 | step   9250/15620 | loss 0.6710 | ppl    1.96 | lr 1.13e-04 | gnorm  0.49 |   25.9k tok/s | mem    8021MB
+2026-09-19 00:53:07 | INFO  | ep  6/10 | step   9300/15620 | loss 0.6645 | ppl    1.94 | lr 1.12e-04 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:53:38 | INFO  | ep  6/10 | step   9350/15620 | loss 0.6494 | ppl    1.91 | lr 1.10e-04 | gnorm  0.49 |   26.0k tok/s | mem    8021MB
+2026-09-19 00:53:43 | INFO  | [spike] step 9356: loss 0.7070 > mean 0.6544 + 3.0*0.0151
+2026-09-19 00:54:25 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:54:25 | INFO  | EPOCH  6 | train 0.6604 | val 0.6633 | val ppl 1.94 | bpc 0.9570 | top1 78.96% | gap +0.0030 | 16.4 min | 26.0k tok/s
+2026-09-19 00:54:25 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 00:54:26 | INFO  | [ckpt] new best val 0.6633 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 00:54:43 | INFO  | ep  7/10 | step   9400/15620 | loss 0.6499 | ppl    1.92 | lr 1.09e-04 | gnorm  0.53 |   46.6k tok/s | mem    8021MB
+2026-09-19 00:55:15 | INFO  | ep  7/10 | step   9450/15620 | loss 0.6261 | ppl    1.87 | lr 1.08e-04 | gnorm  0.48 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:55:36 | INFO  | [spike] step 9483: loss 0.6879 > mean 0.6436 + 3.0*0.0145
+2026-09-19 00:55:46 | INFO  | ep  7/10 | step   9500/15620 | loss 0.6456 | ppl    1.91 | lr 1.07e-04 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:56:17 | INFO  | ep  7/10 | step   9550/15620 | loss 0.6339 | ppl    1.89 | lr 1.06e-04 | gnorm  0.48 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:56:49 | INFO  | ep  7/10 | step   9600/15620 | loss 0.6223 | ppl    1.86 | lr 1.05e-04 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:57:20 | INFO  | ep  7/10 | step   9650/15620 | loss 0.6455 | ppl    1.91 | lr 1.04e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:57:52 | INFO  | ep  7/10 | step   9700/15620 | loss 0.6227 | ppl    1.86 | lr 1.02e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:58:23 | INFO  | ep  7/10 | step   9750/15620 | loss 0.6461 | ppl    1.91 | lr 1.01e-04 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:58:54 | INFO  | ep  7/10 | step   9800/15620 | loss 0.6409 | ppl    1.90 | lr 1.00e-04 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:59:26 | INFO  | ep  7/10 | step   9850/15620 | loss 0.6266 | ppl    1.87 | lr 9.90e-05 | gnorm  0.49 |   26.1k tok/s | mem    8021MB
+2026-09-19 00:59:57 | INFO  | ep  7/10 | step   9900/15620 | loss 0.6526 | ppl    1.92 | lr 9.79e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:00:28 | INFO  | ep  7/10 | step   9950/15620 | loss 0.6495 | ppl    1.91 | lr 9.68e-05 | gnorm  0.50 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:01:00 | INFO  | ep  7/10 | step  10000/15620 | loss 0.6175 | ppl    1.85 | lr 9.57e-05 | gnorm  0.50 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:01:31 | INFO  | ep  7/10 | step  10050/15620 | loss 0.6329 | ppl    1.88 | lr 9.46e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:02:02 | INFO  | ep  7/10 | step  10100/15620 | loss 0.6587 | ppl    1.93 | lr 9.35e-05 | gnorm  0.51 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:02:34 | INFO  | ep  7/10 | step  10150/15620 | loss 0.6245 | ppl    1.87 | lr 9.24e-05 | gnorm  0.52 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:03:05 | INFO  | ep  7/10 | step  10200/15620 | loss 0.6501 | ppl    1.92 | lr 9.13e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:03:36 | INFO  | ep  7/10 | step  10250/15620 | loss 0.6253 | ppl    1.87 | lr 9.02e-05 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:04:08 | INFO  | ep  7/10 | step  10300/15620 | loss 0.6304 | ppl    1.88 | lr 8.91e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:04:39 | INFO  | ep  7/10 | step  10350/15620 | loss 0.5917 | ppl    1.81 | lr 8.81e-05 | gnorm  0.48 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:05:11 | INFO  | ep  7/10 | step  10400/15620 | loss 0.6385 | ppl    1.89 | lr 8.70e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:05:42 | INFO  | ep  7/10 | step  10450/15620 | loss 0.6443 | ppl    1.90 | lr 8.59e-05 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:06:14 | INFO  | ep  7/10 | step  10500/15620 | loss 0.6357 | ppl    1.89 | lr 8.49e-05 | gnorm  0.51 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:06:46 | INFO  | ep  7/10 | step  10550/15620 | loss 0.6157 | ppl    1.85 | lr 8.38e-05 | gnorm  0.50 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:06:54 | INFO  | [spike] step 10563: loss 0.6850 > mean 0.6367 + 3.0*0.0156
+2026-09-19 01:07:17 | INFO  | ep  7/10 | step  10600/15620 | loss 0.6369 | ppl    1.89 | lr 8.28e-05 | gnorm  0.50 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:07:48 | INFO  | ep  7/10 | step  10650/15620 | loss 0.6467 | ppl    1.91 | lr 8.18e-05 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:08:20 | INFO  | ep  7/10 | step  10700/15620 | loss 0.6176 | ppl    1.85 | lr 8.07e-05 | gnorm  0.51 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:08:51 | INFO  | ep  7/10 | step  10750/15620 | loss 0.6536 | ppl    1.92 | lr 7.97e-05 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:09:23 | INFO  | ep  7/10 | step  10800/15620 | loss 0.6516 | ppl    1.92 | lr 7.87e-05 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:09:54 | INFO  | ep  7/10 | step  10850/15620 | loss 0.6310 | ppl    1.88 | lr 7.77e-05 | gnorm  0.50 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:10:26 | INFO  | ep  7/10 | step  10900/15620 | loss 0.6515 | ppl    1.92 | lr 7.67e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:11:20 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:11:20 | INFO  | EPOCH  7 | train 0.6404 | val 0.6514 | val ppl 1.92 | bpc 0.9397 | top1 79.34% | gap +0.0110 | 16.4 min | 26.1k tok/s
+2026-09-19 01:11:20 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:11:21 | INFO  | [ckpt] new best val 0.6514 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 01:11:31 | INFO  | ep  8/10 | step  10950/15620 | loss 0.6172 | ppl    1.85 | lr 7.57e-05 | gnorm  0.51 |   81.0k tok/s | mem    8021MB
+2026-09-19 01:12:02 | INFO  | ep  8/10 | step  11000/15620 | loss 0.6462 | ppl    1.91 | lr 7.47e-05 | gnorm  0.55 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:12:34 | INFO  | ep  8/10 | step  11050/15620 | loss 0.6009 | ppl    1.82 | lr 7.37e-05 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:13:05 | INFO  | ep  8/10 | step  11100/15620 | loss 0.6195 | ppl    1.86 | lr 7.27e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:13:37 | INFO  | ep  8/10 | step  11150/15620 | loss 0.6040 | ppl    1.83 | lr 7.17e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:13:49 | INFO  | [spike] step 11168: loss 0.6774 > mean 0.6231 + 3.0*0.0152
+2026-09-19 01:14:08 | INFO  | ep  8/10 | step  11200/15620 | loss 0.6056 | ppl    1.83 | lr 7.08e-05 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:14:40 | INFO  | ep  8/10 | step  11250/15620 | loss 0.6226 | ppl    1.86 | lr 6.98e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:15:11 | INFO  | ep  8/10 | step  11300/15620 | loss 0.6469 | ppl    1.91 | lr 6.89e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:15:43 | INFO  | ep  8/10 | step  11350/15620 | loss 0.6240 | ppl    1.87 | lr 6.79e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:16:14 | INFO  | ep  8/10 | step  11400/15620 | loss 0.6400 | ppl    1.90 | lr 6.70e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:16:45 | INFO  | ep  8/10 | step  11450/15620 | loss 0.6244 | ppl    1.87 | lr 6.61e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:17:17 | INFO  | ep  8/10 | step  11500/15620 | loss 0.6528 | ppl    1.92 | lr 6.52e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:17:48 | INFO  | ep  8/10 | step  11550/15620 | loss 0.6448 | ppl    1.91 | lr 6.43e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:18:20 | INFO  | ep  8/10 | step  11600/15620 | loss 0.5991 | ppl    1.82 | lr 6.34e-05 | gnorm  0.51 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:18:51 | INFO  | ep  8/10 | step  11650/15620 | loss 0.6407 | ppl    1.90 | lr 6.25e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:19:22 | INFO  | ep  8/10 | step  11700/15620 | loss 0.6228 | ppl    1.86 | lr 6.16e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:19:54 | INFO  | ep  8/10 | step  11750/15620 | loss 0.6196 | ppl    1.86 | lr 6.07e-05 | gnorm  0.55 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:20:25 | INFO  | ep  8/10 | step  11800/15620 | loss 0.6247 | ppl    1.87 | lr 5.98e-05 | gnorm  0.52 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:20:56 | INFO  | ep  8/10 | step  11850/15620 | loss 0.6137 | ppl    1.85 | lr 5.90e-05 | gnorm  0.52 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:21:27 | INFO  | ep  8/10 | step  11900/15620 | loss 0.6149 | ppl    1.85 | lr 5.81e-05 | gnorm  0.51 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:21:44 | INFO  | [spike] step 11926: loss 0.6820 > mean 0.6230 + 3.0*0.0138
+2026-09-19 01:21:59 | INFO  | ep  8/10 | step  11950/15620 | loss 0.6242 | ppl    1.87 | lr 5.73e-05 | gnorm  0.53 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:22:30 | INFO  | ep  8/10 | step  12000/15620 | loss 0.6244 | ppl    1.87 | lr 5.65e-05 | gnorm  0.52 |   26.2k tok/s | mem    8021MB
+2026-09-19 01:23:01 | INFO  | ep  8/10 | step  12050/15620 | loss 0.6355 | ppl    1.89 | lr 5.56e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:23:33 | INFO  | ep  8/10 | step  12100/15620 | loss 0.6206 | ppl    1.86 | lr 5.48e-05 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:24:04 | INFO  | ep  8/10 | step  12150/15620 | loss 0.6141 | ppl    1.85 | lr 5.40e-05 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:24:36 | INFO  | ep  8/10 | step  12200/15620 | loss 0.6217 | ppl    1.86 | lr 5.32e-05 | gnorm  0.52 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:25:08 | INFO  | ep  8/10 | step  12250/15620 | loss 0.6353 | ppl    1.89 | lr 5.25e-05 | gnorm  0.53 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:25:39 | INFO  | ep  8/10 | step  12300/15620 | loss 0.6317 | ppl    1.88 | lr 5.17e-05 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:26:11 | INFO  | ep  8/10 | step  12350/15620 | loss 0.6030 | ppl    1.83 | lr 5.09e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:26:42 | INFO  | ep  8/10 | step  12400/15620 | loss 0.6275 | ppl    1.87 | lr 5.02e-05 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:27:14 | INFO  | ep  8/10 | step  12450/15620 | loss 0.5941 | ppl    1.81 | lr 4.94e-05 | gnorm  0.52 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:28:16 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:28:16 | INFO  | EPOCH  8 | train 0.6244 | val 0.6412 | val ppl 1.90 | bpc 0.9250 | top1 79.63% | gap +0.0168 | 16.4 min | 26.1k tok/s
+2026-09-19 01:28:16 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:28:16 | INFO  | [ckpt] new best val 0.6412 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 01:28:19 | INFO  | ep  9/10 | step  12500/15620 | loss 0.6114 | ppl    1.84 | lr 4.87e-05 | gnorm  0.52 |  325.9k tok/s | mem    8021MB
+2026-09-19 01:28:50 | INFO  | ep  9/10 | step  12550/15620 | loss 0.5929 | ppl    1.81 | lr 4.80e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:29:22 | INFO  | ep  9/10 | step  12600/15620 | loss 0.5755 | ppl    1.78 | lr 4.72e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:29:53 | INFO  | ep  9/10 | step  12650/15620 | loss 0.6074 | ppl    1.84 | lr 4.65e-05 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:30:25 | INFO  | ep  9/10 | step  12700/15620 | loss 0.6352 | ppl    1.89 | lr 4.58e-05 | gnorm  0.56 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:30:57 | INFO  | ep  9/10 | step  12750/15620 | loss 0.6098 | ppl    1.84 | lr 4.51e-05 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:31:28 | INFO  | ep  9/10 | step  12800/15620 | loss 0.6117 | ppl    1.84 | lr 4.45e-05 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:32:00 | INFO  | ep  9/10 | step  12850/15620 | loss 0.6426 | ppl    1.90 | lr 4.38e-05 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:32:13 | INFO  | [spike] step 12870: loss 0.6564 > mean 0.6124 + 3.0*0.0132
+2026-09-19 01:32:31 | INFO  | ep  9/10 | step  12900/15620 | loss 0.6139 | ppl    1.85 | lr 4.32e-05 | gnorm  0.54 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:33:03 | INFO  | ep  9/10 | step  12950/15620 | loss 0.5874 | ppl    1.80 | lr 4.25e-05 | gnorm  0.51 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:33:34 | INFO  | ep  9/10 | step  13000/15620 | loss 0.6111 | ppl    1.84 | lr 4.19e-05 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:34:06 | INFO  | ep  9/10 | step  13050/15620 | loss 0.6138 | ppl    1.85 | lr 4.13e-05 | gnorm  0.54 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:34:37 | INFO  | ep  9/10 | step  13100/15620 | loss 0.5930 | ppl    1.81 | lr 4.06e-05 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:35:09 | INFO  | ep  9/10 | step  13150/15620 | loss 0.6177 | ppl    1.85 | lr 4.00e-05 | gnorm  0.54 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:35:13 | INFO  | [spike] step 13156: loss 0.6572 > mean 0.6139 + 3.0*0.0141
+2026-09-19 01:35:41 | INFO  | ep  9/10 | step  13200/15620 | loss 0.5947 | ppl    1.81 | lr 3.95e-05 | gnorm  0.55 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:36:12 | INFO  | ep  9/10 | step  13250/15620 | loss 0.6271 | ppl    1.87 | lr 3.89e-05 | gnorm  0.55 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:36:44 | INFO  | ep  9/10 | step  13300/15620 | loss 0.5896 | ppl    1.80 | lr 3.83e-05 | gnorm  0.53 |   25.9k tok/s | mem    8021MB
+2026-09-19 01:37:15 | INFO  | ep  9/10 | step  13350/15620 | loss 0.6185 | ppl    1.86 | lr 3.78e-05 | gnorm  0.57 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:37:47 | INFO  | ep  9/10 | step  13400/15620 | loss 0.6184 | ppl    1.86 | lr 3.72e-05 | gnorm  0.53 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:38:18 | INFO  | ep  9/10 | step  13450/15620 | loss 0.5965 | ppl    1.82 | lr 3.67e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:38:50 | INFO  | ep  9/10 | step  13500/15620 | loss 0.6378 | ppl    1.89 | lr 3.62e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:39:21 | INFO  | ep  9/10 | step  13550/15620 | loss 0.6091 | ppl    1.84 | lr 3.56e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:39:53 | INFO  | ep  9/10 | step  13600/15620 | loss 0.6204 | ppl    1.86 | lr 3.51e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:40:24 | INFO  | ep  9/10 | step  13650/15620 | loss 0.5981 | ppl    1.82 | lr 3.47e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:40:55 | INFO  | ep  9/10 | step  13700/15620 | loss 0.6213 | ppl    1.86 | lr 3.42e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:41:27 | INFO  | ep  9/10 | step  13750/15620 | loss 0.5966 | ppl    1.82 | lr 3.37e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:41:52 | INFO  | [spike] step 13790: loss 0.6533 > mean 0.6108 + 3.0*0.0135
+2026-09-19 01:41:58 | INFO  | ep  9/10 | step  13800/15620 | loss 0.5955 | ppl    1.81 | lr 3.33e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:42:29 | INFO  | ep  9/10 | step  13850/15620 | loss 0.6054 | ppl    1.83 | lr 3.28e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:43:01 | INFO  | ep  9/10 | step  13900/15620 | loss 0.6010 | ppl    1.82 | lr 3.24e-05 | gnorm  0.52 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:43:32 | INFO  | ep  9/10 | step  13950/15620 | loss 0.5934 | ppl    1.81 | lr 3.20e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:44:03 | INFO  | ep  9/10 | step  14000/15620 | loss 0.6003 | ppl    1.82 | lr 3.16e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:44:35 | INFO  | ep  9/10 | step  14050/15620 | loss 0.5970 | ppl    1.82 | lr 3.12e-05 | gnorm  0.54 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:45:13 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:45:13 | INFO  | EPOCH  9 | train 0.6123 | val 0.6367 | val ppl 1.89 | bpc 0.9185 | top1 79.80% | gap +0.0244 | 16.4 min | 26.0k tok/s
+2026-09-19 01:45:13 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 01:45:13 | INFO  | [ckpt] new best val 0.6367 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 01:45:40 | INFO  | ep 10/10 | step  14100/15620 | loss 0.6062 | ppl    1.83 | lr 3.08e-05 | gnorm  0.54 |   31.0k tok/s | mem    8021MB
+2026-09-19 01:46:11 | INFO  | ep 10/10 | step  14150/15620 | loss 0.6277 | ppl    1.87 | lr 3.04e-05 | gnorm  0.58 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:46:42 | INFO  | ep 10/10 | step  14200/15620 | loss 0.6185 | ppl    1.86 | lr 3.01e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:47:14 | INFO  | ep 10/10 | step  14250/15620 | loss 0.5900 | ppl    1.80 | lr 2.97e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:47:45 | INFO  | ep 10/10 | step  14300/15620 | loss 0.6054 | ppl    1.83 | lr 2.94e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:48:16 | INFO  | ep 10/10 | step  14350/15620 | loss 0.5993 | ppl    1.82 | lr 2.90e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:48:48 | INFO  | ep 10/10 | step  14400/15620 | loss 0.5901 | ppl    1.80 | lr 2.87e-05 | gnorm  0.53 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:49:19 | INFO  | ep 10/10 | step  14450/15620 | loss 0.5734 | ppl    1.77 | lr 2.84e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:49:50 | INFO  | ep 10/10 | step  14500/15620 | loss 0.6037 | ppl    1.83 | lr 2.82e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:50:22 | INFO  | ep 10/10 | step  14550/15620 | loss 0.6109 | ppl    1.84 | lr 2.79e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:50:53 | INFO  | ep 10/10 | step  14600/15620 | loss 0.6140 | ppl    1.85 | lr 2.76e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:51:25 | INFO  | ep 10/10 | step  14650/15620 | loss 0.6110 | ppl    1.84 | lr 2.74e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:51:40 | INFO  | [spike] step 14673: loss 0.6478 > mean 0.6062 + 3.0*0.0135
+2026-09-19 01:51:56 | INFO  | ep 10/10 | step  14700/15620 | loss 0.5954 | ppl    1.81 | lr 2.71e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:52:28 | INFO  | ep 10/10 | step  14750/15620 | loss 0.6012 | ppl    1.82 | lr 2.69e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:52:59 | INFO  | ep 10/10 | step  14800/15620 | loss 0.6011 | ppl    1.82 | lr 2.67e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:53:30 | INFO  | ep 10/10 | step  14850/15620 | loss 0.5953 | ppl    1.81 | lr 2.65e-05 | gnorm  0.57 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:54:02 | INFO  | ep 10/10 | step  14900/15620 | loss 0.5979 | ppl    1.82 | lr 2.63e-05 | gnorm  0.54 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:54:33 | INFO  | ep 10/10 | step  14950/15620 | loss 0.5691 | ppl    1.77 | lr 2.61e-05 | gnorm  0.54 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:55:05 | INFO  | ep 10/10 | step  15000/15620 | loss 0.5954 | ppl    1.81 | lr 2.60e-05 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:55:36 | INFO  | ep 10/10 | step  15050/15620 | loss 0.6084 | ppl    1.84 | lr 2.58e-05 | gnorm  0.55 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:56:08 | INFO  | ep 10/10 | step  15100/15620 | loss 0.5977 | ppl    1.82 | lr 2.57e-05 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:56:39 | INFO  | ep 10/10 | step  15150/15620 | loss 0.5978 | ppl    1.82 | lr 2.56e-05 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:57:11 | INFO  | ep 10/10 | step  15200/15620 | loss 0.5792 | ppl    1.78 | lr 2.54e-05 | gnorm  0.56 |   26.0k tok/s | mem    8021MB
+2026-09-19 01:57:42 | INFO  | ep 10/10 | step  15250/15620 | loss 0.6316 | ppl    1.88 | lr 2.53e-05 | gnorm  0.58 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:58:14 | INFO  | ep 10/10 | step  15300/15620 | loss 0.6151 | ppl    1.85 | lr 2.53e-05 | gnorm  0.57 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:58:45 | INFO  | ep 10/10 | step  15350/15620 | loss 0.6104 | ppl    1.84 | lr 2.52e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:59:16 | INFO  | ep 10/10 | step  15400/15620 | loss 0.6116 | ppl    1.84 | lr 2.51e-05 | gnorm  0.58 |   26.1k tok/s | mem    8021MB
+2026-09-19 01:59:48 | INFO  | ep 10/10 | step  15450/15620 | loss 0.5821 | ppl    1.79 | lr 2.51e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 02:00:19 | INFO  | ep 10/10 | step  15500/15620 | loss 0.6006 | ppl    1.82 | lr 2.50e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 02:00:51 | INFO  | ep 10/10 | step  15550/15620 | loss 0.6220 | ppl    1.86 | lr 2.50e-05 | gnorm  0.55 |   26.1k tok/s | mem    8021MB
+2026-09-19 02:01:22 | INFO  | ep 10/10 | step  15600/15620 | loss 0.6203 | ppl    1.86 | lr 2.50e-05 | gnorm  0.56 |   26.1k tok/s | mem    8021MB
+2026-09-19 02:02:08 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 02:02:08 | INFO  | EPOCH 10 | train 0.6046 | val 0.6334 | val ppl 1.88 | bpc 0.9137 | top1 79.90% | gap +0.0288 | 16.4 min | 26.1k tok/s
+2026-09-19 02:02:08 | INFO  | --------------------------------------------------------------------------------------------
+2026-09-19 02:02:08 | INFO  | [ckpt] new best val 0.6334 -> task1_shreya_deep_narrow_20260918_231117_best.pt
+2026-09-19 02:02:08 | INFO  | ============================================================================================
+2026-09-19 02:02:08 | INFO  | TRAINING DONE in 169.2 min | 255,918,080 tokens | 25.2k tok/s | peak device 8021 MB | peak RSS 1903 MB
+2026-09-19 02:02:08 | INFO  | stability: 24 loss spikes (>3.0 sigma), 0 NaN/Inf events
+2026-09-19 02:02:08 | INFO  | ============================================================================================
+2026-09-19 02:02:09 | INFO  | [resume] in-memory training state found - nothing to do
+2026-09-19 02:02:12 | INFO  | [plot] saved /content/drive/MyDrive/DATA266_Lab1/task1_llm/shreya/outputs/plots/loss_curves.png
+2026-09-19 02:02:12 | INFO  | [gen] loaded best checkpoint from epoch 10 (val loss 0.6334)
+2026-09-19 02:02:18 | INFO  | [gen] generation throughput: 79.2 tokens/sec (batch=1, no KV cache)
+2026-09-19 02:03:18 | INFO  | [gen] wrote 13 samples to task1_llm/shreya/outputs/samples
+2026-09-19 02:03:18 | INFO  | [metrics] generating 20,000 chars for diversity stats (~4.2 min at 79 tok/s) ...
+2026-09-19 02:07:32 | INFO  | [metrics] NOTE: epoch 10 (the last) was also the best -> the model was still improving when training stopped. This is an UNDER-FITTING signal, not a bug, and it means *_best.pt and *_last.pt hold identical weights. Consider more data (data.use_chars), more epochs, or a larger model.
+2026-09-19 02:07:33 | INFO  | [metrics] wrote task1_llm/shreya/metrics_report.csv (50 rows)
+2026-09-19 02:08:40 | INFO  | [failure] evidence -> task1_llm/shreya/outputs/failure_candidates.md

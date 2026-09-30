@@ -1,0 +1,48 @@
+22:20:11 | task2_shreya_main_20260921_222011 | cuda | Tesla T4 | torch 2.11.0+cu128
+22:20:20 | loaded 560,000 train / 38,000 test
+22:20:20 | train classes {0: np.int64(280000), 1: np.int64(280000)} balance 1.0000
+22:20:20 | test classes {0: np.int64(19000), 1: np.int64(19000)} balance 1.0000
+22:20:30 | words per review: mean 133 median 97 p90 282 p99 608 max 1052
+22:20:30 | max_len 200 vs raw words: 80.3% of reviews whole (preprocessing removes about half the tokens, so the real figure is higher)
+22:20:30 | median words by class {0: 112.0, 1: 84.0}
+22:20:34 | train 560,000 -> 560,000 (dropped 0)
+22:20:34 | test 38,000 -> 38,000 (dropped 0)
+22:20:34 | train 540,000 | val 20,000 | test 38,000
+22:20:34 | positive rate: train 0.4999 val 0.5032 test 0.5000
+22:20:34 | stopwords 318 -> 305
+22:20:34 | demo: ['food', 'not', 'good', 'dont', 'think', 'll', 'return']
+22:21:22 | tokenised 598,000 reviews in 48s
+22:21:22 | mean words 133.0 raw -> 63.5 processed (52% removed)
+22:21:22 | processed tokens: median 46 p90 133 p95 176 p99 288
+22:21:22 | max_len 200 keeps 96.6% of reviews whole, 96.3% of all tokens
+22:21:23 | empty after preprocessing: 35
+22:21:28 | vocab 48,436 of 170,326 unique words | token coverage 99.47%
+22:21:38 | encoded train (540000, 200) val (20000, 200) test (38000, 200)
+22:21:38 | <unk> rate 0.52% | mean tokens kept 61.1 / 200
+22:21:39 | baseline_meanpool    meanpool  9,687,602 params
+22:21:39 | exp_textcnn          textcnn   9,928,102 params
+22:21:39 | exp_bilstm           bilstm    10,025,634 params
+22:21:39 | training baseline_meanpool
+22:21:59 |   baseline_meanpool ep1 loss 0.2310 val_acc 0.9285 (38,165 ex/s)
+22:22:13 |   baseline_meanpool ep2 loss 0.1822 val_acc 0.9288 (38,889 ex/s)
+22:22:26 |   baseline_meanpool ep3 loss 0.1750 val_acc 0.9273 (41,451 ex/s)
+22:22:26 | training exp_textcnn
+22:23:46 |   exp_textcnn ep1 loss 0.2058 val_acc 0.9372 (6,773 ex/s)
+22:25:10 |   exp_textcnn ep2 loss 0.1412 val_acc 0.9439 (6,451 ex/s)
+22:26:34 |   exp_textcnn ep3 loss 0.1102 val_acc 0.9445 (6,417 ex/s)
+22:26:34 | training exp_bilstm
+22:28:31 |   exp_bilstm ep1 loss 0.1843 val_acc 0.9461 (4,636 ex/s)
+22:30:27 |   exp_bilstm ep2 loss 0.1254 val_acc 0.9480 (4,643 ex/s)
+22:32:24 |   exp_bilstm ep3 loss 0.0993 val_acc 0.9468 (4,633 ex/s)
+22:32:32 | baseline_meanpool    acc 0.9314 f1m 0.9314 auc 0.9793 mcc 0.8629 brier 0.0516 ece 0.0046
+22:32:32 |                      95% CI acc [0.9289, 0.9339] f1m [0.9289, 0.9339] mcc [0.8578, 0.8679]
+22:32:42 | exp_textcnn          acc 0.9435 f1m 0.9435 auc 0.9863 mcc 0.8870 brier 0.0430 ece 0.0111
+22:32:42 |                      95% CI acc [0.9412, 0.9458] f1m [0.9412, 0.9458] mcc [0.8824, 0.8915]
+22:32:54 | exp_bilstm           acc 0.9485 f1m 0.9485 auc 0.9891 mcc 0.8970 brier 0.0384 ece 0.0086
+22:32:54 |                      95% CI acc [0.9463, 0.9507] f1m [0.9463, 0.9507] mcc [0.8926, 0.9014]
+22:32:55 | McNemar baseline_meanpool vs exp_textcnn: base-only 775 exp-only 1234 p=1.64e-24 (chi2 corrected)
+22:32:55 | McNemar baseline_meanpool vs exp_bilstm: base-only 540 exp-only 1189 p=9.36e-55 (chi2 corrected)
+22:32:55 | errors from exp_bilstm (acc 0.9485): 1,957 wrong
+22:32:55 | 20 errors -> outputs/error_review.md
+22:32:55 | metrics_report.csv: 3 models x 47 columns
+22:32:57 | manifest -> reproducibility/manifests/task2_shreya_main_20260921_222011.json
