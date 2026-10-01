@@ -1,5 +1,6 @@
 # Task 3 - CycleGAN, photo <-> Monet (Kaggle gan-getting-started).
-# Domain A = photo (7038 imgs), Domain B = monet (300 imgs), unpaired.
+# Domain A = Monet (300 imgs), Domain B = photo (7038 imgs), unpaired.
+# A/B follow the instructor's evaluator: pred_A2B = Monet->Photo, pred_B2A = Photo->Monet.
 # Device stays `auto` - this run is NOT intended for the local M5; benchmark a few
 # hundred steps first, then commit to a machine (workplan 3.1).
 
@@ -10,15 +11,15 @@ run:
   device: auto
 
 data:
-  domain_a_dir: task3_gan/data/photo_jpg
-  domain_b_dir: task3_gan/data/monet_jpg
+  domain_a_dir: task3_gan/data/monet_jpg
+  domain_b_dir: task3_gan/data/photo_jpg
   image_size: 256          # benchmark 256 vs 128 before the real run
   load_size: 286           # resize then random-crop to image_size
   random_flip: true
   num_workers: 4
-  # 300 Monet vs 7038 photos: one "epoch" is defined by the LARGER domain,
+  # 300 Monet vs 7038 photos: one "epoch" is defined by the LARGER domain (photos),
   # with the smaller domain resampled. State which definition the metrics use.
-  epoch_definition: domain_a
+  epoch_definition: domain_b
 
 model:
   generator: resnet         # resnet | unet
@@ -39,19 +40,24 @@ loss:
   image_pool_size: 50       # discriminator history buffer
 
 train:
-  epochs: 100
-  epochs_decay: 100         # linear LR decay to zero over these epochs
+  epochs: 20                # at constant LR; the paper's 100 + 100 is ~35 h on one RTX 4090
+  epochs_decay: 20          # linear LR decay to zero over these epochs
   batch_size: 1
   optimizer: adam
   lr: 2.0e-4
   betas: [0.5, 0.999]
   log_interval_steps: 50
   sample_interval_steps: 500
-  checkpoint_interval_epochs: 5
+  checkpoint_interval_epochs: 1     # resumable <run>_last.pt, overwritten (atomically) each time
+  snapshot_interval_epochs: 5       # permanent <run>_epochNNN.pt copies, ~340 MB each
   amp: false
 
 eval:
+  n_eval: 300               # images per set, as the instructor's evaluator (N_EVAL)
+  feature_batch_size: 32
   kid_subset_size: 100      # < 300, the Monet domain size
+  kid_subsets: 50
+  nn_k: 5                   # k for precision/recall/density/coverage
   lpips_net: alex
   cycle_l1_samples: 200
   content_cosine_backbone: inception_v3   # measurement only - never touches submitted images
@@ -65,10 +71,12 @@ submission:
   direction: photo_to_monet     # the Kaggle competition scores photo -> Monet
   n_images: 7038
   format: zip                   # competition expects images.zip; brief's tree says submission.csv - see README
-  out_dir: task3_gan/zoheb_waghu/outputs/pred_A2B
+  out_dir: task3_gan/zoheb_waghu/outputs/pred_B2A   # Photo -> Monet is B2A (A = Monet)
 
 paths:
   log_dir: reproducibility/raw_logs/zoheb_waghu/task3_gan
   checkpoint_dir: task3_gan/zoheb_waghu/checkpoints
   output_dir: task3_gan/zoheb_waghu/outputs
   metrics_csv_path: task3_gan/zoheb_waghu/full_metrics_report.csv
+  team_metrics_csv_path: task3_gan/zoheb_waghu/metrics_report.csv
+  submission_csv_path: task3_gan/zoheb_waghu/submission.csv

@@ -1,0 +1,21 @@
+[    0.000s] run_start    run_id=t3_resumetest utc=2026-09-30T06:55:54.490971+00:00 git_commit=unknown python=3.12.10 argv=task3_gan\zoheb_waghu\src\train.py --config task3_gan\zoheb_waghu\configs\cyclegan_baseline.yaml --run-id t3_resumetest --max-steps 200 hardware={'device': 'cuda', 'torch': '2.5.1+cu124', 'platform': 'Windows-11-10.0.26200-SP0', 'processor': 'AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD', 'gpu_name': 'NVIDIA GeForce RTX 4090', 'gpu_mem_gb': '25.8'}
+[   14.100s] setup        n_a=300 n_b=7038 steps_per_epoch=7038 total_epochs=40 param_count=28285832 g_params=22756358
+[   19.174s] step         step=50 epoch=0 lr=0.0002 g_loss=10.4144 d_loss=0.84589 cycle_loss=0.61248 identity_loss=0.61818 grad_norm=54.76105
+[   22.976s] step         step=100 epoch=0 lr=0.0002 g_loss=7.09946 d_loss=0.90224 cycle_loss=0.43591 identity_loss=0.41101 grad_norm=29.79344
+[   26.797s] step         step=150 epoch=0 lr=0.0002 g_loss=9.80386 d_loss=0.53118 cycle_loss=0.6066 identity_loss=0.57809 grad_norm=65.78757
+[   30.601s] step         step=200 epoch=0 lr=0.0002 g_loss=8.89397 d_loss=0.55761 cycle_loss=0.5471 identity_loss=0.54438 grad_norm=41.73622
+[   30.601s] epoch        epoch=0 step=200 seconds=16.5
+[   30.881s] checkpoint   epoch=1 step=200
+[   30.966s] train_summary param_count=28285832 train_seconds=16.78 images_per_sec=11.92 peak_memory_gb=12.7792 steps=200 checkpoint=t3_resumetest_final.pt
+[   30.966s] run_end      status=ok wall_seconds=30.966
+[    0.000s] run_start    run_id=t3_resumetest utc=2026-09-30T06:56:29.568907+00:00 git_commit=unknown python=3.12.10 argv=task3_gan\zoheb_waghu\src\train.py --config task3_gan\zoheb_waghu\configs\cyclegan_baseline.yaml --run-id t3_resumetest --max-steps 400 --resume task3_gan\zoheb_waghu\checkpoints\t3_resumetest_last.pt hardware={'device': 'cuda', 'torch': '2.5.1+cu124', 'platform': 'Windows-11-10.0.26200-SP0', 'processor': 'AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD', 'gpu_name': 'NVIDIA GeForce RTX 4090', 'gpu_mem_gb': '25.8'}
+[   13.993s] setup        n_a=300 n_b=7038 steps_per_epoch=7038 total_epochs=40 param_count=28285832 g_params=22756358
+[   14.114s] resume       checkpoint=task3_gan\zoheb_waghu\checkpoints\t3_resumetest_last.pt epoch=1 step=200
+[   19.350s] step         step=250 epoch=1 lr=0.0002 g_loss=9.55139 d_loss=0.53165 cycle_loss=0.56219 identity_loss=0.58149 grad_norm=44.39493
+[   23.336s] step         step=300 epoch=1 lr=0.0002 g_loss=6.35278 d_loss=0.48894 cycle_loss=0.38617 identity_loss=0.36228 grad_norm=22.69981
+[   27.318s] step         step=350 epoch=1 lr=0.0002 g_loss=9.38167 d_loss=0.36663 cycle_loss=0.57611 identity_loss=0.53199 grad_norm=64.98553
+[   31.304s] step         step=400 epoch=1 lr=0.0002 g_loss=9.02525 d_loss=0.55787 cycle_loss=0.54808 identity_loss=0.55635 grad_norm=52.70564
+[   31.304s] epoch        epoch=1 step=400 seconds=17.2
+[   31.602s] checkpoint   epoch=2 step=400
+[   31.697s] train_summary param_count=28285832 train_seconds=17.49 images_per_sec=22.87 peak_memory_gb=13.1265 steps=400 checkpoint=t3_resumetest_final.pt
+[   31.697s] run_end      status=ok wall_seconds=31.697

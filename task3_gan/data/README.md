@@ -6,7 +6,10 @@ Raw data is **not committed**.
 
 ## Fetch
 
-Requires a Kaggle account and `~/.kaggle/kaggle.json`, and you must **join the competition
+The same 300 Monet + 7,038 photo images (256x256 JPEG) also ship in the instructor's
+`Part3_export/dataset/dataset/` bundle; copy `monet_jpg/` and `photo_jpg/` from there to skip Kaggle.
+
+Otherwise requires a Kaggle account and `~/.kaggle/kaggle.json`, and you must **join the competition
 first** or the download 403s:
 
 ```bash

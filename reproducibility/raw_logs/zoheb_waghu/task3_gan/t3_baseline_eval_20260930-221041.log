@@ -1,0 +1,5 @@
+[    0.002s] run_start    run_id=t3_baseline_eval_20260930-221041 utc=2026-10-01T05:10:41.117454+00:00 git_commit=unknown python=3.12.10 argv=task3_gan\zoheb_waghu\evaluate_local.py metrics --config task3_gan\zoheb_waghu\configs\cyclegan_baseline.yaml --train-run-id t3_baseline_20260929-235720 --checkpoint t3_baseline_20260929-235720_final.pt --zip hardware={'device': 'cuda', 'torch': '2.5.1+cu124', 'platform': 'Windows-11-10.0.26200-SP0', 'processor': 'AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD', 'gpu_name': 'NVIDIA GeForce RTX 4090', 'gpu_mem_gb': '25.8'}
+[   14.787s] direction    direction=A2B n_real=300 n_gen=300 mifid=0.41814 kid_std=0.002294 fid=103.19668 kid=0.01818 lpips=0.35447 content_cosine=0.79746 cycle_l1=0.03315
+[   29.027s] direction    direction=B2A n_real=300 n_gen=300 mifid=0.40472 kid_std=0.00134 fid=98.85495 kid=0.00762 lpips=0.37829 content_cosine=0.77197 cycle_l1=0.03984
+[   33.026s] zip          n_images=7038 path=C:\Users\018302973\Desktop\data266-lab1\task3_gan\zoheb_waghu\outputs\images.zip
+[   33.029s] run_end      status=ok wall_seconds=33.029

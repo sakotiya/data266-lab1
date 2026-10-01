@@ -1,0 +1,13 @@
+[    0.003s] run_start    run_id=t3_baseline_smoke_20260929-234621 utc=2026-09-30T06:46:21.151450+00:00 git_commit=unknown python=3.12.10 argv=task3_gan\zoheb_waghu\src\train.py --config task3_gan\zoheb_waghu\configs\cyclegan_baseline.yaml --max-steps 400 hardware={'device': 'cuda', 'torch': '2.5.1+cu124', 'platform': 'Windows-11-10.0.26200-SP0', 'processor': 'AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD', 'gpu_name': 'NVIDIA GeForce RTX 4090', 'gpu_mem_gb': '25.8'}
+[   19.339s] setup        n_a=300 n_b=7038 steps_per_epoch=7038 total_epochs=200 param_count=28285832 g_params=22756358
+[   24.485s] step         step=50 epoch=0 lr=0.0002 g_loss=10.38159 d_loss=0.92159 cycle_loss=0.60351 identity_loss=0.60933 grad_norm=52.72388
+[   28.358s] step         step=100 epoch=0 lr=0.0002 g_loss=6.93146 d_loss=0.86132 cycle_loss=0.42806 identity_loss=0.40458 grad_norm=27.73412
+[   32.179s] step         step=150 epoch=0 lr=0.0002 g_loss=9.4441 d_loss=0.53311 cycle_loss=0.59864 identity_loss=0.5275 grad_norm=53.44023
+[   35.962s] step         step=200 epoch=0 lr=0.0002 g_loss=8.49992 d_loss=0.57876 cycle_loss=0.53075 identity_loss=0.51402 grad_norm=39.79258
+[   39.740s] step         step=250 epoch=0 lr=0.0002 g_loss=8.68804 d_loss=0.99081 cycle_loss=0.48734 identity_loss=0.45137 grad_norm=60.10757
+[   43.525s] step         step=300 epoch=0 lr=0.0002 g_loss=7.82388 d_loss=0.45583 cycle_loss=0.4907 identity_loss=0.43804 grad_norm=50.18757
+[   47.307s] step         step=350 epoch=0 lr=0.0002 g_loss=9.58781 d_loss=0.43431 cycle_loss=0.60988 identity_loss=0.56328 grad_norm=47.61937
+[   51.088s] step         step=400 epoch=0 lr=0.0002 g_loss=6.51916 d_loss=0.55658 cycle_loss=0.38059 identity_loss=0.35002 grad_norm=37.6143
+[   51.088s] epoch        epoch=0 step=400 seconds=31.7
+[   51.175s] train_summary param_count=28285832 train_seconds=31.75 images_per_sec=12.6 peak_memory_gb=12.7792 steps=400 checkpoint=t3_baseline_smoke_20260929-234621_final.pt
+[   51.175s] run_end      status=ok wall_seconds=51.175
