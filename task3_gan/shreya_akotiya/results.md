@@ -122,7 +122,7 @@ The log confirms the run used 256px images.
 
 | Item | Value |
 |------|-------|
-| GPU | TO CONFIRM (Colab GPU used for the run) |
+| GPU | NVIDIA A100 (Google Colab) |
 | Framework | PyTorch 2.11.0+cu130, CUDA |
 | Training time | 9.66 hours (34,793 s), about 430 s per epoch after the first |
 | Throughput | ~16.2 images/sec (563,040 steps, batch size 1) |
