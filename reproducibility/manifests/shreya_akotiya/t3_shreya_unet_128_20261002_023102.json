@@ -1,0 +1,101 @@
+{
+  "run_tag": "t3_shreya_unet_128_20261002_023102",
+  "member": "shreya_akotiya",
+  "task": "task3_gan",
+  "timestamp": "2026-10-02T12:15:24.029417",
+  "config": {
+    "run": {
+      "tag": "t3_shreya_unet_256",
+      "member": "shreya_akotiya",
+      "seed": 42,
+      "device": "auto"
+    },
+    "data": {
+      "domain_a_dir": "task3_gan/data/photo_jpg",
+      "domain_b_dir": "task3_gan/data/monet_jpg",
+      "image_size": 256,
+      "load_size": 286,
+      "random_flip": true,
+      "num_workers": 4,
+      "epoch_definition": "domain_a"
+    },
+    "model": {
+      "generator": "unet",
+      "gen_down_blocks": 8,
+      "gen_filters": 64,
+      "gen_use_dropout": true,
+      "discriminator": "patchgan",
+      "disc_layers": 3,
+      "disc_filters": 64,
+      "norm": "instance",
+      "init": "normal",
+      "init_gain": 0.02
+    },
+    "loss": {
+      "gan_mode": "lsgan",
+      "lambda_cycle_a": 10.0,
+      "lambda_cycle_b": 10.0,
+      "lambda_identity": 0.5,
+      "image_pool_size": 50
+    },
+    "train": {
+      "epochs": 80,
+      "epochs_decay": 20,
+      "batch_size": 1,
+      "optimizer": "adam",
+      "lr": 0.0002,
+      "betas": [
+        0.5,
+        0.999
+      ],
+      "log_interval_steps": 50,
+      "sample_interval_steps": 500,
+      "checkpoint_interval_epochs": 10,
+      "amp": false
+    },
+    "eval": {
+      "fid_batch_size": 32,
+      "kid_subset_size": 100,
+      "lpips_net": "alex",
+      "cycle_l1_samples": 200,
+      "content_cosine_backbone": "inception_v3",
+      "human_audit": {
+        "n_samples": 30,
+        "n_raters": 2,
+        "blind": true,
+        "axes": [
+          "style",
+          "content",
+          "artifacts"
+        ]
+      }
+    },
+    "submission": {
+      "direction": "photo_to_monet",
+      "n_images": 7038,
+      "format": "zip",
+      "out_dir": "task3_gan/shreya_akotiya/outputs/pred_A2B"
+    },
+    "paths": {
+      "log_dir": "reproducibility/raw_logs/shreya_akotiya/task3_gan",
+      "checkpoint_dir": "task3_gan/shreya_akotiya/checkpoints",
+      "output_dir": "task3_gan/shreya_akotiya/outputs",
+      "metrics_csv_path": "task3_gan/shreya_akotiya/full_metrics_report.csv"
+    }
+  },
+  "checkpoint": {
+    "path": null,
+    "sha256": null
+  },
+  "environment": {
+    "python": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+    "torch": "2.11.0+cu130",
+    "device": "cuda"
+  },
+  "metrics_summary": {
+    "fid_photo_to_monet": 80.54941272204911,
+    "fid_monet_to_photo": 84.0511712567885,
+    "cycle_l1_A": 0.04189922702498734,
+    "cycle_l1_B": 0.043693871917203066
+  }
+}
