@@ -14,9 +14,8 @@ run provenance: [manifest](../../reproducibility/manifests/zoheb_waghu/)
 
 ## 0. Dataset note
 
-The brief's task text says **Yelp polarity**; the folder tree in the same brief labels the
-shared data IMDB. Proceeding on Yelp polarity - `data.dataset` in `configs/_shared.yaml`
-switches it in one line if the instructor rules otherwise. **Still unconfirmed.**
+Dataset confirmed: **Yelp polarity** (560K train / 38K test). Both members train on it and
+evaluate on the same official 38K test split.
 
 ## 1. Data and preprocessing (10 marks)
 
