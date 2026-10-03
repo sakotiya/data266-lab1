@@ -180,7 +180,7 @@ anywhere in the repo.
 | 1 | zoheb_waghu | **complete** (RTX 4090) | val loss 0.7019 · ppl 2.02 · bpc 1.013 · top-1 77.7% |
 | 2 | shreya_akotiya | **complete** | baseline 93.14% · TextCNN 94.35% · BiLSTM **94.85%** |
 | 2 | zoheb_waghu | **complete** (RTX 4090) | M1 93.46% · M2 93.57% (n.s.) · M3 **94.02%** |
-| 3 | shreya_akotiya | not started | - |
+| 3 | shreya_akotiya | **trained** (Tesla T4); audit, Kaggle rank pending | FID photo→Monet 80.5 · Monet→photo 84.1 · submission FID 79.15 / MiFID 0.404 |
 | 3 | zoheb_waghu | **trained** (RTX 4090); audit, Kaggle rank pending | FID A2B 103.2 · B2A 98.9 · submission FID 101.03 / MiFID 0.411 |
 
 Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysis.md`.
