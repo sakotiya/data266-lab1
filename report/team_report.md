@@ -5,16 +5,32 @@
 
 ## Team ownership statement
 
-Each member independently designed, implemented, trained and evaluated their own models for
-every task, in their own folder (`<task>/shreya_akotiya/`, `<task>/zoheb_waghu/`). For Task 1,
-Shreya built and trained the 12-layer deep-narrow character GPT, and Zoheb built and trained the
-4-layer shallow-wide character GPT. For Task 2, Shreya built and trained a mean-pool
-baseline, a TextCNN and a BiLSTM, and Zoheb built and trained a BiLSTM baseline, a TextCNN and an
-attention BiLSTM. Within each task, the two members' implementations are separate code bases (Shreya: a
-config-driven notebook; Zoheb: `src/` modules plus a notebook). The team agreed on the shared
-decisions before training: the reading of "100K / 10K" as sequences, disjoint data slices, a
-vocabulary built from the train split only, and a common `metrics_report.csv` schema so the
-numbers can be placed side by side. The comparison and analysis below were written jointly.
+Each of us designed, implemented, trained, and evaluated our own models in our own folders. We
+kept our code and experiment results separate, then compared the results after both members had
+finished their runs.
+
+Before training, we agreed on the main shared decisions. We interpreted 100K/10K as the number
+of sequences, used non-overlapping data slices for Task 1, built vocabularies from training data
+only, and used the same `metrics_report.csv` format. This made it easier to place our results
+side by side. The comparison sections below summarize what we found together.
+
+### Individual contributions
+
+**Shreya's contribution**
+
+I built and trained the 12-layer deep-narrow character GPT for Task 1. I also trained three Yelp
+sentiment models for Task 2: a mean-pooling baseline, a TextCNN, and a BiLSTM. My work is
+organized around configuration-driven notebooks, and I prepared the preprocessing, training
+logs, metrics, generated samples, and failure analyses for my models.
+
+**Zoheb's contribution**
+
+I built and trained the 4-layer shallow-wide character GPT for Task 1. For Task 2, I trained a
+BiLSTM mean-pooling baseline, a TextCNN, and an attention-based BiLSTM. I organized my work using
+Python source modules and notebooks, and prepared the checkpoints, metrics, plots, logs, and
+error reviews for my models.
+
+We agreed to use the same main evaluation format so that the results could be compared fairly.
 
 ---
 
@@ -144,26 +160,26 @@ epoch. The deeper model is ahead from epoch 1, and the gap between the two model
 
 ### 1.5 Joint analysis
 
-**What the comparison shows**
+**What we noticed from the comparison**
 
-1. **Depth improved modelling quality.** At the same width and the same 256M training tokens,
-   the 12-block model reaches 0.913 bits per character against 1.013 (about 10% lower) and 79.9%
-   next-character accuracy against 77.7%. A character model has to compose characters into
-   words, words into phrases and phrases into sentences, and each block is one more step of that
-   composition.
-2. **The cost is size and memory.** The deep model has 2.9× the parameters and needs 8× the
-   peak GPU memory, and its 12 blocks must run one after another, so each step does about three
-   times the work of the 4-block model. The training times (176 min vs 6 min) are not a fair
-   measure of this cost because the GPUs differ.
-3. **The shallow model barely overfits.** Its generalization gap is 0.004 against 0.029. That
-   reflects its smaller capacity rather than better regularisation: it fits both train and
-   validation less well.
-4. **Both models are under-trained.** Validation loss was still falling at epoch 10 in both
-   runs, and in both the best checkpoint is the last. Ten epochs was a budget limit, not
-   convergence.
-5. **Training was stable for both.** No NaN or Inf events, and mean gradient norms of 0.69 and
-   0.74, below the clipping threshold of 1.0. Shreya's largest gradient norm (17.8) is at
-   initialisation; after warm-up her maximum is 2.9, and no step after 1,910 needed clipping.
+1. **The deeper model performed better on next-character prediction.** The 12-layer model reached
+   0.913 bits per character and 79.9% next-character accuracy, compared with 1.013 bits per
+   character and 77.7% accuracy for the 4-layer model. The difference makes sense for this
+   task because a character model has to build characters into words, words into phrases, and
+   phrases into sentences. The extra layers give it more steps to do that.
+2. **The deeper model also costs more.** It has about 2.9 times as many parameters and used about
+   eight times more peak GPU memory. The two training times cannot be compared directly,
+   because Shreya's run used a Tesla T4 while Zoheb's used an RTX 4090.
+3. **The smaller model had a smaller generalization gap, but that does not mean it learned more.**
+   Its gap was 0.0037 compared with 0.0289 for the deeper model. The smaller gap mostly reflects the lower
+   capacity of the shallow model: it fit the training data less closely as well as the validation
+   data.
+4. **Neither model had fully converged after 10 epochs.** Validation loss was still improving at
+   the end of both runs, so the final epoch was still the best checkpoint. Ten epochs was the
+   training limit, not the point where either model had completely finished learning.
+5. **Both runs were stable.** Neither model produced NaN or Inf values. The largest gradient norm,
+   17.8, occurred at the beginning of the deeper model's training. After warm-up, its maximum was
+   2.9, and no step after step 1,910 needed clipping.
 
 **Strengths**
 
@@ -185,11 +201,12 @@ constraints) rather than from either design.
 | Losing track of who is who | "Lily didn't want to share his toy friends" | restarts a new story mid-generation ("Once upon a time…") |
 | Non-words at high temperature | "strets", "pumpins", "knowled" (3.0% non-words at T = 1.2) | "aboven", "MPleaf", "spreadying" at T = 1.2 |
 
-Temperature trades one failure for another in both models. Greedy and low temperature give
-correct spelling but loop; high temperature removes the loops but breaks spelling and meaning.
-In Shreya's temperature sweep, T = 0.8 was the best balance (0.42% non-words, no repeated
-phrases). Zoheb's repeated-4-gram rate falls from 0.61 (greedy) to 0.37 (T = 0.8) to 0.23
-(T = 1.2), while his semantic errors grow at T = 1.2.
+In both models, temperature moves the problem from one type of failure to another. Greedy and
+low-temperature decoding usually give cleaner spelling, but the model can repeat common phrases.
+Higher temperatures reduce repetition, but they also increase spelling and meaning errors. In Shreya's
+temperature sweep, T = 0.8 gave the best balance: the non-word rate was only 0.42% and no repeated
+phrase was detected. Zoheb saw the same general pattern: his repeated 4-gram rate decreased as
+the temperature increased, but the semantic problems became more noticeable at T = 1.2.
 
 **Limitations**
 
@@ -412,32 +429,31 @@ error rate.
 
 ### 2.6 Joint analysis
 
-**What the comparison shows**
+**What we learned from the comparison**
 
-1. **The best model is Shreya's BiLSTM (94.85%).** Its accuracy CI [0.9463, 0.9507] does not
-   overlap the CI of Zoheb's best, BiLSTM-attn [0.9379, 0.9426], so the difference is real on
-   this test set. It cannot, however, be attributed to architecture alone. Shreya's models
-   trained on **6× more data** (540K vs 90K reviews), with a larger vocabulary and embedding
-   size. Training-set size is the most likely main cause.
-2. **A model that can read word order beats one that can't, in both sets.** Shreya's mean-pool
-   baseline, which has no word order, is the weakest of all six models (93.14%), and both of her
-   sequence models beat it with very small McNemar p-values. Zoheb's baseline is already a
-   BiLSTM, so it starts higher (93.46%) despite 6× less data.
-3. **TextCNN only helps when the baseline has no word order.** Shreya's TextCNN beats her
-   mean-pool baseline by 1.2 points (p = 1.6e-24). Zoheb's TextCNN is statistically
-   indistinguishable from his BiLSTM baseline: the CIs overlap and McNemar p = 0.37. Local n-gram
-   features add a lot over a bag of words, but little over a recurrent encoder, which already
-   captures them. Zoheb's TextCNN is still the cheapest of his models in time and memory.
-4. **Better pooling on a BiLSTM helps.** Zoheb's attention pooling beats his mean pooling by 0.56
-   points (p = 2.6e-7), at 2.5× the parameters and about 22× the training time. Shreya's masked
-   max pooling reached a higher score with fewer parameters, but on 6× the data, so the two
-   pooling choices are not directly comparable.
-5. **All models are well calibrated.** ECE is at most 0.0134 and Brier at most 0.052, so the
-   predicted probabilities are usable as confidences. Within each member, the most accurate
-   model also has the best Brier score.
-6. **All models converge within 1–3 epochs.** Validation scores peak early and then flatten or
-   drop, so more epochs would not help any of the six. Data, input length and pooling are the
-   levers, not training time.
+1. **The BiLSTM trained by Shreya had the highest test accuracy at 94.85%.** Its confidence
+   interval did not overlap Zoheb's best BiLSTM-attention interval. However, architecture alone
+   cannot explain the difference. Shreya's models used 540K training reviews, while Zoheb used
+   90K, and the vocabulary and embedding sizes were also different. The difference in training-set
+   size is probably the most important factor.
+2. **Keeping word order helped.** Shreya's mean-pooling baseline was the weakest of her three
+   models at 93.14%, while both the TextCNN and BiLSTM performed better. Zoheb's baseline was
+   already a BiLSTM, which is why it started at 93.46% even with less training data.
+3. **TextCNN was especially useful compared with a bag-of-words model.** Shreya's TextCNN improved
+   over her mean-pooling baseline by 1.2 percentage points, and the McNemar test confirmed that
+   the improvement was significant. In Zoheb's experiments, however, TextCNN was not significantly
+   better than his BiLSTM baseline. This suggests that local phrase features help most when the
+   baseline does not understand word order at all.
+4. **Attention pooling improved Zoheb's BiLSTM.** The attention BiLSTM improved over the mean-
+   pooling BiLSTM by 0.56 percentage points. It also required much more computation. Shreya's BiLSTM
+   masked max-pooling model reached a higher score, but the two results are not a perfectly
+   controlled pooling comparison because the training data and embedding sizes were different.
+5. **The probability outputs were generally useful.** All models had reasonably low Brier scores
+   and ECE values. Within each member's experiments, the model with the best accuracy also had the
+   best Brier score.
+6. **Most models reached their best validation result early.** The models usually peaked within
+   the first few epochs. This suggests that future improvements should focus more on the amount of
+   data, input length, and model design than simply adding many more epochs.
 
 **Strengths**
 
