@@ -8,7 +8,7 @@ run:
   device: auto          # portable: cuda on the GPU Lab, mps locally
 
 data:
-  dataset: yelp_polarity   # brief's task text says Yelp polarity; folder tree says IMDB - see README
+  dataset: yelp_polarity   # confirmed: Yelp polarity
   train_size: 100000       # subsample of the 560K train split; set null for full
   val_fraction: 0.1        # held out of TRAIN. Official test split is touched once, at the end.
   test_size: null          # null = full 38K test split
