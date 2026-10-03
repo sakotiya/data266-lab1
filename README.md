@@ -91,8 +91,8 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 
 - [ ] GPU Lab booking, Kaggle competition registration
 - [ ] Agree per-member architectures and data splits so no two models match
-- [ ] **Task 2 dataset ambiguity:** the brief's task text says Yelp polarity, its folder tree
-      says IMDB. zoheb_waghu proceeded on **Yelp polarity**; one config field switches it
+- [x] **Task 2 dataset:** confirmed - **Yelp polarity** (560K train / 38K test). Both members
+      use it.
 - [x] **Task 3 submission format:** resolved - the class competition takes `submission.csv`
       (ID, FID, MiFID; values must match the instructor's script). Leaderboard score =
       (FID + MiFID) / 2, lower is better

@@ -4,9 +4,8 @@ Source: https://huggingface.co/datasets/fancyzhx/yelp_polarity (560K train / 38K
 
 Raw data is **not committed** (size).
 
-> **Ambiguity, unresolved.** The brief's task text says Yelp polarity; its folder tree labels
-> the shared data IMDB. zoheb_waghu proceeded on **Yelp polarity**. One config field
-> (`data.dataset` in `configs/_shared.yaml`) switches it if the instructor rules otherwise.
+> **Dataset confirmed: Yelp polarity.** Both members train on it and evaluate on the same
+> official 38K test split.
 
 ## Fetch
 
