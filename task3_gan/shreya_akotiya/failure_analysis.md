@@ -6,25 +6,48 @@ images per set, Inception-v3, submission = mean of the two directions, score = �
 
 ## Visual quality
 
-| Measure (run 1) | Photo → Monet | Monet → Photo |
-|---|---:|---:|
-| FID, instructor method (300 images) | 97.904 | 102.784 |
-| MiFID | 0.4043 | 0.4206 |
-| LPIPS, input vs translation (200 images) | 0.316 | not measured |
+Team-format metrics for run 1 (`metrics_report_full.csv`, first 300 images per set, computed by
+`src/run1_team_metrics.ipynb` from the epoch-80 checkpoint). Team names: A = Monet, B = photo.
 
-Monet→Photo is the weaker direction: about 5 FID points worse than Photo→Monet. It is scored on
-only 300 source paintings, so it also has the larger sampling noise.
+| Measure (run 1) | Photo → Monet (B2A) | Monet → Photo (A2B) |
+|---|---:|---:|
+| FID / MiFID (= submission) | 97.904 / 0.4043 | 102.784 / 0.4206 |
+| KID | 0.0069 ± 0.0013 | 0.0185 ± 0.0021 |
+| Precision (realism) / recall (diversity) | 0.540 / 0.730 | 0.730 / 0.447 |
+| Density / coverage | 0.489 / 0.763 | 1.005 / 0.850 |
+| LPIPS input vs translation (how much changed) | 0.304 | 0.244 |
+| Content cosine input vs translation | 0.821 | 0.861 |
+
+Evidence: `outputs/plots/failure_candidates_B2A.jpg` and `..._A2B.jpg` (source | translation |
+cycle reconstruction).
+
+The two directions fail in opposite ways:
+- **Photo→Monet: diverse but less convincing.** Recall is 0.73 but precision only 0.54. The outputs
+  cover most of the variety of real Monet paintings, but many don't look like one.
+- **Monet→Photo: convincing but narrow.** Precision is 0.73 but recall only 0.45. The outputs look
+  like photos, but stick to a narrower range than the real photo set.
+- **Monet→Photo changes the image less** (LPIPS 0.244 vs 0.304) and keeps content better (cosine
+  0.861 vs 0.821). Its higher FID is therefore about missing photo variety, not about losing content.
 
 ## Cycle-consistency verification
 
-| Measure (run 1, 200 images, [-1, 1] pixel scale) | Photo → Monet → Photo | Monet → Photo → Monet |
+| Measure (run 1, 300 images, [0, 1] pixel scale) | Photo → Monet → Photo | Monet → Photo → Monet |
 |---|---:|---:|
-| Cycle L1 | 0.042 | 0.044 |
+| Mean cycle L1 | 0.0216 (≈ 5.5 / 255) | 0.0223 (≈ 5.7 / 255) |
+| Worst image | 0.0455 (`08b790bca7.jpg`) | 0.0448 (`a619072f82.jpg`) |
+| Training cycle loss, final 10% of epochs (unweighted, both directions) | 0.080 | |
 
-Both round trips restore the source closely and the two directions are nearly symmetric. Low
-cycle error alone does not prove the translation looks faithful: CycleGANs can satisfy the cycle
-loss by hiding source detail in subtle signals (Chu, Zhmoginov and Sandler, 2017). The UNet skip
-connections make this easy, because full-resolution detail can bypass the bottleneck.
+Both round trips restore the source closely and are nearly symmetric. For comparison, the team's
+ResNet-9 (zoheb_waghu) has about twice the error (0.040 / 0.033). The UNet's skip connections carry
+full-resolution detail straight to the output, which makes reconstruction easy.
+
+**Low cycle error does not mean faithful translations.** The clearest evidence is in the "most
+changed" photos (rows 6–10 of the B2A grid). These night scenes come out as a barely recognisable
+tiled pattern, yet they have the *lowest* cycle errors in the set (0.013–0.021). The reconstruction
+restores the stars, city lights and corridor almost perfectly from an image in which they are hard
+to see. The source information must be carried in subtle signals the eye doesn't pick up. This is
+the "steganography" behaviour CycleGANs are known for (Chu, Zhmoginov and Sandler, 2017), and the
+UNet's skip connections make it especially easy.
 
 ## Training stability
 
@@ -115,13 +138,34 @@ the leaderboard number.
 
 ## Failure cases
 
-**Pending.** Needs visual inspection of the run 1 predictions (on Google Drive). The plan is to
-take the five lowest-LPIPS (least changed), five highest-LPIPS (most changed) and five worst
-cycle-L1 images per direction, as in the team's protocol.
+Candidates were selected by measurement (`src/run1_team_metrics.ipynb`) over the 300 evaluated
+images per direction, then inspected by eye. *Least changed* = lowest LPIPS (translation barely
+departs from the input), *most changed* = highest LPIPS, *worst cycle* = highest cycle L1. All 30
+candidates: `outputs/failure_candidates.csv`; images: `outputs/plots/failure_candidates_{B2A,A2B}.jpg`.
 
-| # | Sample | Direction | What went wrong | Suspected cause |
-| --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
+| # | Sample | Direction | Selected as | LPIPS | Cycle L1 | What went wrong | Suspected cause |
+|---|---|---|---|---:|---:|---|---|
+| 1 | `09fc404e31.jpg` | Photo→Monet | most changed | 0.721 | 0.013 | A dark starry sky becomes a blotchy blue-grey field with a repeated tiled motif along the top. The reconstruction restores the night sky almost exactly. | Night photos have almost no contrast. InstanceNorm divides by a very small standard deviation, so tiny pixel noise is amplified and the decoder fills the image with learned texture. The source survives as a hidden signal (lowest cycle error in the set). |
+| 2 | `07054731ab.jpg` | Photo→Monet | most changed | 0.643 | 0.014 | City lights at dusk: the same tiled band appears across the top and the sky turns to mottled texture; the lights survive. | Same as #1. The motif is identical across different night images, so it is a learned pattern, not content from the source. |
+| 3 | `08341635fa.jpg` | Photo→Monet | most changed | 0.629 | 0.016 | A dark corridor is washed out to grey-green with the tiled band on top; the lit doorways are kept. | Same as #1; the bright lamps give the only strong signal, so only they are kept. |
+| 4 | `02ded12bbd.jpg` | Photo→Monet | most changed | 0.623 | 0.014 | A dull sunset becomes a flat grey haze; the red horizon band disappears, though it returns in the reconstruction. | Low-detail input: a patch discriminator rewards Monet-like local texture but nothing protects the global colour of the scene. |
+| 5 | `063ab57d41.jpg` | Photo→Monet | least changed | 0.120 | 0.025 | An office building and road sign stay sharply photographic, with only a pale wash. | Hard-edged modern scenes are rare in Monet's work; the identity loss (weight 5.0) makes keeping the photo cheap. |
+| 6 | `04b8bfdb1c.jpg` | Photo→Monet | least changed | 0.113 | 0.024 | Cows on grass: slightly softened and faded, but clearly still a photo. | Same as #5: a small colour shift satisfies the losses. |
+| 7 | `0962094f25.jpg` | Photo→Monet | least changed + worst cycle | 0.129 | 0.044 | A banana plant under a glass roof barely changes, yet its round trip is among the worst. The stock-photo watermark text is copied through. | Dense fine detail (leaves, roof grid, text) is hard to reproduce exactly even when the style change is small. |
+| 8 | `08b790bca7.jpg` | Photo→Monet | worst cycle | 0.276 | 0.045 | A rope bridge in a forest gets convincing brush texture, but the reconstruction loses fine leaf detail. | High-frequency foliage is where the painted texture and the original detail collide; the cycle loss only constrains the average pixel error. |
+| 9 | `b1ea5d5a7d.jpg` | Monet→Photo | most changed | 0.509 | 0.019 | A golden Houses of Parliament sunset turns almost black; the reconstruction restores the gold. | The generator maps hazy Monet light to a dark, high-contrast "photo" look. The source colour is hidden in the dark image and recovered on the way back. |
+| 10 | `6a03aea8be.jpg` | Monet→Photo | most changed | 0.482 | 0.016 | A misty Parliament in blue-green becomes a murky dark field, with bright horizontal streaks across the top that also appear in the reconstruction. | The streaks are a generator artifact in flat, low-texture regions, likely from the transposed-convolution decoder. |
+| 11 | `2cca56415e.jpg` | Monet→Photo | most changed | 0.465 | 0.029 | A haystack at sunset: the sky becomes a saturated orange-red flare and the field goes nearly black. | The photo domain has many high-contrast sunsets, so the generator exaggerates contrast instead of keeping Monet's soft light. |
+| 12 | `a619072f82.jpg` | Monet→Photo | worst cycle | 0.268 | 0.045 | A coastal painting gets a rainbow-coloured horizontal band across the sky, which stays in the reconstruction. | Same streak artifact as #10. Because it survives the round trip, it is a fault of the generators, not of the source image. |
+| 13 | `676a5a4c2e.jpg` | Monet→Photo | least changed | 0.046 | 0.022 | A dense hillside painting is returned almost unchanged; it still looks fully painted. | Busy brushwork already contains photo-like local texture, so the patch discriminator accepts it; the identity loss makes copying cheap. |
+| 14 | `10c555c1b1.jpg` | Monet→Photo | least changed | 0.124 | 0.023 | A bridge with boats keeps its painted look, and the sky gets smeared horizontal streaks. | Combination of #13 (little change) and the sky streaks seen in #10 and #12. |
+
+**Hard images are shared across models.** Zoheb's ResNet-9 failure list includes several of the
+same files: `b1ea5d5a7d` (dark Parliament), `a619072f82` (coast), `6782e7cb2a` (footbridge, also in
+my worst-cycle list), `063ab57d41` (building), `04f59976b5` (snowy rocks, also in my least-changed list) and
+`02ded12bbd` (sunset). These images are difficult
+for CycleGAN in general, not just for my architecture. What *is* specific to my UNet is the tiled
+motif on night photos (#1–3) and the horizontal streaks (#10, #12, #14).
 
 ## Human audit (30 fixed samples, 2 raters)
 
