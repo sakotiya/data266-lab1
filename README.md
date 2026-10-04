@@ -112,8 +112,8 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
       (see "Metrics schema" below)
 - [ ] **Task 3 human audit** - 30 fixed samples, 2 raters, Cohen's kappa (both members)
 - [ ] **Task 3 Kaggle public/private score and leaderboard rank** (both members)
-- [ ] **shreya_akotiya Task 3 checkpoint** - commit the generators (fp16, under GitHub's 100 MB
-      file limit)
+- [x] **shreya_akotiya Task 3 checkpoint** - fp16 generators committed
+      (`task3_gan/shreya_akotiya/checkpoints/*_G_AB_fp16.pt`, `*_G_BA_fp16.pt`)
 - [ ] **Final report** - `report/team_report.md` covers Tasks 1-2; Task 3 section to add, then
       export `report/DATA266_Lab1_Report_Team_32.pdf`
 
@@ -199,9 +199,10 @@ python task3_gan/shreya_akotiya/src/human_audit.py make                  # blind
 python task3_gan/shreya_akotiya/src/human_audit.py score                 # rating means + Cohen's kappa
 ```
 
-The reported run `t3_shreya_unet_128_20261002_023102` used **256px and 80 epochs**, set by an
-override cell in `task3_cyclegan.ipynb`; `config.yaml` still holds the earlier 128px plan. The
-run ID keeps "128" from that plan. See `task3_gan/shreya_akotiya/results.md`.
+`config.yaml` holds the values the reported run `t3_shreya_unet_128_20261002_023102` trained with
+(**256px, 80 epochs**). The run ID keeps "128" from an earlier plan; the run itself is 256px. The
+committed fp16 generators (`checkpoints/*_G_AB_fp16.pt`, `*_G_BA_fp16.pt`) are enough for
+inference without retraining. See `task3_gan/shreya_akotiya/results.md`.
 
 Shared, task-agnostic utilities live in `common/`: config loading with `extends:` inheritance,
 seeding, device selection, the append-only run logger, and the metrics writers.
@@ -225,7 +226,7 @@ anywhere in the repo.
 | Write-up (architecture, hyperparameters, metrics, hardware) | `<task>/<member>/results.md` |
 | Failure / error analysis | `<task>/<member>/failure_analysis.md` |
 | Team-format metrics | `<task>/<member>/metrics_report.csv` |
-| Extended metrics | Tasks 1-2: `metrics_report_extended.csv` · Task 3: `metrics_report_full.csv` (shreya_akotiya), `full_metrics_report.csv` (zoheb_waghu) |
+| Extended metrics | Tasks 1-2: `metrics_report_extended.csv` · Task 3: `full_metrics_report.csv` (zoheb_waghu); shreya_akotiya keeps the team file only |
 | Checkpoints | `<task>/<member>/checkpoints/` |
 | Plots, samples, predictions | `<task>/<member>/outputs/` |
 | Kaggle submission | `task3_gan/<member>/submission.csv` |
@@ -270,7 +271,7 @@ run writes both files from the same in-memory row, so they cannot drift.
 | --- | --- | --- |
 | 1 | 22 cols | `config_path`, `device`, `model_name` |
 | 2 | 31 cols | confusion-matrix cells (`tn`/`fp`/`fn`/`tp`), all 8 per-slice robustness columns, `split`, `config_path`, `device` |
-| 3 | 30 cols, **one row per direction** (A2B, B2A) | MiFID and other extras, in each member's extended Task 3 CSV |
+| 3 | 30 cols, **one row per direction** (A2B, B2A) | MiFID and other extras (zoheb_waghu's `full_metrics_report.csv`; shreya_akotiya's MiFID is in `submission.csv`) |
 
 **Decided:** the Task 2 team header stays as agreed; confusion matrices and per-slice metrics
 live in each member's extended CSV and `results.md`. Task 3 uses one row per direction for both
