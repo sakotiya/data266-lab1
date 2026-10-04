@@ -2,7 +2,7 @@
 
 Submitted model: run 1 (`t3_shreya_unet_128_20261002_023102`, epoch 80), UNet generator + PatchGAN.
 All scores below use the instructor's method (`Part3_Evaluation_Script.ipynb`): first 300 sorted
-images per set, Inception-v3, submission = mean of the two directions, score = −(FID + MiFID) / 2.
+images per set, Inception-v3, submission = mean of the two directions, score = (FID + MiFID) / 2, lower is better.
 
 ## Visual quality
 
@@ -108,12 +108,12 @@ I trained three more 80-epoch runs to try to beat run 1. Everything else stayed 
 was scored with the instructor's method on its final epoch, and none did better, so run 1 stays the
 submission. Their notebooks are not in the repo.
 
-| Run | What changed from run 1 | FID | MiFID | Score |
+| Run | What changed from run 1 | FID | MiFID | Score (lower is better) |
 |---|---|---:|---:|---:|
-| **Run 1 (submitted)** | — | 100.344 | 0.4124 | **−50.38** |
-| v2 | DiffAugment (colour, translation, cutout); discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | −54.67 |
-| v3 | Identity weight 5.0 → 1.0; outermost UNet skip removed; EMA generator weights | 111.379 | 0.4263 | −55.90 |
-| v4 | As v3, but identity weight 0.5 and a 40 + 40 epoch schedule | 107.909 | 0.4117 | −54.16 |
+| **Run 1 (submitted)** | — | 100.344 | 0.4124 | **50.38** |
+| v2 | DiffAugment (colour, translation, cutout); discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | 54.67 |
+| v3 | Identity weight 5.0 → 1.0; outermost UNet skip removed; EMA generator weights | 111.379 | 0.4263 | 55.90 |
+| v4 | As v3, but identity weight 0.5 and a 40 + 40 epoch schedule | 107.909 | 0.4117 | 54.16 |
 
 Why they failed:
 - **v2:** with only 300 Monet paintings, the augmentations and the slower discriminator gave it a
@@ -122,7 +122,7 @@ Why they failed:
   Photo→Monet stopped improving. Its FID on a held-out set of 300 photos stayed around 109 for the
   whole run.
 - **v4:** the weaker identity loss fixed that during training (held-out Photo→Monet FID about
-  101–103), but the real score was still 3.8 points behind run 1. v3 and v4 share the skip
+  101–103), but the real score was still 3.8 points worse than run 1 (54.16 vs 50.38). v3 and v4 share the skip
   removal, and both lost to run 1, which kept it, so that is the most likely cause.
 - **Noise:** in v4, Photo→Monet FID moved 5–8 points between checks 10 epochs apart. With one seed
   per setting, differences of a few points between runs are within that noise.
