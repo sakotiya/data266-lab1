@@ -26,6 +26,7 @@ DATA_DIR = MEMBER_DIR.parent / "data"
 OUT_DIR = MEMBER_DIR / "outputs"
 AXES = ["style", "content", "artifacts"]
 N_SAMPLES, N_RATERS, SEED = 30, 2, 42
+FIRST_N = 300   # sample only from the first 300 sorted predictions, as the instructor's evaluation does
 
 # team name -> (source images, my prediction folder)
 DIRECTIONS = {"A2B": (DATA_DIR / "monet_jpg", OUT_DIR / "pred_B2A"),   # Monet -> photo
@@ -36,12 +37,12 @@ def list_images(folder):
     return sorted(p for p in Path(folder).iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png"))
 
 
-def make(out_dir):
+def make(out_dir, first_n=FIRST_N):
     rng = random.Random(SEED)
     picks = []
     for name, (src_dir, pred_dir) in DIRECTIONS.items():
         sources = {p.stem: p for p in list_images(src_dir)}
-        preds = [p for p in list_images(pred_dir) if p.stem in sources]
+        preds = [p for p in list_images(pred_dir)[:first_n] if p.stem in sources]
         if len(preds) < N_SAMPLES // 2:
             raise SystemExit(f"{pred_dir}: only {len(preds)} predictions with a matching source")
         picks += [(name, sources[p.stem], p) for p in rng.sample(preds, N_SAMPLES // 2)]
@@ -107,5 +108,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=["make", "score"])
     ap.add_argument("--out_dir", type=Path, default=OUT_DIR)
+    ap.add_argument("--first", type=int, default=FIRST_N,
+                    help="sample only from the first N sorted predictions per direction")
     args = ap.parse_args()
-    make(args.out_dir) if args.mode == "make" else score(args.out_dir)
+    make(args.out_dir, args.first) if args.mode == "make" else score(args.out_dir)
