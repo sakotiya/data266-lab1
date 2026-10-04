@@ -1,0 +1,116 @@
+{
+  "run_tag": "t3_shreya_unet_256_v3",
+  "member": "shreya_akotiya",
+  "task": "task3_gan",
+  "timestamp": "2026-10-04T07:14:12.707386",
+  "config": {
+    "run": {
+      "tag": "t3_shreya_unet_256_v3",
+      "member": "shreya_akotiya",
+      "seed": 42,
+      "device": "auto"
+    },
+    "data": {
+      "domain_a_dir": "task3_gan/data/photo_jpg",
+      "domain_b_dir": "task3_gan/data/monet_jpg",
+      "image_size": 256,
+      "load_size": 286,
+      "random_flip": true,
+      "num_workers": 4,
+      "epoch_definition": "domain_a"
+    },
+    "model": {
+      "generator": "unet",
+      "gen_down_blocks": 7,
+      "gen_filters": 64,
+      "gen_use_dropout": true,
+      "discriminator": "patchgan",
+      "disc_layers": 3,
+      "disc_filters": 64,
+      "norm": "instance",
+      "init": "normal",
+      "init_gain": 0.02
+    },
+    "loss": {
+      "gan_mode": "lsgan",
+      "lambda_cycle_a": 10.0,
+      "lambda_cycle_b": 10.0,
+      "lambda_identity": 0.1,
+      "image_pool_size": 50
+    },
+    "train": {
+      "epochs": 80,
+      "epochs_decay": 20,
+      "batch_size": 1,
+      "optimizer": "adam",
+      "lr": 0.0002,
+      "betas": [
+        0.5,
+        0.999
+      ],
+      "log_interval_steps": 50,
+      "sample_interval_steps": 500,
+      "checkpoint_interval_epochs": 20,
+      "amp": false
+    },
+    "eval": {
+      "fid_batch_size": 32,
+      "kid_subset_size": 100,
+      "lpips_net": "alex",
+      "cycle_l1_samples": 200,
+      "content_cosine_backbone": "inception_v3",
+      "human_audit": {
+        "n_samples": 30,
+        "n_raters": 2,
+        "blind": true,
+        "axes": [
+          "style",
+          "content",
+          "artifacts"
+        ]
+      }
+    },
+    "submission": {
+      "direction": "photo_to_monet",
+      "n_images": 7038,
+      "format": "zip",
+      "out_dir": "task3_gan/shreya_akotiya/outputs/pred_A2B"
+    },
+    "paths": {
+      "log_dir": "reproducibility/raw_logs/shreya_akotiya/task3_gan",
+      "checkpoint_dir": "task3_gan/shreya_akotiya/checkpoints",
+      "output_dir": "task3_gan/shreya_akotiya/outputs",
+      "metrics_csv_path": "task3_gan/shreya_akotiya/full_metrics_report.csv"
+    }
+  },
+  "v3_settings": {
+    "d_lr_mult": 1.0,
+    "diffaugment": null,
+    "skip_outer": false,
+    "lambda_identity": 0.1,
+    "ema_decay": 0.9999,
+    "submission_weights": "ema",
+    "monitor_every": 10
+  },
+  "checkpoint": {
+    "path": "/content/drive/MyDrive/DATA266_Lab1/task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_256_v3_latest.pt",
+    "epoch": 80,
+    "sha256": "4a9450306a1fedfd5910adef1ca8ca9913187a7a052be8cc6e157c1c7fa6b45e"
+  },
+  "raw_log": "/content/drive/MyDrive/DATA266_Lab1/reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_256_v3.log",
+  "environment": {
+    "python": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cu130",
+    "torchvision": "0.26.0+cu130",
+    "gpu": "NVIDIA A100-SXM4-40GB"
+  },
+  "metrics_summary": {
+    "fid_photo_to_monet_cleanfid": 97.50458945703235,
+    "fid_monet_to_photo_cleanfid": 92.76321037304956,
+    "submission_fid": 111.37917184004112,
+    "submission_mifid": 0.42631733417510986,
+    "cycle_l1_A": 0.03428991472348571,
+    "cycle_l1_B": 0.050040279952809213
+  }
+}

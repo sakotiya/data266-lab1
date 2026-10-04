@@ -106,7 +106,13 @@ Inter-rater agreement (Cohen's kappa / % agreement):
 
 I trained three more 80-epoch runs to try to beat run 1. Everything else stayed as in run 1, each
 was scored with the instructor's method on its final epoch, and none did better, so run 1 stays the
-submission. Their notebooks are not in the repo.
+submission.
+
+Evidence (`reproducibility/`): raw logs `raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_256_v{2,3,4}.log`
+and manifests `manifests/shreya_akotiya/t3_shreya_unet_256_v{2,3}.json` (settings, checkpoint hash,
+FID/MiFID). The v2 log covers all 80 epochs. The v3 and v4 runs were resumed after Colab
+disconnects, and their logs only kept the last session (v3: epochs 75–80, v4: epochs 61–80). The v4
+manifest was not saved; its FID/MiFID below come from the instructor-method cell output.
 
 | Run | What changed from run 1 | FID | MiFID | Score (lower is better) |
 |---|---|---:|---:|---:|
@@ -117,20 +123,25 @@ submission. Their notebooks are not in the repo.
 
 Why they failed:
 - **v2:** with only 300 Monet paintings, the augmentations and the slower discriminator gave it a
-  weaker, noisier picture of Monet style. Photo→Monet got worse, and training was unstable early on.
-- **v3:** the Monet discriminator won almost completely (loss about 0.001 from epoch 6 on), so
-  Photo→Monet stopped improving. Its FID on a held-out set of 300 photos stayed around 109 for the
-  whole run.
-- **v4:** the weaker identity loss fixed that during training (held-out Photo→Monet FID about
-  101–103), but the real score was still 3.8 points worse than run 1 (54.16 vs 50.38). v3 and v4 share the skip
+  weaker, noisier picture of Monet style. Photo→Monet got worse (clean-fid FID 94.09 against run 1's
+  80.55, manifest) and training was unstable early on (held-out Photo→Monet FID 118 at epoch 10,
+  148 at epoch 20, back to 105 by epoch 80, log).
+- **v3:** the Monet discriminator won almost completely: in the logged epochs (75–80) its loss had a
+  median of 0.0001, against 0.034 in v4. The generator then gets almost no useful signal, and
+  Photo→Monet stayed poor: FID 108.8 at epoch 80 on a held-out set of 300 photos (photos 301–600),
+  against 102.9 for v4.
+- **v4:** the weaker identity loss kept the Monet discriminator in balance (loss median 0.034) and
+  improved held-out Photo→Monet FID (97.6 at epoch 70, 102.9 at epoch 80), but the real score was
+  still 3.8 points worse than run 1 (54.16 vs 50.38). v3 and v4 share the skip
   removal, and both lost to run 1, which kept it, so that is the most likely cause.
-- **Noise:** in v4, Photo→Monet FID moved 5–8 points between checks 10 epochs apart. With one seed
-  per setting, differences of a few points between runs are within that noise.
+- **Noise:** in v4, held-out Photo→Monet FID moved 5.3 points between epochs 70 and 80, at a low
+  learning rate. With one seed per setting, differences of a few points between runs are within
+  that noise.
 
 ## Shortcomings
 
-- **One seed.** Run-to-run variance is unmeasured, and the checkpoint-to-checkpoint swings seen
-  in v4 suggest it is several FID points.
+- **One seed.** Run-to-run variance is unmeasured; the 5-point swing between v4's last two
+  checkpoints suggests it is several FID points.
 - **300-image scoring.** FID on 300 images is noisy and biased upward.
 - **Domain imbalance.** 300 Monet paintings against 7,038 photos: each painting is seen about 23
   times per epoch, which makes it easy for the Monet discriminator to memorise them.
