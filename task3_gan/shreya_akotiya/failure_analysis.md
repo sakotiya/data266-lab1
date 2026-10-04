@@ -108,11 +108,14 @@ I trained three more 80-epoch runs to try to beat run 1. Everything else stayed 
 was scored with the instructor's method on its final epoch, and none did better, so run 1 stays the
 submission.
 
-Evidence (`reproducibility/`): raw logs `raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_256_v{2,3,4}.log`
+Evidence (`reproducibility/`): raw logs `raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_256_v{2,3,4}.log`,
+per-epoch FID history `raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_256_v{2,3,4}_fid_monitor.csv`
+(every 10 epochs, on held-out photos 301–600; monitoring only, never used to pick a checkpoint)
 and manifests `manifests/shreya_akotiya/t3_shreya_unet_256_v{2,3}.json` (settings, checkpoint hash,
 FID/MiFID). The v2 log covers all 80 epochs. The v3 and v4 runs were resumed after Colab
-disconnects, and their logs only kept the last session (v3: epochs 75–80, v4: epochs 61–80). The v4
-manifest was not saved; its FID/MiFID below come from the instructor-method cell output.
+disconnects, and their logs only kept the last session (v3: epochs 75–80, v4: epochs 61–80); the
+FID history files cover all 80 epochs. The v4 manifest was not saved; its FID/MiFID below come from
+the instructor-method cell output.
 
 | Run | What changed from run 1 | FID | MiFID | Score (lower is better) |
 |---|---|---:|---:|---:|
@@ -128,20 +131,20 @@ Why they failed:
   148 at epoch 20, back to 105 by epoch 80, log).
 - **v3:** the Monet discriminator won almost completely: in the logged epochs (75–80) its loss had a
   median of 0.0001, against 0.034 in v4. The generator then gets almost no useful signal, and
-  Photo→Monet stayed poor: FID 108.8 at epoch 80 on a held-out set of 300 photos (photos 301–600),
-  against 102.9 for v4.
+  Photo→Monet stopped improving: held-out FID stayed between 108.8 and 110.2 at every check from
+  epoch 10 to 80, even through the LR decay.
 - **v4:** the weaker identity loss kept the Monet discriminator in balance (loss median 0.034) and
-  improved held-out Photo→Monet FID (97.6 at epoch 70, 102.9 at epoch 80), but the real score was
+  improved held-out Photo→Monet FID (97.6–105.4 over the run, against v3's 108.8–110.2), but the real score was
   still 3.8 points worse than run 1 (54.16 vs 50.38). v3 and v4 share the skip
   removal, and both lost to run 1, which kept it, so that is the most likely cause.
-- **Noise:** in v4, held-out Photo→Monet FID moved 5.3 points between epochs 70 and 80, at a low
-  learning rate. With one seed per setting, differences of a few points between runs are within
-  that noise.
+- **Noise:** in v4, held-out Photo→Monet FID went 100.1 → 105.4 → 97.6 → 102.9 over epochs 50–80,
+  swings of 5–8 points between checks, even at a low learning rate. With one seed per setting,
+  differences of a few points between runs are within that noise.
 
 ## Shortcomings
 
-- **One seed.** Run-to-run variance is unmeasured; the 5-point swing between v4's last two
-  checkpoints suggests it is several FID points.
+- **One seed.** Run-to-run variance is unmeasured; the 5–8 point swings between v4's checkpoints
+  suggest it is several FID points.
 - **300-image scoring.** FID on 300 images is noisy and biased upward.
 - **Domain imbalance.** 300 Monet paintings against 7,038 photos: each painting is seen about 23
   times per epoch, which makes it easy for the Monet discriminator to memorise them.
