@@ -129,7 +129,8 @@ Still to measure: human audit (30 samples, 2 raters, Cohen's kappa; sheet genera
 not logged during this run.
 
 Evidence: loss curves in `outputs/plots/loss_curves.png`, per-epoch losses in
-`outputs/train_history.csv`, manifest in
+`outputs/train_history.csv`, run manifest in
+`reproducibility/manifests/shreya_akotiya/task3_gan_manifest.md` (run → checkpoint → log) and
 `reproducibility/manifests/shreya_akotiya/t3_shreya_unet_128_20261002_023102.json`.
 
 | Result | Checkpoint | Raw log |
