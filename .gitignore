@@ -24,6 +24,9 @@ task3_gan/data/photo_jpg/*
 !task2_sentiment/zoheb_waghu/checkpoints/t2_m3_bilstm_attn_20260929-211521_best.pt
 # Task 3: fp16 copy of the two generators (43 MB); the fp32 _final.pt is 108 MB, over the limit
 !task3_gan/zoheb_waghu/checkpoints/t3_baseline_20260929-235720_generators_fp16.pt
+# Task 3 (shreya_akotiya): fp16 copies of the two generators (84 MB each); the full checkpoint is 1.0 GB
+!task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_128_20261002_023102_G_AB_fp16.pt
+!task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_128_20261002_023102_G_BA_fp16.pt
 
 # Python
 __pycache__/

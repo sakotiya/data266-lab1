@@ -34,7 +34,13 @@ The submission FID/MiFID were recomputed by `run1_team_metrics.ipynb` from the c
 |---|---|---|
 | Photo → Monet translations | `task3_gan/shreya_akotiya/outputs/pred_A2B/` | first 300 of 7,038 (the evaluated set) |
 | Monet → photo translations | `task3_gan/shreya_akotiya/outputs/pred_B2A/` | all 300 |
-| Checkpoint (all four networks, optimizers, history) | `task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_128_20261002_023102_epoch080.pt` | no (1.0 GB; `*.pt` is gitignored) |
+| Generators, fp16 (what inference needs) | `task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_128_20261002_023102_G_AB_fp16.pt` (photo→Monet, sha256 `2ce06ca5...`) and `..._G_BA_fp16.pt` (Monet→photo, sha256 `5e7b55c7...`) | yes, 84 MB each |
+| Full checkpoint (all four networks, optimizers, history) | `task3_gan/shreya_akotiya/checkpoints/t3_shreya_unet_128_20261002_023102_epoch080.pt` | no (1.0 GB, over GitHub's 100 MB limit) |
+
+The fp16 files were cut from the full epoch-80 checkpoint (`{"run_id", "epoch", "source", "G_AB" or
+"G_BA": state_dict}`). Loaded back as fp32, they give the same images as the full checkpoint (mean
+difference 0.01 / 255), and they reproduce the committed predictions to about 3 / 255 (JPEG and
+CPU-vs-GPU rounding). Load with the `UNetGenerator` class in `src/run1_team_metrics.ipynb`.
 
 Direction names: in my notebooks A = photo and B = Monet, so `pred_A2B` is Photo→Monet. The
 instructor's script and the team metrics use A = Monet; `metrics_report.csv` uses the team names.

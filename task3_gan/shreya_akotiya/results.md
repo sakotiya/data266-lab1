@@ -135,7 +135,7 @@ Evidence: loss curves in `outputs/plots/loss_curves.png`, per-epoch losses in
 
 | Result | Checkpoint | Raw log |
 |--------|------------|---------|
-| All metrics above | `t3_shreya_unet_128_20261002_023102_epoch080.pt` | `reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102.log` |
+| All metrics above | `t3_shreya_unet_128_20261002_023102_epoch080.pt` (1.0 GB, not in repo); committed generators `checkpoints/t3_shreya_unet_128_20261002_023102_G_{AB,BA}_fp16.pt` | `reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102.log` |
 
 The run ID contains `128` because the run tag was set before the notebook switched this run to 256px.
 The log confirms the run used 256px images.
