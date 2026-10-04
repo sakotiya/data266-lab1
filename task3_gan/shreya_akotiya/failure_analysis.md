@@ -51,7 +51,7 @@ UNet's skip connections make it especially easy.
 
 ## Training stability
 
-- No NaN or Inf values in run 1. (v2–v4 count non-finite steps in their `metrics_report.csv`.)
+- No NaN or Inf values in run 1: 0 non-finite values in 11,260 logged steps.
 - In run 1, total generator loss was lowest at epoch 5 (2.05). After that the discriminators slowly
   got ahead: average D loss fell 0.23 → 0.08 while the Photo→Monet adversarial loss rose 0.40 → 0.76.
 - v3 shows the same imbalance in its most extreme form: the Monet discriminator's loss fell to
@@ -68,6 +68,23 @@ None did.
 | v2 | DiffAugment (colour, translation, cutout); discriminator LR × 0.5; LR decay over 40 epochs instead of 20 | 108.937 | 0.4127 | **−54.67** | −4.29 |
 | v3 | Identity weight 5.0 → 1.0; outermost UNet skip removed; EMA generators (decay 0.9999) | 111.379 | 0.4263 | **−55.90** | −5.52 |
 | v4 | As v3, but identity weight 0.5 and LR decay over 40 epochs | 107.909 | 0.4117 | **−54.16** | −3.78 |
+
+**What we tried, in full.** All three follow-up runs kept run 1's setup otherwise: same UNet
+generator and PatchGAN discriminator, 256 px, 80 epochs of 7,038 steps, batch size 1, Adam
+(2e-4, betas 0.5/0.999), LSGAN loss, cycle weight 10, replay buffer 50, seed 42, Google Colab.
+Each took about 7 minutes per epoch, roughly 9.5 hours per run. Run 1's notebook is in the repo;
+the follow-up notebooks are not.
+
+| Setting | Run 1 | v2 | v3 | v4 |
+|---|---|---|---|---|
+| Identity loss weight (× cycle weight 10) | 0.5 → 5.0 | 0.5 → 5.0 | 0.1 → 1.0 | 0.05 → 0.5 |
+| Outermost UNet skip connection | kept | kept | removed | removed |
+| DiffAugment on discriminator inputs | off | colour, translation, cutout | off | off |
+| Discriminator LR | 2e-4 | 1e-4 (× 0.5) | 2e-4 | 2e-4 |
+| LR schedule (constant + linear decay) | 60 + 20 | 40 + 40 | 60 + 20 | 40 + 40 |
+| Submitted weights | trained | trained | EMA (decay 0.9999) | EMA (decay 0.9999) |
+| FID monitor every 10 epochs | no | yes | yes | yes |
+| Ideas behind it | baseline | more data variety for the small Monet set; slow the discriminator down | push harder towards Monet style | v3 plus the CycleGAN paper's half-run decay and a weaker identity pull |
 
 From v2 on, every run also logged a monitor score every 10 epochs, using the same method on photos
 301–600 (images the submission is not scored on). It was used for monitoring only; every submission

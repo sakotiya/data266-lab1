@@ -135,14 +135,15 @@ not logged during this run.
 
 I trained three more 80-epoch runs to try to improve on run 1. Each was scored with the same
 instructor method on its final epoch; no checkpoint was picked after seeing results. Run 1 is still
-the best and stays the Kaggle submission.
+the best and stays the Kaggle submission. Only run 1's notebook (`src/task3_cyclegan.ipynb`) is in
+the repo; the follow-up runs are described in full in `failure_analysis.md`.
 
-| Run | Notebook | Changes from run 1 | FID | MiFID | **Score** |
-|---|---|---|---:|---:|---:|
-| **Run 1** | `src/task3_cyclegan.ipynb` | — | 100.344 | 0.4124 | **−50.38** |
-| v2 | `src/task3_cyclegan_v2.ipynb` | DiffAugment; discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | −54.67 |
-| v3 | `src/task3_cyclegan_v3.ipynb` | Identity weight 1.0; outermost UNet skip removed; EMA generators | 111.379 | 0.4263 | −55.90 |
-| v4 | `src/task3_cyclegan_v4.ipynb` | Identity weight 0.5; outermost skip removed; EMA; 40 + 40 schedule | 107.909 | 0.4117 | −54.16 |
+| Run | Changes from run 1 | FID | MiFID | **Score** |
+|---|---|---:|---:|---:|
+| **Run 1** | — | 100.344 | 0.4124 | **−50.38** |
+| v2 | DiffAugment; discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | −54.67 |
+| v3 | Identity weight 1.0; outermost UNet skip removed; EMA generators | 111.379 | 0.4263 | −55.90 |
+| v4 | Identity weight 0.5; outermost skip removed; EMA; 40 + 40 schedule | 107.909 | 0.4117 | −54.16 |
 
 What they showed (details and per-epoch monitor scores in `failure_analysis.md`):
 - **Lowering the identity weight helped Photo→Monet during training** (monitor FID about 101–103 in
