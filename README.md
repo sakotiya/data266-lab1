@@ -166,6 +166,9 @@ python task2_sentiment/shreya_akotiya/src/fetch_data.py
 jupyter lab task2_sentiment/shreya_akotiya/src/task2_sentiment.ipynb
 ```
 
+On Colab the notebooks look for the repo at `/content/drive/MyDrive/DATA266_Lab1` by default;
+set the `LAB1_ROOT` environment variable to use a different location.
+
 Shared, task-agnostic utilities live in `common/`: config loading with `extends:` inheritance,
 seeding, device selection, the append-only run logger, and the metrics writers.
 
