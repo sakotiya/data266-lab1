@@ -54,104 +54,6 @@ UNet's skip connections make it especially easy.
 - No NaN or Inf values in run 1: 0 non-finite values in 11,260 logged steps.
 - In run 1, total generator loss was lowest at epoch 5 (2.05). After that the discriminators slowly
   got ahead: average D loss fell 0.23 → 0.08 while the Photo→Monet adversarial loss rose 0.40 → 0.76.
-- v3 shows the same imbalance in its most extreme form: the Monet discriminator's loss fell to
-  about 0.001 by epoch 6 and stayed between 0.0001 and 0.002 for the rest of the run.
-
-## Experiments that did not help (v2, v3, v4)
-
-After run 1 I trained three more full 80-epoch runs, each changing the settings to try to beat it.
-None did.
-
-| Run | Changes from run 1 | Real FID | Real MiFID | **Score** | vs run 1 |
-|---|---|---:|---:|---:|---:|
-| Run 1 (submitted) | — | 100.344 | 0.4124 | **−50.38** | — |
-| v2 | DiffAugment (colour, translation, cutout); discriminator LR × 0.5; LR decay over 40 epochs instead of 20 | 108.937 | 0.4127 | **−54.67** | −4.29 |
-| v3 | Identity weight 5.0 → 1.0; outermost UNet skip removed; EMA generators (decay 0.9999) | 111.379 | 0.4263 | **−55.90** | −5.52 |
-| v4 | As v3, but identity weight 0.5 and LR decay over 40 epochs | 107.909 | 0.4117 | **−54.16** | −3.78 |
-
-**What we tried, in full.** All three follow-up runs kept run 1's setup otherwise: same UNet
-generator and PatchGAN discriminator, 256 px, 80 epochs of 7,038 steps, batch size 1, Adam
-(2e-4, betas 0.5/0.999), LSGAN loss, cycle weight 10, replay buffer 50, seed 42, Google Colab.
-Each took about 7 minutes per epoch, roughly 9.5 hours per run. Run 1's notebook is in the repo;
-the follow-up notebooks are not.
-
-| Setting | Run 1 | v2 | v3 | v4 |
-|---|---|---|---|---|
-| Identity loss weight (× cycle weight 10) | 0.5 → 5.0 | 0.5 → 5.0 | 0.1 → 1.0 | 0.05 → 0.5 |
-| Outermost UNet skip connection | kept | kept | removed | removed |
-| DiffAugment on discriminator inputs | off | colour, translation, cutout | off | off |
-| Discriminator LR | 2e-4 | 1e-4 (× 0.5) | 2e-4 | 2e-4 |
-| LR schedule (constant + linear decay) | 60 + 20 | 40 + 40 | 60 + 20 | 40 + 40 |
-| Submitted weights | trained | trained | EMA (decay 0.9999) | EMA (decay 0.9999) |
-| FID monitor every 10 epochs | no | yes | yes | yes |
-| Ideas behind it | baseline | more data variety for the small Monet set; slow the discriminator down | push harder towards Monet style | v3 plus the CycleGAN paper's half-run decay and a weaker identity pull |
-
-From v2 on, every run also logged a monitor score every 10 epochs, using the same method on photos
-301–600 (images the submission is not scored on). It was used for monitoring only; every submission
-is the final epoch.
-
-| Monitor score | e10 | e20 | e30 | e40 | e50 | e60 | e70 | e80 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| v2 | −56.32 | −65.83 | −58.54 | −56.64 | −56.57 | −53.59 | −53.07 | −51.68 |
-| v3 | −54.84 | −54.46 | −53.94 | −53.73 | −53.56 | −53.46 | −53.40 | −53.52 |
-| v4 | −53.16 | −52.30 | −52.03 | — | −51.41 | −52.75 | −50.79 | −52.14 |
-
-(v4's epoch-40 line was not recorded.)
-
-### Why v2 did not help
-
-- **Photo→Monet got worse, not better.** clean-fid FID on all generated images was 94.09 for
-  Photo→Monet against run 1's 80.55, and 86.27 for Monet→Photo against run 1's 84.05.
-- **It was unstable early on.** The monitor score dropped from −56.32 at epoch 10 to −65.83 at epoch
-  20 before recovering. Most of the final gain came during the LR decay (−56.57 at epoch 50 to
-  −51.68 at epoch 80).
-- **Likely cause:** with only 300 Monet paintings, DiffAugment's colour and cutout changes, plus
-  the halved discriminator learning rate, gave the Monet discriminator a weaker and noisier signal
-  about what real Monet style looks like. The generators then had less to learn from.
-- **Limitation:** three things changed at once, so this run cannot say which one did the damage.
-
-### Why v3 did not help
-
-- **Photo→Monet barely moved for 80 epochs:** 110.2 at epoch 10, 108.8 at epoch 80 on the monitor.
-  All of v3's improvement came from Monet→Photo (108.3 → 104.4).
-- **The Monet discriminator won too easily.** Its loss fell to about 0.001 by epoch 6 and stayed
-  there. A discriminator that separates real from fake almost perfectly gives the generator very
-  little useful gradient.
-- **The LR decay did nothing.** The monitor score was flat from epoch 40 to 80 (−53.73 → −53.52).
-- **Likely cause:** removing the outermost skip connection forced all full-resolution detail through
-  the encoder. That made reconstruction harder: in the step logs the cycle loss (weighted, both
-  directions) was still about 1.0 at epochs 30–40, against a per-epoch average of about 0.8 in run 1. With the identity weight still at 1.0, the
-  generator kept close to its input instead of moving towards Monet style, and the discriminator
-  could tell its outputs apart.
-- **What it did show:** EMA weights beat the raw weights at 6 of 8 checkpoints and at the final
-  epoch (−53.52 vs −53.80), so EMA was not the problem.
-
-### Why v4 did not help
-
-- **On the monitor it was the best run:** Photo→Monet fell to about 100–103 (97.6 at epoch 70),
-  against v3's 109. The Monet discriminator stayed balanced (loss 0.02–0.15 instead of 0.001).
-  Lowering the identity weight to 0.5 was the change that freed up Photo→Monet.
-- **But the real score was still 3.8 points worse than run 1** (−54.16 vs −50.38).
-- **The scores swung a lot between checkpoints.** Photo→Monet moved 5–8 FID points between
-  consecutive monitor checks, even at low learning rates (100.1 → 105.4 → 97.6 → 102.9 over
-  epochs 50–80). On 300 images, the epoch where training stops matters about as much as the
-  setting being tested.
-- **Likely cause:** v3 and v4 both removed the outermost skip connection, and both ended about 4–6
-  points behind run 1, which kept it. The skip removal is the common factor, so it is the most
-  likely reason both runs fell short. This is not proven: v3 and v4 also added EMA. The EMA
-  comparison within each run (EMA ≥ raw at the final epoch) makes EMA an unlikely cause.
-
-### Monitor vs real score
-
-| Run | Monitor, epoch 80 | Real score | Monitor too optimistic by |
-|---|---:|---:|---:|
-| v2 | −51.68 | −54.67 | 2.99 |
-| v3 | −53.52 | −55.90 | 2.38 |
-| v4 | −52.14 | −54.16 | 2.02 |
-
-The monitor ranked the three runs correctly (v4 > v2 > v3 on both). Its absolute value was
-2.0–3.0 points too optimistic every time, so it is useful for comparing runs but not for predicting
-the leaderboard number.
 
 ## Failure cases
 
@@ -200,23 +102,40 @@ stripped. Raters get only `outputs/human_audit/`, `outputs/human_audit_ratings.c
 
 Inter-rater agreement (Cohen's kappa / % agreement):
 
+## Other models tried (not successful)
+
+I trained three more 80-epoch runs to try to beat run 1. Everything else stayed as in run 1, each
+was scored with the instructor's method on its final epoch, and none did better, so run 1 stays the
+submission. Their notebooks are not in the repo.
+
+| Run | What changed from run 1 | FID | MiFID | Score |
+|---|---|---:|---:|---:|
+| **Run 1 (submitted)** | — | 100.344 | 0.4124 | **−50.38** |
+| v2 | DiffAugment (colour, translation, cutout); discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | −54.67 |
+| v3 | Identity weight 5.0 → 1.0; outermost UNet skip removed; EMA generator weights | 111.379 | 0.4263 | −55.90 |
+| v4 | As v3, but identity weight 0.5 and a 40 + 40 epoch schedule | 107.909 | 0.4117 | −54.16 |
+
+Why they failed:
+- **v2:** with only 300 Monet paintings, the augmentations and the slower discriminator gave it a
+  weaker, noisier picture of Monet style. Photo→Monet got worse, and training was unstable early on.
+- **v3:** the Monet discriminator won almost completely (loss about 0.001 from epoch 6 on), so
+  Photo→Monet stopped improving. Its FID on a held-out set of 300 photos stayed around 109 for the
+  whole run.
+- **v4:** the weaker identity loss fixed that during training (held-out Photo→Monet FID about
+  101–103), but the real score was still 3.8 points behind run 1. v3 and v4 share the skip
+  removal, and both lost to run 1, which kept it, so that is the most likely cause.
+- **Noise:** in v4, Photo→Monet FID moved 5–8 points between checks 10 epochs apart. With one seed
+  per setting, differences of a few points between runs are within that noise.
+
 ## Shortcomings
 
-- **The best model is the first one.** Three follow-up runs, about 30 GPU hours, did not beat the
-  baseline. Each changed several settings at once, so they show what doesn't work together but not
-  which single change is responsible.
-- **One seed per setting.** The 5–8 point swings between checkpoints in v4 suggest run-to-run
-  variance of several points, about the size of every difference measured here. Without repeated
-  seeds, none of the gaps between runs can be called significant.
-- **300-image scoring.** FID on 300 images is noisy and biased upward; the monitor-vs-real gap of
-  2–3 points between two different sets of 300 photos shows how much the image sample alone moves
-  the score.
+- **One seed.** Run-to-run variance is unmeasured, and the checkpoint-to-checkpoint swings seen
+  in v4 suggest it is several FID points.
+- **300-image scoring.** FID on 300 images is noisy and biased upward.
 - **Domain imbalance.** 300 Monet paintings against 7,038 photos: each painting is seen about 23
-  times per epoch, which makes it easy for the Monet discriminator to memorise them (most visible in
-  v3).
-- **Gap to the leaderboard.** The top scores are −41 to −45. My best is −50.38. The settings I
-  changed moved the score by a few points at most; closing a 5–10 point gap would need a different
-  approach, not more tuning of this one.
+  times per epoch, which makes it easy for the Monet discriminator to memorise them.
+- **Artifacts specific to this model:** the tiled pattern on night photos and the horizontal sky
+  streaks (failure cases #1–3, #10, #12, #14).
 
-What I would test next, one change at a time: put the outermost skip back with identity weight 0.5
-(isolating v4's useful change), and repeat the best setting with three seeds to measure the noise.
+What I would test next, one change at a time: keep run 1's architecture and lower only the identity
+weight to 0.5, and repeat the best setting with three seeds to measure the noise.

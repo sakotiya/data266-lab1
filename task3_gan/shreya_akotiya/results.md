@@ -131,36 +131,6 @@ Still to measure: human audit (30 samples, 2 raters, Cohen's kappa; sheet genera
 `src/human_audit.py`) and Kaggle public/private score and rank. Gradient norms and peak memory were
 not logged during this run.
 
-## Follow-up runs (v2, v3, v4) — none beat run 1
-
-I trained three more 80-epoch runs to try to improve on run 1. Each was scored with the same
-instructor method on its final epoch; no checkpoint was picked after seeing results. Run 1 is still
-the best and stays the Kaggle submission. Only run 1's notebook (`src/task3_cyclegan.ipynb`) is in
-the repo; the follow-up runs are described in full in `failure_analysis.md`.
-
-| Run | Changes from run 1 | FID | MiFID | **Score** |
-|---|---|---:|---:|---:|
-| **Run 1** | — | 100.344 | 0.4124 | **−50.38** |
-| v2 | DiffAugment; discriminator LR × 0.5; 40 + 40 epoch schedule | 108.937 | 0.4127 | −54.67 |
-| v3 | Identity weight 1.0; outermost UNet skip removed; EMA generators | 111.379 | 0.4263 | −55.90 |
-| v4 | Identity weight 0.5; outermost skip removed; EMA; 40 + 40 schedule | 107.909 | 0.4117 | −54.16 |
-
-What they showed (details and per-epoch monitor scores in `failure_analysis.md`):
-- **Lowering the identity weight helped Photo→Monet during training** (monitor FID about 101–103 in
-  v4 against 109 in v3), but the gain did not carry over to the submitted 300 photos.
-- **Removing the outermost skip connection is the most likely reason v3 and v4 fell short.** It is
-  the change they share, and run 1, which kept it, beat both.
-- **DiffAugment with a weaker discriminator (v2) made Photo→Monet worse** (clean-fid 94.09 vs 80.55).
-- **EMA weights were at least as good as the raw weights** at the final epoch in v3 and v4.
-- **The training monitor** (same method, photos 301–600) ranked the runs correctly, but was 2.0–3.0
-  points more optimistic than the real score every time.
-- **Scores swing between checkpoints:** v4's Photo→Monet FID moved 5–8 points between consecutive
-  10-epoch checks. Single-seed differences of a few points between runs are within that noise.
-
-Leaderboard context: the top scores are −41 to −45. My best honest score, −50.38, is about 5–10
-points behind. The settings changed in v2–v4 moved the score by a few points at most, so closing
-that gap would take a different approach rather than more tuning of this one.
-
 Evidence: loss curves in `outputs/plots/loss_curves.png`, per-epoch losses in
 `outputs/train_history.csv`, manifest in
 `reproducibility/manifests/shreya_akotiya/t3_shreya_unet_128_20261002_023102.json`.
@@ -185,10 +155,8 @@ The log confirms the run used 256px images.
 
 ## What I would try next
 
-1. **Isolate the one useful change.** Keep the outermost skip connection (as in run 1) and only
-   lower the identity weight to 0.5, since that is what improved Photo→Monet in v4.
-2. **Repeat with three seeds.** Checkpoint-to-checkpoint swings of 5–8 FID points mean single-run
-   differences of a few points cannot be called significant.
-3. **Rebalance the Monet discriminator** without weakening its signal (v2's approach hurt), e.g.
-   fewer discriminator updates instead of a lower learning rate.
-4. **Longer schedule** - 100 constant + 100 decay epochs, as in the CycleGAN paper.
+1. **Repeat with three seeds** to measure run-to-run variance; with 300 images per set, FID
+   differences of a few points may be noise.
+2. **Rebalance the discriminators** - they gradually overpowered the generators; try fewer
+   discriminator updates.
+3. **Longer schedule** - 100 constant + 100 decay epochs, as in the CycleGAN paper.
