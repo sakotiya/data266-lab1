@@ -19,14 +19,16 @@ side by side. The comparison sections below summarize what we found together.
 **Shreya's contribution**
 
 I built and trained the 12-layer deep-narrow character GPT for Task 1. I also trained three Yelp
-sentiment models for Task 2: a mean-pooling baseline, a TextCNN, and a BiLSTM. My work is
+sentiment models for Task 2: a mean-pooling baseline, a TextCNN, and a BiLSTM. For Task 3, I
+trained a CycleGAN with UNet generators and PatchGAN discriminators. My work is
 organized around configuration-driven notebooks, and I prepared the preprocessing, training
 logs, metrics, generated samples, and failure analyses for my models.
 
 **Zoheb's contribution**
 
 I built and trained the 4-layer shallow-wide character GPT for Task 1. For Task 2, I trained a
-BiLSTM mean-pooling baseline, a TextCNN, and an attention-based BiLSTM. I organized my work using
+BiLSTM mean-pooling baseline, a TextCNN, and an attention-based BiLSTM. For Task 3, I trained a
+CycleGAN with ResNet-9 generators and 70 × 70 PatchGAN discriminators. I organized my work using
 Python source modules and notebooks, and prepared the checkpoints, metrics, plots, logs, and
 error reviews for my models.
 
@@ -526,6 +528,247 @@ also found label noise, which no model can fix.
 
 ---
 
+## Task 3 — CycleGAN image style transfer (Monet ↔ photo)
+
+### 3.1 Shared setup
+
+- **Data.** Kaggle `gan-getting-started`: 300 Monet paintings and 7,038 photographs, unpaired,
+  256 × 256. Both members trained at full 256px resolution, with the same augmentation: resize to
+  286, random 256 crop, horizontal flip.
+- **Direction names.** This report uses the instructor's convention: **A = Monet, B = photo**.
+  So **A2B = Monet → photo** and **B2A = photo → Monet** (the Kaggle direction). Shreya's
+  notebook internally uses A = photo, so her `outputs/pred_A2B/` folder holds photo → Monet. All
+  tables below use the instructor's names.
+- **Same CycleGAN recipe.** Both models have two generators and two discriminators, trained with
+  an LSGAN adversarial loss, cycle-consistency loss (λ = 10 in both directions), identity loss
+  (0.5 × λ = 5), a 50-image fake pool for each discriminator, Adam (lr 2e-4, β = (0.5, 0.999)),
+  batch size 1 with instance normalisation, and one epoch = one pass over the 7,038 photos (each
+  Monet image is reused about 23 times per epoch).
+- **Same evaluation.** All image-quality numbers follow the instructor's
+  `Part3_Evaluation_Script.ipynb`: the first 300 sorted images per set, Inception-v3 features,
+  FID and MiFID per direction, and submission value = mean of the two directions. Both members
+  then computed KID, precision/recall, density/coverage, cycle L1, LPIPS and content cosine on
+  the same 300 images, so these numbers are directly comparable.
+- **Leaderboard integrity.** Every submitted value comes from each member's own CycleGAN
+  inference. Pretrained networks (Inception-v3, AlexNet for LPIPS) are used only to *measure*
+  images, never to generate or edit them.
+
+### 3.2 Model comparison — architecture and hyperparameters
+
+The two models differ mainly in the **generator**: Shreya used a UNet with skip connections from
+pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
+
+| | **shreya_akotiya** | **zoheb_waghu** |
+|---|---|---|
+| Generator | **UNet**: 7 stride-2 encoder blocks down to a 2 × 2 bottleneck, 6 decoder blocks + output layer, skip connection at every level, dropout 0.5 in 3 decoder blocks | **ResNet-9**: 7 × 7 conv, 2 downsamples, **9 residual blocks** at 64 × 64, 2 upsamples, reflection padding |
+| Generator parameters | 41,821,187 each | 11,378,179 each |
+| Discriminator | PatchGAN: 3 stride-2 convs (64 → 256) + output conv; 31 × 31 score map | 70 × 70 PatchGAN: 3 stride-2 convs + a stride-1 512 conv; score map |
+| Discriminator parameters | 662,593 each | 2,764,737 each |
+| **Total parameters** | **84,967,560** | **28,285,832** |
+| Epochs (steps) | **80** (563,040) | **40** (281,520) |
+| LR schedule | constant to epoch 61, linear decay over epochs 62–80 (ends at 1.9e-5) | constant 20 epochs, linear decay to 0 over 20 |
+| Seed | 42 | 1337 |
+| Hardware | NVIDIA A100-SXM4-40GB (Google Colab), PyTorch 2.11 | NVIDIA RTX 4090 24 GB, PyTorch 2.5.1 |
+| Training time | 9.66 h | 6.69 h |
+
+**Design logic.**
+
+- **Shreya (UNet):** skip connections pass edges and layout straight from the encoder to the
+  decoder, so the generator only has to change colour and texture rather than rebuild the scene.
+  The expected strength is content preservation; the expected risk is that the skip paths make it
+  easy to copy the input or hide information in it.
+- **Zoheb (ResNet-9):** nine residual blocks repeatedly transform texture and colour at 64 × 64.
+  This is the generator from the original CycleGAN paper, with a larger 70 × 70 patch
+  discriminator focused on local brush texture.
+- Like Task 1, this compares **two complete designs**. Generator, discriminator, epoch count,
+  schedule, seed and GPU all differ, so a difference cannot be credited to the generator alone.
+
+### 3.3 Metrics — side by side (same 300 images per direction)
+
+| Metric | Shreya A2B (Monet → photo) | Shreya B2A (photo → Monet) | Zoheb A2B (Monet → photo) | Zoheb B2A (photo → Monet) |
+|---|---:|---:|---:|---:|
+| FID ↓ | 102.784 | **97.904** | 103.197 | 98.855 |
+| MiFID | 0.4206 | 0.4043 | 0.4181 | 0.4047 |
+| KID ↓ | 0.0185 | **0.0069** | 0.0182 | 0.0076 |
+| Precision (realism) | **0.730** | 0.540 | 0.703 | 0.507 |
+| Recall (diversity) | 0.447 | **0.730** | 0.480 | 0.680 |
+| Density | 1.005 | 0.489 | 1.013 | 0.433 |
+| Coverage | 0.850 | 0.763 | 0.897 | 0.690 |
+| Cycle-reconstruction L1 ↓ ([0, 1] pixels) | **0.0223** | **0.0216** | 0.0332 | 0.0398 |
+| LPIPS, input vs translation (how much changed) | 0.244 | 0.304 | 0.354 | 0.378 |
+| Content cosine, input vs translation ↑ | **0.861** | **0.821** | 0.797 | 0.772 |
+| Human audit (style / content / artifacts) | pending | pending | pending | pending |
+| Inter-rater agreement (Cohen's κ) | pending | pending | pending | pending |
+
+| Submission and training | **shreya_akotiya** | **zoheb_waghu** |
+|---|---|---|
+| Submission FID / MiFID (mean of both directions) | 100.344 / 0.4124 | 101.026 / 0.4114 |
+| **Leaderboard score (FID + MiFID) / 2 ↓** | **50.38** | 50.72 |
+| Kaggle public / private score and rank | pending | pending |
+| Generator loss (final 10% of steps) | 2.439 | 2.970 |
+| Discriminator loss, D_A + D_B (final 10%) | 0.171 | 0.251 |
+| Cycle loss, unweighted (final 10%) | 0.080 | 0.132 |
+| Identity loss, unweighted (final 10%) | 0.046 | 0.097 |
+| Generator gradient norm (mean) † | 38.40 | 23.36 |
+| NaN / Inf steps | 0 | 0 |
+| Images / sec ¶ | 16.2 | 11.7 |
+| Peak GPU memory † | 1.78 GB | 12.78 GB |
+
+**Comparability notes**
+
+- **FID across directions is not comparable.** A2B is compared with real photos and B2A with real
+  Monet paintings, so the two directions have different reference sets. Compare each direction
+  across the two members, not A2B against B2A.
+- † **Gradient norm and peak memory were measured differently.** Zoheb's values come from his
+  training run. Shreya's run did not log them, so hers come from **one extra
+  diagnostic epoch** (7,038 steps) started from the epoch-80 checkpoint, with the same losses and
+  data pipeline (`run1_grad_diagnostic.ipynb`). Her gradient norm therefore describes the trained
+  model, not the average over training.
+- ¶ **Speed is not comparable** (A100 vs RTX 4090), and the two models also have very different
+  parameter counts.
+- **Training losses** come from different architectures, so they are context, not a ranking.
+
+### 3.4 Training curves
+
+**shreya_akotiya (UNet, 80 epochs):**
+
+![](../task3_gan/shreya_akotiya/outputs/plots/loss_curves.png)
+
+**zoheb_waghu (ResNet-9, 40 epochs):**
+
+![](../task3_gan/zoheb_waghu/outputs/plots/training_curves_t3_baseline_20260929-235720.png)
+
+**Example translations (zoheb_waghu):** input, translation and cycle reconstruction.
+
+![](../task3_gan/zoheb_waghu/outputs/plots/translation_examples.jpg)
+
+Shreya's failure-case images are in `task3_gan/shreya_akotiya/outputs/plots/failure_candidates_{B2A,A2B}.jpg`
+(source, translation, cycle reconstruction for 15 cases per direction).
+
+**What the training shows.**
+
+- **Both runs were numerically stable:** 0 NaN or Inf steps. Zoheb's largest gradient spike
+  (527 at epoch 21) recovered by the next logged step without loss divergence.
+- **Losses fell fastest early in both runs.** Shreya's cycle loss was flat (about 0.41 weighted)
+  from epoch 30. Zoheb's checkpoint score improved mostly up to epoch 20 and then varied by only
+  0.46 points to epoch 40.
+- **The discriminators gradually got ahead in Shreya's run.** After epoch 5, the photo → Monet
+  adversarial loss rose (0.40 → 0.76) while discriminator loss fell (0.23 → 0.08). In Zoheb's run,
+  the discriminator loss stayed at 0.245–0.310 from epoch 11, which means the discriminators
+  separated real from fake usefully without completely winning.
+
+### 3.5 Joint analysis
+
+**What the comparison shows**
+
+1. **Image quality is effectively tied.** The two models are within about one FID point in each
+   direction (B2A 97.9 vs 98.9; A2B 102.8 vs 103.2), and the leaderboard scores are 50.38 vs 50.72.
+   That gap is well inside the noise of 300-image FID: Zoheb's FID varied over a range of 4.7–6.5
+   points across his checkpoints after epoch 20, and Shreya's v4 run moved 5–8 points between checks 10 epochs
+   apart. Neither model is better on FID or KID.
+2. **The UNet preserves content more strongly.** Shreya's model has about half the cycle error
+   (0.022 vs 0.033–0.040), smaller LPIPS change (0.24–0.30 vs 0.35–0.38) and higher content
+   cosine (0.82–0.86 vs 0.77–0.80) in both directions. This is what skip connections are expected
+   to do: they carry the scene structure straight to the output.
+3. **But low cycle error is not proof of good translation.** Both members found translations
+   that look badly broken but still reconstruct almost perfectly. Shreya's night photos become a
+   tiled blue-grey pattern yet have the *lowest* cycle errors (0.013–0.021). Zoheb's purple-cloud
+   photo becomes a bright paint field, yet the reconstruction restores it. The source information
+   is carried in subtle signals a person cannot see ("steganography", Chu et al., 2017). UNet skip
+   connections make this easier, so part of the UNet's cycle-error advantage comes from hidden
+   information, not from faithful translation.
+4. **Both models fail in the same direction-specific way.** **Photo → Monet is diverse but less
+   convincing:** recall is higher than precision for both (Shreya 0.73 / 0.54; Zoheb 0.68 / 0.51),
+   so the outputs cover much of the Monet style space but many don't look like a real Monet.
+   **Monet → photo is convincing but narrow:** precision is higher than recall for both (0.73 /
+   0.45; 0.70 / 0.48), so the outputs look photographic but cover only part of the variety of real
+   photos. The shared cause is the data: only 300 Monet paintings, against 7,038 photos.
+5. **More capacity and training did not buy a better score.** Shreya's model has 3× the
+   parameters and trained twice as many epochs, for a 0.34-point lower leaderboard score, which
+   is within noise. Zoheb's checkpoint sweep shows the score had nearly plateaued by epoch 20, and
+   Shreya's three alternative runs (v2–v4: DiffAugment, lower identity weight, removed outer skip,
+   EMA) all scored worse (54.2–55.9). The limiting factors appear to be the small Monet set and
+   the noisy evaluation, not model size.
+
+**Strengths**
+
+- Both members built a complete CycleGAN, trained it at full 256px resolution, and produced a
+  valid submission from their own model's inference.
+- All quality metrics use the instructor's method on the same 300 images, so the side-by-side
+  comparison is fair.
+- Cycle consistency is verified with measured reconstruction distances, not only assumed from
+  the loss term, and both members inspected the cases where low cycle error hides bad output.
+
+**Weaknesses and shared failure modes**
+
+| Failure type | shreya_akotiya example | zoheb_waghu example |
+|---|---|---|
+| Dark or low-detail scenes break down | night sky → blotchy blue-grey field with a tiled pattern (`09fc404e31`) | dark sunset → structureless pastel field (`02ded12bbd`) |
+| Monet → photo becomes too dark / too contrasty | golden Parliament sunset → almost black (`b1ea5d5a7d`) | the same image → black and orange extremes (`b1ea5d5a7d`) |
+| Too little change (still looks like the source domain) | office building stays photographic (`063ab57d41`) | the same building, mild purple tint only (`063ab57d41`) |
+| The same coastal painting fails (`a619072f82`) | rainbow-like horizontal band across the sky, kept in the reconstruction | becomes saturated and high-contrast; the reconstruction is washed out |
+| Colour shifts | sunset loses its red horizon (`02ded12bbd`) | orange clouds turn cyan, storm sky turns teal (`0845e8dc24`, `0254fc91bd`) |
+
+Several of the same images fail for both models (`b1ea5d5a7d`, `a619072f82`, `063ab57d41`,
+`02ded12bbd`, plus `6782e7cb2a` and `04f59976b5`). That suggests these images are hard for
+CycleGAN in general, not for one architecture. **Specific to the UNet:** the tiled pattern on
+night photos and horizontal sky streaks. **Specific to the ResNet-9:** strong hue shifts in
+clouds and skies.
+
+**Limitations**
+
+- **Single seed per model.** Run-to-run variance is not measured, and the checkpoint-to-checkpoint
+  swings above suggest it is several FID points.
+- **300-image FID is noisy and biased upward.** It matches the leaderboard, but small differences
+  between models are not meaningful.
+- **Not a controlled comparison.** Generator, discriminator, epochs, schedule, seed and GPU all
+  differ.
+- **Domain imbalance.** With 300 Monet paintings each seen about 23 times per epoch, the Monet
+  discriminator can memorise them.
+- **Pending:** the blinded human audit (30 samples, 2 raters, Cohen's κ) and the Kaggle public and
+  private score and rank, for both members.
+
+**What the team would try next**
+
+1. **Select checkpoints on a held-out validation set** (FID, KID, precision/recall) rather than
+   taking the last epoch, since quality plateaus and fluctuates late in training.
+2. **Run three seeds per setting** before treating any FID difference of a few points as real.
+3. **Change one thing at a time.** For the UNet: lower only the identity weight (0.5) while keeping
+   the outer skip. For the ResNet-9: a discriminator with a larger receptive field, to target low
+   B2A precision.
+4. **Rebalance the discriminators** (e.g. fewer discriminator updates) where they overpower the
+   generator.
+5. **Complete the human audit** to check whether people agree with the metric tie, particularly on
+   artifacts.
+
+### 3.6 Individual failure analyses
+
+Full write-ups with sample IDs, LPIPS and cycle values are in each member's folder:
+
+- `task3_gan/shreya_akotiya/failure_analysis.md`: 14 failure cases (8 photo → Monet, 6 Monet →
+  photo), the cycle-consistency check including the steganography finding, training stability,
+  shared hard images, and the human-audit protocol. `results.md` also covers the three alternative
+  runs (v2–v4).
+- `task3_gan/zoheb_waghu/failure_analysis.md`: 18 failure cases (9 per direction: least changed,
+  most changed, worst cycle), cycle-consistency verification, training stability including the
+  epoch-21 gradient spike, and the human-audit protocol.
+
+### 3.7 Evidence
+
+| | shreya_akotiya | zoheb_waghu |
+|---|---|---|
+| Run ID | `t3_shreya_unet_128_20261002_023102` (256px; "128" is from an earlier plan) | `t3_baseline_20260929-235720` |
+| Config | `task3_gan/shreya_akotiya/config.yaml` | `task3_gan/zoheb_waghu/configs/cyclegan_baseline.yaml` |
+| Checkpoint | `checkpoints/t3_shreya_unet_128_20261002_023102_G_AB_fp16.pt`, `…_G_BA_fp16.pt` | `checkpoints/t3_baseline_20260929-235720_generators_fp16.pt` |
+| Raw logs | `reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102.log` (+ `_graddiag.{csv,json}`, v2–v4 logs) | `reproducibility/raw_logs/zoheb_waghu/task3_gan/t3_baseline_20260929-235720.{log,jsonl}` |
+| Manifest | `reproducibility/manifests/shreya_akotiya/task3_gan_manifest.md`, `t3_shreya_unet_128_20261002_023102.json` | `reproducibility/manifests/zoheb_waghu/task3_gan_manifest.md` |
+| Metrics | `metrics_report.csv`, `submission.csv` | `metrics_report.csv`, `full_metrics_report.csv`, `submission.csv`, `outputs/snapshot_metrics.csv` |
+| Evaluated images | `outputs/pred_A2B/` (photo → Monet, 300), `outputs/pred_B2A/` (Monet → photo, 300) | `outputs/pred_B2A/` (photo → Monet, 300), `outputs/pred_A2B/` (Monet → photo, 300) |
+| Plots | `outputs/plots/loss_curves.png`, `failure_candidates_{B2A,A2B}.jpg` | `outputs/plots/training_curves_…png`, `translation_examples.jpg`, `failure_candidates.jpg` |
+| Evaluation code | `src/part3_evaluation_shreya.ipynb`, `src/run1_team_metrics.ipynb`, `src/human_audit.py` | `evaluate_local.py`, `src/snapshot_sweep.py` |
+
+---
+
 ## References
 
 1. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., &
@@ -546,3 +789,25 @@ also found label noise, which no model can fix.
    proportions or percentages.* Psychometrika, 12(2), 153–157.
 8. Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). *On Calibration of Modern Neural
    Networks.* ICML 2017.
+9. Zhu, J.-Y., Park, T., Isola, P., & Efros, A. A. (2017). *Unpaired Image-to-Image Translation
+   using Cycle-Consistent Adversarial Networks.* ICCV 2017.
+10. Isola, P., Zhu, J.-Y., Zhou, T., & Efros, A. A. (2017). *Image-to-Image Translation with
+    Conditional Adversarial Networks.* CVPR 2017. (UNet generator, PatchGAN discriminator.)
+11. Ronneberger, O., Fischer, P., & Brox, T. (2015). *U-Net: Convolutional Networks for Biomedical
+    Image Segmentation.* MICCAI 2015.
+12. He, K., Zhang, X., Ren, S., & Sun, J. (2016). *Deep Residual Learning for Image Recognition.*
+    CVPR 2016.
+13. Mao, X., Li, Q., Xie, H., Lau, R. Y. K., Wang, Z., & Smolley, S. P. (2017). *Least Squares
+    Generative Adversarial Networks.* ICCV 2017.
+14. Heusel, M., Ramsauer, H., Unterthiner, T., Nessler, B., & Hochreiter, S. (2017). *GANs Trained
+    by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium.* NeurIPS 2017. (FID.)
+15. Bińkowski, M., Sutherland, D. J., Arbel, M., & Gretton, A. (2018). *Demystifying MMD GANs.*
+    ICLR 2018. (KID.)
+16. Kynkäänniemi, T., Karras, T., Laine, S., Lehtinen, J., & Aila, T. (2019). *Improved Precision
+    and Recall Metric for Assessing Generative Models.* NeurIPS 2019.
+17. Naeem, M. F., Oh, S. J., Uh, Y., Choi, Y., & Yoo, J. (2020). *Reliable Fidelity and Diversity
+    Metrics for Generative Models.* ICML 2020. (Density and coverage.)
+18. Zhang, R., Isola, P., Efros, A. A., Shechtman, E., & Wang, O. (2018). *The Unreasonable
+    Effectiveness of Deep Features as a Perceptual Metric.* CVPR 2018. (LPIPS.)
+19. Chu, C., Zhmoginov, A., & Sandler, M. (2017). *CycleGAN, a Master of Steganography.*
+    arXiv:1712.02950.
