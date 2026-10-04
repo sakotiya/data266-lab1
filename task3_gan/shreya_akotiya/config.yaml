@@ -76,4 +76,4 @@ paths:
   log_dir: reproducibility/raw_logs/shreya_akotiya/task3_gan
   checkpoint_dir: task3_gan/shreya_akotiya/checkpoints
   output_dir: task3_gan/shreya_akotiya/outputs
-  metrics_csv_path: task3_gan/shreya_akotiya/full_metrics_report.csv
+  metrics_csv_path: task3_gan/shreya_akotiya/metrics_report.csv

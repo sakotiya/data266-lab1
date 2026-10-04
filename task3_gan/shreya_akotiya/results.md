@@ -73,7 +73,8 @@ From `outputs/train_history.csv` (per-epoch averages) and the raw log:
 
 ## Metrics
 
-Computed by the notebook with `clean-fid` on all generated images (7,038 Photo→Monet, 300 Monet→Photo):
+Computed by `src/task3_cyclegan.ipynb` (saved cell output) with `clean-fid` on all generated images
+(7,038 Photo→Monet, 300 Monet→Photo):
 
 | Metric | Photo → Monet | Monet → Photo |
 |--------|--------------:|--------------:|
@@ -98,7 +99,7 @@ comparable. Only the 300-image numbers match the leaderboard and teammates' subm
 
 ### Team-format metrics
 
-`metrics_report.csv` / `metrics_report_full.csv`, computed from the epoch-80 checkpoint and its
+`metrics_report.csv`, computed from the epoch-80 checkpoint and its
 predictions by `src/run1_team_metrics.ipynb`. Same 300-image method as the submission (FID and
 MiFID match it exactly). Team direction names: A = Monet, B = photo. The last column is the
 teammate's ResNet-9 (zoheb_waghu), measured the same way.

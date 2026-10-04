@@ -6,7 +6,7 @@ images per set, Inception-v3, submission = mean of the two directions, score = �
 
 ## Visual quality
 
-Team-format metrics for run 1 (`metrics_report_full.csv`, first 300 images per set, computed by
+Team-format metrics for run 1 (`metrics_report.csv`, first 300 images per set, computed by
 `src/run1_team_metrics.ipynb` from the epoch-80 checkpoint). Team names: A = Monet, B = photo.
 
 | Measure (run 1) | Photo → Monet (B2A) | Monet → Photo (A2B) |
