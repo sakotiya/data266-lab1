@@ -23,6 +23,7 @@ cover all 80 epochs.
 | Team-format metrics (both directions) | FID 97.904 / 102.784, KID, P/R, D/C, cycle L1, LPIPS, content cosine | `task3_gan/shreya_akotiya/src/run1_team_metrics.ipynb` on the epoch-80 checkpoint | `task3_gan/shreya_akotiya/metrics_report.csv` |
 | clean-fid FID / KID, all images | 80.55 / 84.05 | `task3_gan/shreya_akotiya/src/task3_cyclegan.ipynb` (saved cell output) | `t3_shreya_unet_128_20261002_023102.json` (`metrics_summary`) |
 | Training losses per epoch | — | `task3_cyclegan.ipynb` | `task3_gan/shreya_akotiya/outputs/train_history.csv` |
+| Gradient norms per step, peak GPU memory | grad_G mean 38.40, peak 1.78 GB | `task3_gan/shreya_akotiya/src/run1_grad_diagnostic.ipynb` on the epoch-80 checkpoint | `raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102_graddiag.{csv,json}` |
 | Failure candidates | 15 per direction | `run1_team_metrics.ipynb` | `task3_gan/shreya_akotiya/outputs/failure_candidates.csv`, `outputs/plots/failure_candidates_{A2B,B2A}.jpg` |
 
 The submission FID/MiFID were recomputed by `run1_team_metrics.ipynb` from the checkpoint and match

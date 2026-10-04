@@ -128,11 +128,14 @@ The low cycle error should also be interpreted carefully. A low reconstruction e
 | Training time | 9.66 hours (34,793 s), about 430 s per epoch |
 | Throughput | about 16.2 images/sec (563,040 steps, batch size 1) |
 | Numerical stability | 0 NaN/Inf values in 11,260 logged steps |
+| Generator gradient norm per step | mean 38.40, median 36.11, 95th percentile 58.61, max 232.91 |
+| Peak GPU memory | 1.78 GB (batch size 1, fp32) |
 
 | Evidence | Path |
 |---|---|
 | Checkpoint (generators, fp16) | `checkpoints/t3_shreya_unet_128_20261002_023102_G_AB_fp16.pt`, `checkpoints/t3_shreya_unet_128_20261002_023102_G_BA_fp16.pt` (cut from the 1.0 GB epoch-80 checkpoint, which is not in the repo) |
 | Raw log | `reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102.log` |
+| Gradient norms / peak memory | `reproducibility/raw_logs/shreya_akotiya/task3_gan/t3_shreya_unet_128_20261002_023102_graddiag.{csv,json}` |
 | Manifest | `reproducibility/manifests/shreya_akotiya/t3_shreya_unet_128_20261002_023102.json`, `task3_gan_manifest.md` |
 | Metrics | `metrics_report.csv`, `submission.csv` |
 | Training losses / plots | `outputs/train_history.csv`, `outputs/plots/loss_curves.png` |
@@ -157,14 +160,10 @@ The Kaggle public/private score and leaderboard rank are also not available in t
 
 The current metrics file correctly records the following items as `NOT_MEASURED`:
 
-- Gradient-norm mean.
-- Peak GPU memory.
 - Human-audit scores.
 - Kaggle public score.
 - Kaggle private score.
 - Leaderboard rank.
-
-The `run1_grad_diagnostic.ipynb` notebook was prepared to measure gradient norms and peak memory, but it needs to be run on the saved checkpoint before those values can be added.
 
 ## 9. Other runs
 
@@ -183,4 +182,4 @@ The original run performed best. Removing the outer skip connection appears to h
 
 The main limitations are the single random seed, the small number of Monet paintings, and the noisy 300-image FID evaluation. The domain sizes are also very different: there are 300 Monet paintings and 7,038 photos. This makes it easier for the Monet discriminator to memorize the training paintings.
 
-My next steps would be to keep the original UNet architecture, test the identity weight separately, and repeat the best setting with three seeds. I would also complete the human audit, run the gradient diagnostic notebook, and submit the generated images to Kaggle so that the missing required results can be added.
+My next steps would be to keep the original UNet architecture, test the identity weight separately, and repeat the best setting with three seeds. I would also complete the human audit and submit the generated images to Kaggle so that the missing required results can be added.

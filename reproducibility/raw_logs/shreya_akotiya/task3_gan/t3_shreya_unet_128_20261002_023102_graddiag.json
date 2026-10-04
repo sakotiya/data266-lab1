@@ -1,0 +1,31 @@
+{
+  "run_id": "t3_shreya_unet_128_20261002_023102",
+  "checkpoint": "t3_shreya_unet_128_20261002_023102_epoch080.pt",
+  "what": "1 diagnostic epoch from the epoch-80 checkpoint; weights discarded",
+  "steps": 7038,
+  "lr": 1.9047619047619046e-05,
+  "batch_size": 1,
+  "precision": "fp32",
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "torch": "2.11.0+cu130",
+  "grad_norm_G": {
+    "mean": 38.401366457677625,
+    "median": 36.10978126525879,
+    "p95": 58.60610904693603,
+    "max": 232.9124755859375,
+    "max_step": 2865,
+    "spikes_3sd": 130
+  },
+  "grad_norm_D_A_mean": 7.920457878093145,
+  "grad_norm_D_B_mean": 4.985386512053558,
+  "non_finite_steps": 0,
+  "peak_memory_allocated_gb": 1.775904256,
+  "peak_memory_reserved_gb": 1.931476992,
+  "images_per_sec": 15.660201639604725,
+  "loss_means": {
+    "loss_G": 2.463379227783098,
+    "loss_D_A": 0.09397103274323133,
+    "loss_D_B": 0.07140420304474233,
+    "loss_cycle": 0.8012008595365833
+  }
+}
