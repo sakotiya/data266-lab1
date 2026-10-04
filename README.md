@@ -97,7 +97,7 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 
 ## Open items for the team
 
-- [ ] GPU Lab booking, Kaggle competition registration
+- [x] **GPU Lab booking and Kaggle competition registration** - done
 - [x] **Per-member architectures and data splits agreed** - no two models match (see each task's
       `results.md` and the comparison tables in `report/team_report.md`)
 - [x] **Task 2 dataset:** confirmed - **Yelp polarity** (560K train / 38K test). Both members
