@@ -15,7 +15,8 @@ task1_llm/          TinyStories, GPT from scratch (no prebuilt Transformer/atten
 task2_sentiment/    Yelp polarity, 3 models per member (no pretrained embeddings or LMs)
 task3_gan/          CycleGAN, Monet <-> photo, Kaggle submission
 reproducibility/    manifests/ (env + checkpoint mapping), raw_logs/ (unedited)
-report/             DATA266_Lab1_Report_Team_32.pdf
+report/             team_report.md (source) + DATA266_Lab1_Report_Team_32_draft.pdf
+                    (final: DATA266_Lab1_Report_Team_32.pdf)
 ```
 
 Per member, per task:
@@ -26,9 +27,11 @@ Per member, per task:
   data_processed/      your own preprocessing output - never shared
   checkpoints/         your trained weights
   outputs/             samples, predictions, plots, confusion matrices
-  metrics_report.csv   every required metric for this task
+  config.yaml | configs/   run configuration (runs are config-driven)
+  metrics_report.csv   team-format metrics (same columns for both members)
+  metrics_report_extended.csv   full metric set where the team header is narrower (Tasks 1-2)
   failure_analysis.md  required failure/error write-up
-  results.md           architecture + hyperparameter justification
+  results.md           architecture + hyperparameter justification, metrics, hardware
 ```
 
 ## Setup
@@ -46,6 +49,11 @@ python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_
 `requirements.txt` pins the versions used for zoheb_waghu's reported runs (RTX 4090,
 Python 3.12.10). Install torch from the CUDA index first - PyPI's Windows torch wheel is
 CPU-only. `device: auto` in every config resolves cuda > mps > cpu.
+
+shreya_akotiya's runs used Google Colab: Tasks 1-2 on a Tesla T4 (Python 3.13, torch
+2.11.0+cu128), Task 3 on an A100 40GB (torch 2.11.0+cu130). Exact package lists are in
+`task1_llm/shreya_akotiya/requirements.txt`, `task2_sentiment/shreya_akotiya/requirements.txt`
+and the run manifests under `reproducibility/manifests/shreya_akotiya/`.
 
 For notebooks, register the venv as its own kernel:
 
@@ -90,7 +98,8 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 ## Open items for the team
 
 - [ ] GPU Lab booking, Kaggle competition registration
-- [ ] Agree per-member architectures and data splits so no two models match
+- [x] **Per-member architectures and data splits agreed** - no two models match (see each task's
+      `results.md` and the comparison tables in `report/team_report.md`)
 - [x] **Task 2 dataset:** confirmed - **Yelp polarity** (560K train / 38K test). Both members
       use it.
 - [x] **Task 3 submission format:** resolved - the class competition takes `submission.csv`
@@ -98,7 +107,15 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
       (FID + MiFID) / 2, lower is better
 - [ ] Confirm measurement-only pretrained nets (InceptionV3 for FID/KID, AlexNet for LPIPS) are
       acceptable - those metrics cannot be computed otherwise
-- [ ] Widen or confirm the Task 2 / Task 3 metric headers (see above)
+- [x] **Metric headers decided** - Tasks 1-2 keep the team header plus
+      `metrics_report_extended.csv`; Task 3 uses one row per direction for both members
+      (see "Metrics schema" below)
+- [ ] **Task 3 human audit** - 30 fixed samples, 2 raters, Cohen's kappa (both members)
+- [ ] **Task 3 Kaggle public/private score and leaderboard rank** (both members)
+- [ ] **shreya_akotiya Task 3 checkpoint** - commit the generators (fp16, under GitHub's 100 MB
+      file limit)
+- [ ] **Final report** - `report/team_report.md` covers Tasks 1-2; Task 3 section to add, then
+      export `report/DATA266_Lab1_Report_Team_32.pdf`
 
 ## Data
 
@@ -166,8 +183,25 @@ python task2_sentiment/shreya_akotiya/src/fetch_data.py
 jupyter lab task2_sentiment/shreya_akotiya/src/task2_sentiment.ipynb
 ```
 
-On Colab the notebooks look for the repo at `/content/drive/MyDrive/DATA266_Lab1` by default;
-set the `LAB1_ROOT` environment variable to use a different location.
+On Colab the Task 1 and Task 2 notebooks look for the repo at `/content/drive/MyDrive/DATA266_Lab1`
+by default; set the `LAB1_ROOT` environment variable to use a different location.
+
+**shreya_akotiya's Task 3** - data via Kaggle (see `task3_gan/data/README.md`; needs
+`~/.kaggle/kaggle.json` and a joined competition). Train in the first notebook, score with the
+instructor's method in the second, write the team-format metrics in the third:
+
+```bash
+python task3_gan/shreya_akotiya/src/fetch_data.py
+jupyter lab task3_gan/shreya_akotiya/src/task3_cyclegan.ipynb            # train, translate, clean-fid metrics
+jupyter lab task3_gan/shreya_akotiya/src/part3_evaluation_shreya.ipynb   # instructor evaluator -> submission.csv
+jupyter lab task3_gan/shreya_akotiya/src/run1_team_metrics.ipynb         # team-format metrics_report.csv
+python task3_gan/shreya_akotiya/src/human_audit.py make                  # blinded audit sheet for 2 raters
+python task3_gan/shreya_akotiya/src/human_audit.py score                 # rating means + Cohen's kappa
+```
+
+The reported run `t3_shreya_unet_128_20261002_023102` used **256px and 80 epochs**, set by an
+override cell in `task3_cyclegan.ipynb`; `config.yaml` still holds the earlier 128px plan. The
+run ID keeps "128" from that plan. See `task3_gan/shreya_akotiya/results.md`.
 
 Shared, task-agnostic utilities live in `common/`: config loading with `extends:` inheritance,
 seeding, device selection, the append-only run logger, and the metrics writers.
@@ -186,7 +220,24 @@ anywhere in the repo.
 | 3 | shreya_akotiya | **trained** (A100 40GB); audit, Kaggle rank pending | FID A2B 102.8 · B2A 97.9 · submission FID 100.34 / MiFID 0.412 |
 | 3 | zoheb_waghu | **trained** (RTX 4090); audit, Kaggle rank pending | FID A2B 103.2 · B2A 98.9 · submission FID 101.03 / MiFID 0.411 |
 
-Each member folder holds `metrics_report.csv`, `results.md` and `failure_analysis.md`.
+| What | Where |
+| --- | --- |
+| Write-up (architecture, hyperparameters, metrics, hardware) | `<task>/<member>/results.md` |
+| Failure / error analysis | `<task>/<member>/failure_analysis.md` |
+| Team-format metrics | `<task>/<member>/metrics_report.csv` |
+| Extended metrics | Tasks 1-2: `metrics_report_extended.csv` · Task 3: `metrics_report_full.csv` (shreya_akotiya), `full_metrics_report.csv` (zoheb_waghu) |
+| Checkpoints | `<task>/<member>/checkpoints/` |
+| Plots, samples, predictions | `<task>/<member>/outputs/` |
+| Kaggle submission | `task3_gan/<member>/submission.csv` |
+| Raw training logs (unedited) | `reproducibility/raw_logs/<member>/<task>/` |
+| Manifests (versions, run -> checkpoint -> log) | `reproducibility/manifests/<member>/` |
+| Team report | `report/team_report.md`, `report/DATA266_Lab1_Report_Team_32_draft.pdf` |
+
+**Task 3 direction names.** The instructor's script and the team metrics use A = Monet,
+B = photo, so `A2B` = Monet -> photo and `B2A` = photo -> Monet (the Kaggle direction).
+zoheb_waghu's folders follow this. shreya_akotiya's notebook uses A = photo, so her
+`outputs/pred_A2B/` is the team's `B2A` and vice versa; her `metrics_report.csv` uses the team
+names.
 
 ### Spec 1.1: "training (100K) and validation (10K)"
 
@@ -219,11 +270,11 @@ run writes both files from the same in-memory row, so they cannot drift.
 | --- | --- | --- |
 | 1 | 22 cols | `config_path`, `device`, `model_name` |
 | 2 | 31 cols | confusion-matrix cells (`tn`/`fp`/`fn`/`tp`), all 8 per-slice robustness columns, `split`, `config_path`, `device` |
+| 3 | 30 cols, **one row per direction** (A2B, B2A) | MiFID and other extras, in each member's extended Task 3 CSV |
 
-**For the team to decide:** whether to widen the agreed Task 2 header to include the
-confusion-matrix and per-slice columns, since the brief lists both as required metrics. Task 3's
-header is one row per direction, which differs from the one-row-per-run shape used in Tasks 1
-and 2 - worth confirming before anyone trains a CycleGAN.
+**Decided:** the Task 2 team header stays as agreed; confusion matrices and per-slice metrics
+live in each member's extended CSV and `results.md`. Task 3 uses one row per direction for both
+members. Measurements not taken are written as `NOT_MEASURED`, never left blank.
 
 ## Evidence trail
 
@@ -236,3 +287,9 @@ and 2 - worth confirming before anyone trains a CycleGAN.
 - Vaswani et al., *Attention Is All You Need*
 - Eldan & Li, *TinyStories*
 - Zhu et al., *Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks*
+- Isola et al., *Image-to-Image Translation with Conditional Adversarial Networks* (pix2pix: UNet, PatchGAN)
+- Zhang, Zhao & LeCun, *Character-level Convolutional Networks for Text Classification* (Yelp Polarity)
+- Kim, *Convolutional Neural Networks for Sentence Classification*
+- Hochreiter & Schmidhuber, *Long Short-Term Memory*
+- Bahdanau, Cho & Bengio, *Neural Machine Translation by Jointly Learning to Align and Translate*
+- Heusel et al., *GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium* (FID)
