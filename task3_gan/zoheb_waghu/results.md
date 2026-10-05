@@ -160,6 +160,67 @@ best is an earlier entry scoring **-39.7787** (FID 79.154), which is neither my 
 result that is not attributable to the model documented on this page, and I report my own
 submission's score separately above rather than claiming the leaderboard score as my model's.
 
+## Human audit (blinded, 30 samples, 2 raters)
+
+Protocol: 30 fixed samples, 15 per direction, drawn with seed 42 from the first 300 sorted
+predictions — the same set the instructor's evaluator scores. Each sheet shows **source |
+translation** side by side, so content preservation can actually be judged; sheets are shuffled
+and file names stripped. Raters: zoheb_waghu (rater1) and shreya_akotiya (rater2), scoring
+style / content / artifacts 1–5 where **5 is best on every axis**, independently, without
+discussing scores. Materials: [outputs/human_audit/](outputs/human_audit/),
+[outputs/RATING_GUIDE.md](outputs/RATING_GUIDE.md).
+
+| Direction | style | content | artifacts |
+|---|---|---|---|
+| A2B (Monet → photo) | 3.17 | 4.57 | 4.63 |
+| B2A (photo → Monet) | 3.37 | 4.47 | 4.83 |
+
+**Inter-rater agreement: Cohen's κ = 0.1487**, exact agreement 63.3%, and **100% of ratings
+within one point** on all three axes.
+
+### Two rounds, and why the first was discarded
+
+| | round 1 (no rubric) | round 2 (rubric) |
+|---|---|---|
+| Exact agreement | 23.3% | **63.3%** |
+| Within 1 point | 72% | **100%** |
+| κ overall | **−0.050** | **+0.149** |
+| κ, artifacts axis | −0.130 | +0.153 |
+
+Round 1 was run without an agreed rubric and produced κ = −0.05 — agreement *worse than chance*.
+Per-axis diagnosis showed the cause was definitional, not perceptual: `artifacts` was negative on
+every measure, the signature of the two raters scoring the axis in opposite directions
+(disagreeing on whether 5 meant "clean" or "many artifacts"), while `content` already agreed
+(quadratic κ 0.41). A rubric with explicit 1–5 anchors was written, and the **same 30 sheets**
+were re-rated. Round 1 is retained as evidence in
+[outputs/human_audit_ratings_round1.csv](outputs/human_audit_ratings_round1.csv).
+
+### Why κ is low even though the raters barely disagree
+
+κ = 0.149 reads as "slight agreement" on the Landis–Koch scale, which understates what happened.
+Both raters used only **two of the five categories** on every axis, so chance agreement is
+already high and κ gives little credit for beating it:
+
+| Axis | categories used | chance agreement | observed | κ |
+|---|---|---|---|---|
+| style | {3, 4} | 60.7% | 66.7% | 0.153 |
+| content | {4, 5} | 49.6% | 56.7% | 0.141 |
+| artifacts | {4, 5} | 60.7% | 66.7% | 0.153 |
+
+This is the well-known kappa paradox: high observed agreement with skewed marginals yields a low
+κ. It is also why unweighted and quadratic-weighted κ are **identical here** — quadratic
+weighting only differs from unweighted when some disagreements span more than one category, and
+no disagreement in this audit does. The honest summary is: the raters never differed by more than
+one point, and κ is deflated by low category variance rather than by real disagreement.
+
+### What the audit says about the model
+
+Content (4.47–4.57) and artifacts (4.63–4.83) are strong: the model preserves the scene and
+produces clean images. **Style (3.17–3.37) is the weak axis in both directions** — the human
+verdict matches the computed metrics, where FID is 103.2 / 98.9 and LPIPS shows relatively modest
+change from the input. This model is conservative: it protects content and avoids artifacts at
+the cost of committing to the target style. See [failure_analysis.md](failure_analysis.md).
+
 ## Evidence
 
 | What | Where |

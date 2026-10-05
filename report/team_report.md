@@ -606,8 +606,8 @@ pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
 | Cycle-reconstruction L1 ↓ ([0, 1] pixels) | **0.0223** | **0.0216** | 0.0332 | 0.0398 |
 | LPIPS, input vs translation (how much changed) | 0.244 | 0.304 | 0.354 | 0.378 |
 | Content cosine, input vs translation ↑ | **0.861** | **0.821** | 0.797 | 0.772 |
-| Human audit (style / content / artifacts) | pending | pending | pending | pending |
-| Inter-rater agreement (Cohen's κ) | pending | pending | pending | pending |
+| Human audit (style / content / artifacts) ※ | pending | pending | 3.17 / 4.57 / 4.63 | 3.37 / 4.47 / 4.83 |
+| Inter-rater agreement (Cohen's κ) ※ | pending | pending | 0.149 (63.3% exact, 100% within 1) | 0.149 (same audit) |
 
 | Submission and training | **shreya_akotiya** | **zoheb_waghu** |
 |---|---|---|
@@ -626,6 +626,18 @@ pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
 
 **Comparability notes**
 
+- ※ **Human audit — protocol and how to read κ.** 30 blinded samples (15 per direction, seed 42,
+  drawn from the same first 300 predictions the instructor's evaluator scores), each sheet showing
+  **source | translation** side by side so content preservation can be judged. Two raters, scores
+  1–5 with **5 best on every axis**, rated independently. Zoheb's figures are final; Shreya's audit
+  is still to run.
+  **A first round without an agreed rubric produced κ = −0.05** — agreement worse than chance,
+  driven by the `artifacts` axis being scored in opposite directions by the two raters. A rubric
+  with explicit anchors was written and the same 30 sheets re-rated, giving the numbers above.
+  κ = 0.149 understates the result: both raters used only **two of the five categories** on every
+  axis, so chance agreement is 50–61% and κ gives little credit for the observed 63.3%. **No
+  disagreement exceeded one point**, which is also why unweighted and quadratic-weighted κ are
+  identical. Round 1 is retained as evidence.
 - ‖ **Leaderboard scoring and what the rank reflects.** The competition reports a single
   leaderboard computed on all the test data - there is no public/private split - and the score
   is `-(FID + MiFID) / 2`, so a less negative number is better. The scores above are the two
