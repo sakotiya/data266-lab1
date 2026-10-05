@@ -101,7 +101,7 @@ All numbers are from each member's `metrics_report.csv` (team schema) and
 
 | Metric | **shreya_akotiya** | **zoheb_waghu** |
 |---|---|---|
-| Training cross-entropy (final epoch) | 0.6038 | 0.6982 |
+| Training cross-entropy (eval mode, best checkpoint) † | 0.6038 | 0.6982 |
 | Validation cross-entropy (best) | **0.6327** | 0.7019 |
 | Perplexity | **1.883** | 2.018 |
 | Bits-per-character | **0.913** | 1.013 |
@@ -121,6 +121,15 @@ All numbers are from each member's `metrics_report.csv` (team schema) and
 
 **Comparability notes**
 
+- † **Training cross-entropy is not the number the loss curves end on.** Both members' values
+  here are measured in **eval mode** (dropout off) on the best checkpoint, which is what
+  `metrics_report.csv` stores. The per-epoch training curve in §1.4 is a running mean of
+  minibatch losses *during* the epoch with dropout **active** and weights still changing, so it
+  ends higher - Zoheb's curve ends at 0.749 against 0.698 here. Measured on his checkpoint over
+  the same 300 training batches, changing only `model.train()` vs `model.eval()`, gives 0.733 vs
+  0.684: dropout accounts for 0.0496 of the 0.0511 difference and within-epoch improvement for
+  the remaining 0.0015. Validation agrees exactly between curve and table (0.7019), which rules
+  out a plotting error. The generalization gap row compares eval mode with eval mode.
 - ‡ **Diversity metrics are not directly comparable.** Both use the same formula (unique
   n-grams ÷ total n-grams over characters), but Shreya's are measured on 20,000 generated
   characters at T = 1.0 and Zoheb's on ~3,600 characters pooled over greedy, T = 0.8 and T = 1.2.
