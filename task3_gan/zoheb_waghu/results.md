@@ -137,6 +137,29 @@ B2A also has slightly higher LPIPS and lower content cosine than A2B (0.378 vers
 0.772 versus 0.797). With no error bars, these gaps are only consistent with B2A changing its
 inputs more strongly; they do not confirm a reliable directional difference.
 
+## Kaggle submission
+
+`submission.csv` is produced by `src/infer.py` from checkpoint
+`t3_baseline_20260929-235720_final.pt` — the direct output of my own trained CycleGAN, with no
+manual editing, hand-picking, or external images, and no pretrained or foundation image model
+used to generate or touch it. Pretrained networks appear only in *measurement* (InceptionV3 for
+FID/KID/MiFID, AlexNet for LPIPS) — still to be confirmed with the instructor as acceptable.
+
+| | value |
+|---|---|
+| Competition | DATA 266 Fall 2026 — GAN Image Style Transfer |
+| Team | PairProgramming_Team_32 |
+| Scoring | `-(FID + MiFID) / 2`, one leaderboard over **all** test data (no public/private split) |
+| My submission | FID 101.0258, MiFID 0.4114 → **-50.7186** |
+| Team's most recent entry (shreya_akotiya) | FID 100.3438, MiFID 0.4124 → -50.3781 |
+| **Team rank** | **1** (6 entries) |
+
+**What the rank reflects.** Kaggle ranks a team by its **best** entry, not its latest. The team's
+best is an earlier entry scoring **-39.7787** (FID 79.154), which is neither my model nor the
+`submission.csv` currently committed by my teammate. The rank-1 standing is therefore a team
+result that is not attributable to the model documented on this page, and I report my own
+submission's score separately above rather than claiming the leaderboard score as my model's.
+
 ## Evidence
 
 | What | Where |
