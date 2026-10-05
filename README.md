@@ -105,8 +105,11 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 - [x] **Task 3 submission format:** resolved - the class competition takes `submission.csv`
       (ID, FID, MiFID; values must match the instructor's script). Leaderboard score =
       (FID + MiFID) / 2, lower is better
-- [ ] Confirm measurement-only pretrained nets (InceptionV3 for FID/KID, AlexNet for LPIPS) are
-      acceptable - those metrics cannot be computed otherwise
+- [x] **Measurement-only pretrained nets: confirmed allowed by the instructor.** Pretrained
+      Inception (FID / MiFID / KID) and AlexNet/VGG (LPIPS) may be used **to measure images
+      only**. The CycleGAN itself must be trained from scratch and the submitted images must come
+      directly from it. Both members comply: pretrained networks appear only in the evaluation
+      scripts, never in the model, training or inference path
 - [x] **Metric headers decided** - Tasks 1-2 keep the team header plus
       `metrics_report_extended.csv`; Task 3 uses one row per direction for both members
       (see "Metrics schema" below)

@@ -143,7 +143,15 @@ inputs more strongly; they do not confirm a reliable directional difference.
 `t3_baseline_20260929-235720_final.pt` — the direct output of my own trained CycleGAN, with no
 manual editing, hand-picking, or external images, and no pretrained or foundation image model
 used to generate or touch it. Pretrained networks appear only in *measurement* (InceptionV3 for
-FID/KID/MiFID, AlexNet for LPIPS) — still to be confirmed with the instructor as acceptable.
+FID/KID/MiFID, AlexNet for LPIPS), which the instructor has **confirmed is allowed**: pretrained
+networks may be used to *measure* images only, while the CycleGAN itself must be trained from
+scratch and the submitted images must come directly from it.
+
+This is verifiable rather than asserted. The only `load_state_dict` calls in
+[src/model.py](src/model.py), [src/train.py](src/train.py) and [src/infer.py](src/infer.py) load
+**my own checkpoints** (resume and inference); no `torchvision.models`, pretrained weights or hub
+downloads appear anywhere in the model, training or inference path. Inception and LPIPS are
+imported solely in [evaluate_local.py](evaluate_local.py), which never writes an output image.
 
 | | value |
 |---|---|
@@ -271,5 +279,7 @@ from scratch, and measure whether B2A precision improves without reducing its 0.
 separate identity-loss sweep could test the colour shifts in the orange-cloud and storm-sky
 cases. I would also compare the current sampling with stronger augmentation of the official
 Monet images while holding total updates fixed. A pretrained perceptual loss or an expanded
-Monet set would require confirmation that pretrained training components or external data are
-allowed, so neither is part of these proposed experiments.
+Monet set would still be out of scope: the instructor's ruling allows pretrained networks for
+**measurement only**, so a pretrained perceptual loss — which would enter the training objective —
+remains disallowed, and external data was never sanctioned. Neither is part of these proposed
+experiments.
