@@ -186,22 +186,54 @@ def parse_training_log(path) -> dict:
 # ---- Blinded human audit ------------------------------------------------------------------
 
 def audit_sheet(cfg: dict, seed: int) -> None:
-    """Pick a fixed, shuffled sample from both directions and strip identifying file names."""
+    """Build the blinded rating sheet: a fixed, shuffled sample from both directions.
+
+    Each sheet image is **source | translation** side by side, because "content" is
+    one of the three rated axes and a rater cannot judge content preservation from
+    the output alone. Protocol matches shreya_akotiya/src/human_audit.py so the two
+    members' audits are comparable: 15 samples per direction, sampled from the first
+    300 sorted predictions (the same set the instructor's evaluator scores), seed 42,
+    shuffled, file names stripped.
+
+    Direction convention (instructor's evaluator): A = Monet, B = photo.
+      A2B = Monet -> photo  (sources: data/monet_jpg, predictions: outputs/pred_A2B)
+      B2A = photo -> Monet  (sources: data/photo_jpg, predictions: outputs/pred_B2A)
+    """
+    from PIL import Image
+
     a = cfg["eval"]["human_audit"]
     out = Path(cfg["paths"]["output_dir"])
+    data = Path(cfg["data"]["domain_a_dir"]).parent          # task3_gan/data
+    first_n = int(a.get("sample_from_first_n", 300))
     per_dir = a["n_samples"] // 2
-    rng = random.Random(seed)
-    picks = [(d, p) for d in ("A2B", "B2A")
-             for p in rng.sample(list_images(out / f"pred_{d}"), per_dir)]
+    rng = random.Random(a.get("seed", seed))
+
+    directions = {"A2B": (Path(cfg["data"]["domain_b_dir"]).parent / "monet_jpg",
+                          out / "pred_A2B"),
+                  "B2A": (data / "photo_jpg", out / "pred_B2A")}
+
+    picks = []
+    for name, (src_dir, pred_dir) in directions.items():
+        sources = {p.stem: p for p in list_images(src_dir)}
+        preds = [p for p in list_images(pred_dir)[:first_n] if p.stem in sources]
+        if len(preds) < per_dir:
+            raise SystemExit(f"{pred_dir}: only {len(preds)} predictions have a matching source")
+        picks += [(name, sources[p.stem], p) for p in rng.sample(preds, per_dir)]
     rng.shuffle(picks)
+
     sheet = out / "human_audit"
-    sheet.mkdir(exist_ok=True)
+    sheet.mkdir(parents=True, exist_ok=True)
     with (out / "human_audit_manifest.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
-        w.writerow(["sample_id", "direction", "source_file"])
-        for i, (d, p) in enumerate(picks, 1):
-            shutil.copyfile(p, sheet / f"sample_{i:02d}.jpg")
-            w.writerow([f"sample_{i:02d}", d, p.name])
+        w.writerow(["sample_id", "direction", "source_file", "prediction_file"])
+        for i, (d, src, pred) in enumerate(picks, 1):
+            left = Image.open(src).convert("RGB").resize((256, 256))
+            right = Image.open(pred).convert("RGB").resize((256, 256))
+            pair = Image.new("RGB", (522, 256), "white")      # 10 px white gap
+            pair.paste(left, (0, 0))
+            pair.paste(right, (266, 0))
+            pair.save(sheet / f"sample_{i:02d}.jpg", quality=95)
+            w.writerow([f"sample_{i:02d}", d, src.name, pred.name])
     with (out / "human_audit_ratings.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(["sample_id", "rater_id", *a["axes"]])
@@ -209,8 +241,10 @@ def audit_sheet(cfg: dict, seed: int) -> None:
             for i in range(1, len(picks) + 1):
                 w.writerow([f"sample_{i:02d}", f"rater{r}"])
     print(f"wrote {len(picks)} blinded samples to {sheet}\n"
+          "Left half = original input, right half = my model's translation.\n"
           "Give raters ONLY that folder and human_audit_ratings.csv (scores 1-5). "
           "Keep human_audit_manifest.csv until rating is done.")
+
 
 
 def audit_summary(out: Path, axes: list) -> dict:

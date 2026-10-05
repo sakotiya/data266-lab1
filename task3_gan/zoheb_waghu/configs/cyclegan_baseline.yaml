@@ -66,6 +66,8 @@ eval:
     n_raters: 2
     blind: true             # shuffle + strip model identity before rating
     axes: [style, content, artifacts]
+    seed: 42                      # same seed as shreya_akotiya/src/human_audit.py
+    sample_from_first_n: 300      # the same 300 the instructor's evaluator scores
 
 submission:
   direction: photo_to_monet     # the Kaggle competition scores photo -> Monet
