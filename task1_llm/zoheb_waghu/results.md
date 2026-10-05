@@ -91,6 +91,27 @@ Curves: [outputs/plots/loss_curves_t1_baseline_20260929-213500.png](outputs/plot
 
 ## 5. Metrics
 
+> **Why the loss curve and the CSV disagree on training loss** (raised in team review).
+> The plotted final-epoch train loss is **0.74923**; `metrics_report.csv` reports
+> **0.69817**. Both are correct - they measure different things:
+>
+> | | plotted curve | metrics_report.csv |
+> |---|---|---|
+> | Model mode | **train** (dropout active) | **eval** (dropout off) |
+> | What is averaged | running mean of every minibatch *during* the epoch | one clean sequential pass at the end |
+> | Weights | changing throughout the epoch | fixed, the best checkpoint |
+>
+> Measured, not assumed: re-evaluating the reported checkpoint on the same 300
+> training batches and changing **only** `model.train()` vs `model.eval()` gives
+> 0.73336 against 0.68380 - so **dropout accounts for 0.0496** of the 0.0511
+> difference, and the remaining **0.0015** is the model improving within the final
+> epoch. Validation agrees exactly between curve and CSV (0.70191 both), which rules
+> out a plotting error.
+>
+> The reported **generalization gap (0.00377)** compares like with like - train and
+> validation both in eval mode - which is why it is far smaller than the gap the
+> curve appears to show.
+
 Full row in [metrics_report.csv](metrics_report.csv) (team schema) and
 [metrics_report_extended.csv](metrics_report_extended.csv).
 

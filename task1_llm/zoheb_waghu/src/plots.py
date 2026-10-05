@@ -30,8 +30,16 @@ def main() -> int:
     epochs = [r["epoch"] + 1 for r in ep]
 
     fig, ax = plt.subplots(1, 3, figsize=(16, 4.2))
-    ax[0].plot(epochs, [r["train_loss"] for r in ep], "o-", label="train")
-    ax[0].plot(epochs, [r["loss"] for r in ep], "s-", label="validation")
+    # The two curves are NOT measured the same way, and the legend says so:
+    # train is the running mean of minibatch losses over the epoch with dropout
+    # ACTIVE; validation is a single eval-mode pass at epoch end with dropout off.
+    # That is why the final train point (~0.749) sits above the eval-mode train
+    # loss reported in metrics_report.csv (0.698) - measured at 0.0496 of the
+    # 0.0511 difference, the rest being within-epoch improvement.
+    ax[0].plot(epochs, [r["train_loss"] for r in ep], "o-",
+               label="train (running mean, dropout on)")
+    ax[0].plot(epochs, [r["loss"] for r in ep], "s-",
+               label="validation (eval mode, dropout off)")
     ax[0].set(xlabel="epoch", ylabel="cross-entropy (nats)",
               title=f"Loss curves - {run_id}")
     ax[0].legend(); ax[0].grid(alpha=.3)
@@ -57,7 +65,10 @@ def main() -> int:
     fig2, ax3 = plt.subplots(figsize=(6, 4))
     ax3.axhline(0, color="k", lw=.8)
     ax3.plot(epochs, gap, "o-", color="tab:green")
-    ax3.set(xlabel="epoch", ylabel="val loss - train loss",
+    # Note: this per-epoch gap uses the train-mode running mean, so it reads
+    # NEGATIVE early on. The reported generalization gap in metrics_report.csv
+    # compares like with like - both eval mode - and is 0.0037.
+    ax3.set(xlabel="epoch", ylabel="val loss - train loss (train-mode)",
             title=f"Generalization gap - {run_id}")
     ax3.grid(alpha=.3)
     fig2.tight_layout()
