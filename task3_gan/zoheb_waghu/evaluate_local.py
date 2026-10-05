@@ -259,13 +259,64 @@ def audit_summary(out: Path, axes: list) -> dict:
     if len(raters) != 2:
         raise ValueError(f"kappa needs exactly 2 raters, found {raters}")
     wide = {ax: ratings.pivot(index="sample_id", columns="rater_id", values=ax) for ax in axes}
-    kappas = [cohen_kappa_score(w[raters[0]], w[raters[1]]) for w in wide.values()]
-    agree = [float((w[raters[0]] == w[raters[1]]).mean()) for w in wide.values()]
+    # Unweighted kappa treats "3 vs 4" as badly as "1 vs 5". These are ordinal 1-5
+    # scores, so quadratic-weighted kappa is the appropriate headline statistic;
+    # both are reported, per axis, so the choice is visible rather than hidden.
+    per_axis = {}
+    for ax, w in wide.items():
+        a, b = w[raters[0]].values, w[raters[1]].values
+        per_axis[ax] = {
+            "kappa": float(cohen_kappa_score(a, b)),
+            "kappa_quadratic": float(cohen_kappa_score(a, b, weights="quadratic")),
+            "pct_exact": float(np.mean(a == b)),
+            "pct_within_1": float(np.mean(np.abs(a - b) <= 1)),
+            "mean_abs_diff": float(np.mean(np.abs(a - b))),
+        }
+    kappas = [v["kappa"] for v in per_axis.values()]
+    agree = [v["pct_exact"] for v in per_axis.values()]
     merged = ratings.merge(manifest, on="sample_id")
-    res = {"kappa": float(np.mean(kappas)), "pct_agreement": float(np.mean(agree))}
+    res = {"kappa": float(np.mean(kappas)),
+           "kappa_quadratic": float(np.mean(v["kappa_quadratic"] for v in per_axis.values()))
+           if False else float(np.mean([v["kappa_quadratic"] for v in per_axis.values()])),
+           "pct_agreement": float(np.mean(agree)),
+           "per_axis": per_axis}
     for d in ("A2B", "B2A"):
         res[d] = {ax: float(merged[merged.direction == d][ax].mean()) for ax in axes}
     return res
+
+
+def audit_score(cfg: dict) -> int:
+    """Summarise the completed rating sheet and write the four audit columns into
+    the existing metrics rows, without re-running the expensive image metrics."""
+    import pandas as pd
+
+    out = Path(cfg["paths"]["output_dir"])
+    axes = cfg["eval"]["human_audit"]["axes"]
+    res = audit_summary(out, axes)
+
+    print("Human audit - 30 blinded samples, 2 raters")
+    for d in ("A2B", "B2A"):
+        label = "Monet -> photo" if d == "A2B" else "photo -> Monet"
+        print(f"  {d} ({label}): " + "  ".join(f"{ax} {res[d][ax]:.2f}" for ax in axes))
+    print(f"  Cohen's kappa, unweighted (mean over axes): {res['kappa']:.4f}")
+    print(f"  Cohen's kappa, quadratic-weighted:          {res['kappa_quadratic']:.4f}")
+    print(f"  exact agreement:                            {res['pct_agreement']:.1%}")
+    print("  per axis:")
+    for ax, v in res["per_axis"].items():
+        print(f"    {ax:<10} k {v['kappa']:>6.3f}  k_quad {v['kappa_quadratic']:>6.3f}  "
+              f"exact {v['pct_exact']:>5.1%}  within-1 {v['pct_within_1']:>5.1%}")
+
+    csv_path = Path(cfg["paths"]["metrics_csv_path"])
+    d = pd.read_csv(csv_path)
+    for direction in ("A2B", "B2A"):
+        m = d.direction == direction
+        for ax in axes:
+            d.loc[m, f"human_audit_{ax}"] = round(res[direction][ax], 4)
+        d.loc[m, "inter_rater_kappa"] = round(res["kappa"], 4)
+    d.to_csv(csv_path, index=False)
+    print(f"\nupdated {csv_path.name}")
+    (out / "human_audit_summary.json").write_text(json.dumps(res, indent=2))
+    return 0
 
 
 # ---- Entry point ----------------------------------------------------------------------------
@@ -341,7 +392,7 @@ def run_metrics(args, cfg: dict, device, log: RunLogger) -> int:
 
 def main() -> int:
     ap = config_arg_parser("Task 3 local evaluation")
-    ap.add_argument("mode", choices=["metrics", "audit-sheet"])
+    ap.add_argument("mode", choices=["metrics", "audit-sheet", "audit-score"])
     ap.add_argument("--train-run-id", help="run id of the training run (metrics)")
     ap.add_argument("--checkpoint", help="checkpoint file name behind these images (metrics)")
     ap.add_argument("--zip", action="store_true", help="also build outputs/images.zip from pred_B2A")
@@ -353,6 +404,8 @@ def main() -> int:
     if args.mode == "audit-sheet":
         audit_sheet(cfg, cfg["run"]["seed"])
         return 0
+    if args.mode == "audit-score":
+        return audit_score(cfg)
     if not (args.train_run_id and args.checkpoint):
         ap.error("metrics needs --train-run-id and --checkpoint")
     device = get_device(cfg["run"]["device"])
