@@ -19,6 +19,18 @@ compared side by side.
 | **2 · Yelp sentiment** | mean-pool 93.14% · TextCNN 94.35% · **BiLSTM 94.85%** | BiLSTM 93.46% · TextCNN 93.57% · **BiLSTM-attention 94.02%** |
 | **3 · CycleGAN** | UNet · FID 97.9 (photo→Monet) / 102.8 · **Kaggle score −50.38 (team final)** | ResNet-9 · FID 98.9 / 103.2 · Kaggle score −50.72 |
 
+### Hardware and training time
+
+| Task | shreya_akotiya | zoheb_waghu |
+|---|---|---|
+| 1 · GPT | NVIDIA Tesla T4 16 GB (Google Colab) · 176 min | NVIDIA RTX 4090 24 GB · 6.4 min |
+| 2 · Sentiment | NVIDIA Tesla T4 16 GB (Google Colab) · 41 s / 248 s / 350 s (3 models) | NVIDIA RTX 4090 24 GB · 19 s / 17 s / 436 s (3 models) |
+| 3 · CycleGAN | NVIDIA A100 40 GB (Google Colab) · 9.7 h | NVIDIA RTX 4090 24 GB · 6.7 h |
+
+Zoheb's machine: AMD Ryzen 9 7950X, 128 GB RAM. Full hardware details (software versions, peak
+memory, throughput) are in each member's `results.md`. Training times are not comparable across
+GPUs.
+
 ---
 
 ## What we did
@@ -187,6 +199,17 @@ Task 3 folders also contain `evaluate_local.py`, `submission.csv` (Kaggle) and
 | Raw training logs | `reproducibility/raw_logs/<member>/<task>/` |
 | Which checkpoint and log produced each number | `reproducibility/manifests/<member>/` |
 | Notebook / code for a run | `<task>/<member>/src/` |
+
+### Quick links
+
+| | shreya_akotiya | zoheb_waghu |
+|---|---|---|
+| Task 1 · GPT | [results](task1_llm/shreya_akotiya/results.md) · [failure analysis](task1_llm/shreya_akotiya/failure_analysis.md) · [metrics](task1_llm/shreya_akotiya/metrics_report.csv) · [folder](task1_llm/shreya_akotiya/) | [results](task1_llm/zoheb_waghu/results.md) · [failure analysis](task1_llm/zoheb_waghu/failure_analysis.md) · [metrics](task1_llm/zoheb_waghu/metrics_report.csv) · [folder](task1_llm/zoheb_waghu/) |
+| Task 2 · Sentiment | [results](task2_sentiment/shreya_akotiya/results.md) · [failure analysis](task2_sentiment/shreya_akotiya/failure_analysis.md) · [metrics](task2_sentiment/shreya_akotiya/metrics_report.csv) · [folder](task2_sentiment/shreya_akotiya/) | [results](task2_sentiment/zoheb_waghu/results.md) · [failure analysis](task2_sentiment/zoheb_waghu/failure_analysis.md) · [metrics](task2_sentiment/zoheb_waghu/metrics_report.csv) · [folder](task2_sentiment/zoheb_waghu/) |
+| Task 3 · CycleGAN | [results](task3_gan/shreya_akotiya/results.md) · [failure analysis](task3_gan/shreya_akotiya/failure_analysis.md) · [metrics](task3_gan/shreya_akotiya/metrics_report.csv) · [folder](task3_gan/shreya_akotiya/) · [Kaggle submission](task3_gan/shreya_akotiya/submission.csv) | [results](task3_gan/zoheb_waghu/results.md) · [failure analysis](task3_gan/zoheb_waghu/failure_analysis.md) · [metrics](task3_gan/zoheb_waghu/metrics_report.csv) · [folder](task3_gan/zoheb_waghu/) · [Kaggle submission](task3_gan/zoheb_waghu/submission.csv) |
+| Logs and manifests | [raw logs](reproducibility/raw_logs/shreya_akotiya/) · [manifests](reproducibility/manifests/shreya_akotiya/) | [raw logs](reproducibility/raw_logs/zoheb_waghu/) · [manifests](reproducibility/manifests/zoheb_waghu/) |
+
+**Team report:** [PDF](report/DATA266_Lab1_Report_Team_32.pdf) · [source](report/team_report.md)
 
 ---
 
