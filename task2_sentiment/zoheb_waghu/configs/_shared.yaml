@@ -1,56 +1,38 @@
-# Shared preprocessing + evaluation protocol for all three of my Task 2 models.
-# Kept in one file so the three models differ ONLY where I intend them to differ,
-# and so my numbers stay comparable with my teammates' (workplan section 0).
-
-run:
-  member: zoheb_waghu
-  seed: 1337
-  device: auto          # portable: cuda on the GPU Lab, mps locally
-
 data:
-  dataset: yelp_polarity   # confirmed: Yelp polarity
-  # Full 560K training split, matching shreya_akotiya, so the cross-member
-  # comparison in the report is not confounded by training-set size.
-  # (Was a 100K subsample; see results.md "Retrained at full scale".)
-  train_size: null         # null = the whole official train split
-  val_size: 20000          # absolute holdout from TRAIN, same budget as my teammate
-  val_fraction: 0.1        # fallback, only used when val_size is unset
-  test_size: null          # null = full 38K test split
-  # cache keyed to the data setup: the 100K cache cannot be silently reused
   cache_dir: task2_sentiment/zoheb_waghu/data_processed/full540k
-
-preprocess:
-  lowercase: true
-  strip_punctuation: true
-  strip_special_chars: true
-  # Stopwords: NLTK English MINUS negations - not/no/never/n't invert sentiment,
-  # so they are kept. No _NEG marking. Lemmatize, never stem.
-  normalize_contractions: true              # "don't" -> "do not" BEFORE stopword removal
-  lemmatize: true
-  min_token_freq: 2
-  max_vocab: 30000
-  max_len: 256                              # <pad> = 0, <unk> = 1
-
+  dataset: fancyzhx/yelp_polarity
+  test_size: null
+  train_size: null
+  val_fraction: 0.1
+  val_size: 20000
 embedding:
-  # HARD CONSTRAINT: learned from scratch, trainable, no pretrained embeddings or LMs.
   dim: 128
-
 eval:
-  bootstrap_samples: 2000     # 95% CI for accuracy, macro-F1, MCC
-  calibration_bins: 15        # expected calibration error
-  # Paired McNemar: baseline vs each experimental model.
-  slices:                     # per-slice macro-F1 and error rate (robustness); rules in data.compute_slices
-    - {name: short_reviews}       # len_tokens <= 50
-    - {name: long_reviews}        # len_tokens > 200
-    - {name: contains_negation}   # not / no / never / n't in the raw review
-    - {name: high_punctuation}    # 3+ exclamation marks
-
+  bootstrap_samples: 2000
+  calibration_bins: 15
+  slices:
+  - name: short_reviews
+  - name: long_reviews
+  - name: contains_negation
+  - name: high_punctuation
 paths:
-  # Raw logs live in the team-wide evidence trail, not inside the member folder.
-  log_dir: reproducibility/raw_logs/zoheb_waghu/task2_sentiment
   checkpoint_dir: task2_sentiment/zoheb_waghu/checkpoints
+  confusion_dir: task2_sentiment/zoheb_waghu/outputs/confusion_matrices
+  extended_metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report_extended.csv
+  log_dir: reproducibility/raw_logs/zoheb_waghu/task2_sentiment
+  metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report.csv
   output_dir: task2_sentiment/zoheb_waghu/outputs
   plot_dir: task2_sentiment/zoheb_waghu/outputs/plots
-  confusion_dir: task2_sentiment/zoheb_waghu/outputs/confusion_matrices
-  metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report.csv
-  extended_metrics_csv_path: task2_sentiment/zoheb_waghu/metrics_report_extended.csv
+preprocess:
+  lemmatize: true
+  lowercase: true
+  max_len: 256
+  max_vocab: 30000
+  min_token_freq: 2
+  normalize_contractions: true
+  strip_punctuation: true
+  strip_special_chars: true
+run:
+  device: auto
+  member: zoheb_waghu
+  seed: 1337
