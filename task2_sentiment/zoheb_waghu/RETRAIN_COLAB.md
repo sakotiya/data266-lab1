@@ -76,3 +76,13 @@ plus one-off preprocessing. Budget about an hour on an A100.
    becomes testable and must be rewritten against the new numbers.
 6. The 20-error review in `failure_analysis.md` refers to specific test rows of the old model;
    re-extract and re-annotate, or state that it describes the superseded 90K model.
+7. **Re-execute `src/task2_sentiment.ipynb`.** Its saved outputs are from the 90K / RTX 4090 run.
+   It now reads the cache path from the config rather than hard-coding `data_processed/`, so it
+   will pick up `full540k` automatically — but the committed outputs stay stale until it is run
+   again. Add it to the Colab sequence:
+
+   ```python
+   !pip -q install jupyter nbconvert
+   !jupyter nbconvert --to notebook --execute --inplace \
+       task2_sentiment/zoheb_waghu/src/task2_sentiment.ipynb
+   ```
