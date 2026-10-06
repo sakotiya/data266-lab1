@@ -301,15 +301,15 @@ each member's folder:
 
 | | **shreya_akotiya** | **zoheb_waghu** |
 |---|---|---|
-| Training data used | **all 540,000** (+ 20,000 validation) | **89,997** subsample (+ 9,999 validation) |
+| Training data used | **all 540,000** (+ 20,000 validation) | **all 539,947** (+ 20,000 validation) |
 | Test | full 38,000 | full 38,000 |
-| Malformed rows dropped | 0 train / 0 test (none found; 35 reviews empty after cleaning, kept as padding) | 4 train / 0 test |
+| Malformed rows dropped | 0 train / 0 test (none found; 35 reviews empty after cleaning, kept as padding) | 53 train / 0 test |
 | Lowercase, strip punctuation/special characters | yes | yes |
 | Contractions | apostrophe removed (`don't` → `dont`), kept as a negation word | expanded before stopword removal (`don't` → `do not`) |
 | Stopword list | sklearn (318); 13 negation words exempted → 305 removed | NLTK (198); 39 negation words exempted → 158 removed |
 | Word normalisation | light suffix stemming (`-s`, `-ed`, `-ing`, `-ly`, …) | WordNet lemmatisation |
-| Vocabulary | 48,436 words (min frequency 5, cap 50K), 99.47% token coverage | 30,000 words (min frequency 2, cap 30K), 1.28% test OOV |
-| Max length (tokens) | 200: keeps 96.6% of reviews whole | 256: keeps 97.8% of reviews whole |
+| Vocabulary | 48,436 words (min frequency 5, cap 50K), 99.47% token coverage | 30,000 words (min frequency 2, cap 30K), 1.15% test OOV |
+| Max length (tokens) | 200: keeps 96.6% of reviews whole | 256: keeps 97.9% of reviews whole |
 | Embedding dimension | 200 (all three models) | 128 (M1, M2) / 256 (M3) |
 
 EDA findings both members recorded: the data is perfectly balanced, and review length is
@@ -337,54 +337,53 @@ architecture and hyperparameter set.
 - **Zoheb's set starts from a sequential baseline** and tests two changes: replacing recurrence
   with convolutions (TextCNN), and replacing mean pooling with learned attention (BiLSTM-attn).
 - **Model selection.** Both members keep the checkpoint with the best validation score. Every
-  model peaked within the first one to three epochs: Shreya's at epochs 2–3 of 3, and Zoheb's
-  early stopping chose epoch 1–2.
+  model peaked early: Shreya's at epochs 2–3 of 3, and Zoheb's early stopping chose epochs 3, 5
+  and 3 (BiLSTM-mean, TextCNN, BiLSTM-attn).
 
 ### 2.4 Metrics — all six models on the same 38K test set
 
 | Metric | S: mean-pool | S: TextCNN | S: BiLSTM | Z: BiLSTM-mean | Z: TextCNN | Z: BiLSTM-attn |
 |---|---|---|---|---|---|---|
-| Accuracy ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| Precision (macro) ◆ | 0.9315 | 0.9435 | **0.9485** | 0.9346 | 0.9359 | 0.9404 |
-| Recall (macro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (macro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (micro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (weighted) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| ROC-AUC ◆ | 0.9793 | 0.9863 | **0.9891** | 0.9830 | 0.9836 | 0.9853 |
-| PR-AUC ◆ | 0.9787 | 0.9866 | **0.9894** | 0.9835 | 0.9840 | 0.9856 |
-| MCC ◆ | 0.8629 | 0.8870 | **0.8970** | 0.8693 | 0.8716 | 0.8806 |
-| Brier score ◆ | 0.0516 | 0.0430 | **0.0384** | 0.0489 | 0.0481 | 0.0449 |
-| ECE ‡ | **0.0046** | 0.0111 | 0.0086 | 0.0134 | 0.0054 | 0.0088 |
-| Confusion TN / FP | 17,795 / 1,205 | 17,850 / 1,150 | 18,091 / 909 | 17,766 / 1,234 | 17,963 / 1,037 | 18,046 / 954 |
-| Confusion FN / TP | 1,401 / 17,599 | 997 / 18,003 | 1,048 / 17,952 | 1,250 / 17,750 | 1,405 / 17,595 | 1,317 / 17,683 |
-| Accuracy 95% CI | [0.9289, 0.9339] | [0.9412, 0.9458] | [0.9463, 0.9507] | [0.9321, 0.9371] | [0.9333, 0.9383] | [0.9379, 0.9426] |
-| Macro-F1 95% CI | [0.9289, 0.9339] | [0.9412, 0.9458] | [0.9463, 0.9507] | [0.9321, 0.9371] | [0.9333, 0.9383] | [0.9379, 0.9426] |
-| MCC 95% CI | [0.8578, 0.8679] | [0.8824, 0.8915] | [0.8926, 0.9014] | [0.8642, 0.8741] | [0.8667, 0.8767] | [0.8760, 0.8855] |
-| McNemar p vs own baseline | – | **1.6e-24** | **9.4e-55** | – | 0.369 (n.s.) | **2.6e-7** |
+| Accuracy ◆ | 0.9314 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| Precision (macro) ◆ | 0.9315 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| Recall (macro) ◆ | 0.9314 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| F1 (macro) ◆ | 0.9314 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| F1 (micro) ◆ | 0.9314 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| F1 (weighted) ◆ | 0.9314 | 0.9435 | 0.9485 | 0.9535 | 0.9502 | **0.9553** |
+| ROC-AUC ◆ | 0.9793 | 0.9863 | 0.9891 | 0.9910 | 0.9896 | **0.9916** |
+| PR-AUC ◆ | 0.9787 | 0.9866 | 0.9894 | 0.9912 | 0.9899 | **0.9917** |
+| MCC ◆ | 0.8629 | 0.8870 | 0.8970 | 0.9070 | 0.9004 | **0.9106** |
+| Brier score ◆ | 0.0516 | 0.0430 | 0.0384 | 0.0350 | 0.0371 | **0.0335** |
+| ECE ‡ | 0.0046 | 0.0111 | 0.0086 | 0.0100 | **0.0044** | 0.0053 |
+| Confusion TN / FP | 17,795 / 1,205 | 17,850 / 1,150 | 18,091 / 909 | 18,042 / 958 | 18,009 / 991 | 18,064 / 936 |
+| Confusion FN / TP | 1,401 / 17,599 | 997 / 18,003 | 1,048 / 17,952 | 809 / 18,191 | 901 / 18,099 | 763 / 18,237 |
+| Accuracy 95% CI | [0.9289, 0.9339] | [0.9412, 0.9458] | [0.9463, 0.9507] | [0.9513, 0.9556] | [0.9480, 0.9524] | [0.9531, 0.9573] |
+| Macro-F1 95% CI | [0.9289, 0.9339] | [0.9412, 0.9458] | [0.9463, 0.9507] | [0.9513, 0.9556] | [0.9480, 0.9524] | [0.9531, 0.9573] |
+| MCC 95% CI | [0.8578, 0.8679] | [0.8824, 0.8915] | [0.8926, 0.9014] | [0.9027, 0.9111] | [0.8960, 0.9048] | [0.9063, 0.9146] |
+| McNemar p vs own baseline | – | **1.6e-24** | **9.4e-55** | – | **1.5e-3** (worse) | **0.034** |
 | Parameters | 9.69M | 9.93M | 10.03M | 4.10M | 4.14M | 10.44M |
-| Training time ¶ | 41 s | 248 s | 350 s | 19 s | 17 s | 436 s |
-| Examples/sec ¶ | 39,502 | 6,547 | 4,637 | 18,569 | 21,723 | 825 |
-| Peak GPU memory | 338 MB | 460 MB | 2,286 MB | 1,280 MB | 219 MB | 1,526 MB |
-| Hardware | Tesla T4 | Tesla T4 | Tesla T4 | RTX 4090 | RTX 4090 | RTX 4090 |
+| Training time ¶ | 41 s | 248 s | 350 s | 227 s | 261 s | 3,684 s |
+| Examples/sec ¶ | 39,502 | 6,547 | 4,637 | 11,904 | 14,508 | 879 |
+| Peak GPU memory | 338 MB | 460 MB | 2,286 MB | 744 MB | 220 MB | 1,529 MB |
+| Hardware | Tesla T4 | Tesla T4 | Tesla T4 | A100 | A100 | A100 |
 
 Micro-F1 equals accuracy for single-label classification. Macro and weighted F1 are almost
 identical to it because the test set is exactly balanced.
 
 **Comparability notes**
 
-- ◆ **Quality metrics are not a clean architecture comparison across members.** Shreya trained on
-  **all 540,000** reviews, Zoheb on an **89,997** subsample — a 6× difference — and the vocabulary
-  cap, maximum sequence length and embedding size also differ (see §2.2). The three models *within*
-  each member's column are directly comparable to each other, because each member held their own
-  preprocessing and splits fixed; the comparison **across** the two columns confounds architecture
-  with training-set size, and the size difference is the larger effect. Treat a cross-member gap as
-  a combined result, not as evidence that one architecture is better.
-  A paired McNemar test between the two members' best models *would* settle it — both scored the
-  same official 38K test set — but it needs per-example predictions from both members, which are
-  currently saved for Zoheb only. See §2.6 "what the team would try next".
-- ¶ **Speed is not comparable across members.** Shreya trained on a Tesla T4 (Google Colab) and
-  Zoheb on an RTX 4090. Training time also depends on training-set size (540K vs 90K reviews)
-  and epoch count. Peak memory is comparable: both use `torch.cuda.max_memory_allocated`.
+- ◆ **Same training data, different preprocessing.** Both members now train on all ~540,000 Yelp
+  training reviews, so training-set size no longer differs. The remaining cross-member
+  differences are the preprocessing and input setup: vocabulary (48,436 vs 30,000 words), maximum
+  length (200 vs 256 tokens), embedding size, and stemming vs lemmatisation with contraction
+  expansion (see §2.2). Within each member's column the three models share one setup and are
+  directly comparable; across columns, a gap reflects preprocessing and architecture together.
+  A paired McNemar test between the two members' best models would add a paired comparison —
+  both scored the same official 38K test set — but it needs per-example predictions from both
+  members, which are currently saved for Zoheb only.
+- ¶ **Speed is not comparable across members.** Shreya trained on a Tesla T4 and Zoheb on an
+  A100 (both Google Colab), and the epoch counts differ. Peak memory is comparable: both use
+  `torch.cuda.max_memory_allocated`.
 - ‡ **ECE uses different bin counts** (10 bins for Shreya, 15 for Zoheb), so small ECE
   differences across members are not meaningful. Brier score has no such parameter and is
   directly comparable.
@@ -428,52 +427,55 @@ error rate.
 
 | Slice (n) | BiLSTM-mean | TextCNN | BiLSTM-attn |
 |---|---|---|---|
-| short, ≤ 50 tokens (18,860) | 0.935 / 6.4% | 0.936 / 6.3% | 0.941 / 5.9% |
-| long, > 200 tokens (1,697) | 0.915 / 7.5% | 0.908 / 8.0% | 0.919 / 7.1% |
-| contains negation (22,583) | 0.929 / 6.6% | 0.931 / 6.4% | 0.936 / 5.9% |
-| ≥ 3 exclamation marks (6,944) | 0.955 / 4.4% | 0.952 / 4.7% | 0.958 / 4.1% |
+| short, ≤ 50 tokens (18,860) | 0.953 / 4.6% | 0.951 / 4.8% | 0.954 / 4.5% |
+| long, > 200 tokens (1,697) | 0.941 / 5.2% | 0.928 / 6.3% | 0.940 / 5.3% |
+| contains negation (22,583) | 0.951 / 4.6% | 0.948 / 4.9% | 0.952 / 4.5% |
+| ≥ 3 exclamation marks (6,944) | 0.968 / 3.1% | 0.963 / 3.6% | 0.970 / 2.9% |
 
 **Shared findings.**
 
 - **Long reviews are the weakest slice for all six models.** Long reviews are more often mixed
-  (praise and complaint in one review), and a few lose their tail to truncation. Each member's
-  strongest model (Shreya's BiLSTM, Zoheb's BiLSTM-attn) stays the most accurate on long
-  reviews, although it is not the one whose score drops least. In both sets the TextCNN drops
-  most (Shreya: +0.7–0.9 error points; Zoheb: 0.936 → 0.908 macro-F1), consistent with
-  fixed-width filters losing long-range contrast.
+  (praise and complaint in one review), and a few lose their tail to truncation. Shreya's BiLSTM
+  is her most accurate model on long reviews; in Zoheb's set the BiLSTM-mean and BiLSTM-attn are
+  level on them (0.941 vs 0.940). In both sets the TextCNN drops most (Shreya: +0.7–0.9 error
+  points; Zoheb: 0.951 → 0.928 macro-F1), consistent with fixed-width filters losing long-range
+  contrast.
 - **Reviews with a negation are harder for every model**, but keeping negation words limits the
   damage. The penalty is largest for the model with no word order: Shreya's mean-pool error
   rate rises 2.1 points from the no-negation to the negation slice, against 0.7–0.8 points for
-  her TextCNN and BiLSTM. Zoheb's models lose about 0.5 macro-F1 points on the negation slice
+  her TextCNN and BiLSTM. Zoheb's models lose about 0.3 macro-F1 points on the negation slice
   relative to their overall score.
 - **Strongly emotional reviews (≥ 3 exclamation marks) are the easiest slice** in Zoheb's
-  analysis (error rate 4.1–4.7%), because they carry unambiguous sentiment.
+  analysis (error rate 2.9–3.6%), because they carry unambiguous sentiment.
 
 ### 2.6 Joint analysis
 
 **What we learned from the comparison**
 
-1. **The BiLSTM trained by Shreya had the highest test accuracy at 94.85%.** Its confidence
-   interval did not overlap Zoheb's best BiLSTM-attention interval. However, architecture alone
-   cannot explain the difference. Shreya's models used 540K training reviews, while Zoheb used
-   90K, and the vocabulary and embedding sizes were also different. The difference in training-set
-   size is probably the most important factor.
-2. **Keeping word order helped.** Shreya's mean-pooling baseline was the weakest of her three
-   models at 93.14%, while both the TextCNN and BiLSTM performed better. Zoheb's baseline was
-   already a BiLSTM, which is why it started at 93.46% even with less training data.
-3. **TextCNN was especially useful compared with a bag-of-words model.** Shreya's TextCNN improved
-   over her mean-pooling baseline by 1.2 percentage points, and the McNemar test confirmed that
-   the improvement was significant. In Zoheb's experiments, however, TextCNN was not significantly
-   better than his BiLSTM baseline. This suggests that local phrase features help most when the
-   baseline does not understand word order at all.
-4. **Attention pooling improved Zoheb's BiLSTM.** The attention BiLSTM improved over the mean-
-   pooling BiLSTM by 0.56 percentage points. It also required much more computation. Shreya's BiLSTM
-   masked max-pooling model reached a higher score, but the two results are not a perfectly
-   controlled pooling comparison because the training data and embedding sizes were different.
-5. **The probability outputs were generally useful.** All models had reasonably low Brier scores
+1. **Zoheb's BiLSTM-attention had the highest test accuracy at 95.53%.** Its confidence interval
+   [0.9531, 0.9573] does not overlap Shreya's best model, the BiLSTM at 94.85% [0.9463, 0.9507].
+   Zoheb's BiLSTM-mean baseline (95.35%) is also above it. Both members now train on the same
+   540K reviews, so the gap comes from preprocessing and model setup (lemmatisation and contraction
+   expansion, a 30K vocabulary, 256-token inputs) rather than training-set size, but these factors
+   cannot be separated from each other with the current runs.
+2. **More training data clearly helped.** Zoheb retrained the same three models on all 540K
+   reviews instead of a 90K subsample, with the same model settings. Accuracy rose by about 1.5–1.9
+   points for every model (93.46% → 95.35%, 93.57% → 95.02%, 94.02% → 95.53%). This is the most
+   controlled comparison in Task 2, because the models and their hyperparameters were unchanged.
+3. **Keeping word order helped.** Shreya's mean-pooling baseline was the weakest of all six models
+   at 93.14%, while both her TextCNN and BiLSTM performed better. Zoheb's baseline was already a
+   BiLSTM, which reads word order.
+4. **TextCNN helps against a bag-of-words model, but not against a BiLSTM.** Shreya's TextCNN
+   improved over her mean-pooling baseline by 1.2 points (p = 1.6e-24). Zoheb's TextCNN was
+   significantly *worse* than his BiLSTM baseline by 0.3 points (p = 0.0015). Local phrase
+   features add a lot when the baseline ignores word order, but a recurrent encoder already
+   captures them and more.
+5. **Attention pooling gave a small but real gain.** Zoheb's attention BiLSTM beat his mean-pooling
+   BiLSTM by 0.18 points (p = 0.034), at about 16 times the training time (3,684 s vs 227 s).
+6. **The probability outputs were generally useful.** All models had reasonably low Brier scores
    and ECE values. Within each member's experiments, the model with the best accuracy also had the
    best Brier score.
-6. **Most models reached their best validation result early.** The models usually peaked within
+7. **Most models reached their best validation result early.** The models usually peaked within
    the first few epochs. This suggests that future improvements should focus more on the amount of
    data, input length, and model design than simply adding many more epochs.
 
@@ -487,9 +489,10 @@ error rate.
 
 **Weaknesses and limitations**
 
-- **Confounded comparison across members.** Training-set size, vocabulary, embedding size,
-  preprocessing (stemming vs lemmatisation) and hardware all differ between the two sets, so
-  cross-member differences cannot be attributed to any single factor.
+- **Cross-member differences have more than one cause.** Training-set size is now the same, but
+  vocabulary, maximum length, embedding size, preprocessing (stemming vs lemmatisation) and
+  hardware still differ between the two sets, so a cross-member gap cannot be attributed to any
+  single factor.
 - **Single seed per model**, so there is no estimate of run-to-run variance.
 - **Slices were defined independently** (different length cut-offs and negation detectors) and
   ECE bins differ, so those numbers are not fully comparable across members.
@@ -500,18 +503,13 @@ error rate.
 
 **What the team would try next**
 
-1. **A controlled cross-member test.** Train Zoheb's BiLSTM-attn on Shreya's full 540K split
-   (or Shreya's BiLSTM on Zoheb's 90K split) to separate the effect of data size from the
-   effect of architecture.
-2. **A paired McNemar test between the two best models**, which is now one step from being
-   runnable. Both members scored the same official 38K test reviews in the same order, so the test
-   is valid even though the training-set sizes differ — it conditions on the examples where the two
-   models disagree, instead of comparing two accuracies that carry different amounts of training
-   data. `task2_sentiment/cross_member_mcnemar.py` performs it; it needs Shreya's best model's
-   per-example test probabilities exported once (Zoheb's are already committed as
-   `test_probs_t2_m3_bilstm_attn.npy`), and the script prints the one-line export to add. It will
-   answer "is one setup better on this test set", not "is one architecture better" — the data-size
-   confound in §2.4 ◆ still applies.
+1. **A controlled preprocessing test.** Train Shreya's BiLSTM with Zoheb's preprocessing (and the
+   reverse) to measure how much of the gap between the two best models comes from preprocessing.
+2. **A paired McNemar test between the two best models.** Both members scored the same official
+   38K test reviews in the same order, so the test is valid. `task2_sentiment/cross_member_mcnemar.py`
+   performs it; it needs Shreya's best model's per-example test probabilities exported once
+   (Zoheb's are already committed as `test_probs_t2_m3_bilstm_attn.npy`). It would answer "is one
+   setup better on this test set", not "is one architecture better".
 3. **A hierarchical or sentence-level encoder** for long, mixed reviews. Both error reviews
    identify mixed sentiment as a leading error type, and the long-review slice is the weakest
    for all six models.
@@ -544,10 +542,10 @@ also found label noise, which no model can fix.
 
 | | shreya_akotiya | zoheb_waghu |
 |---|---|---|
-| Run IDs | `task2_shreya_main_20260921_222011` (all three models) | `t2_m1_baseline_20260929-211318`, `t2_m2_cnn_20260929-211446`, `t2_m3_bilstm_attn_20260929-211521` |
+| Run IDs | `task2_shreya_main_20260921_222011` (all three models) | `t2_m1_baseline_20261006-210947`, `t2_m2_cnn_20261006-211829`, `t2_m3_bilstm_attn_20261006-212317` |
 | Config | `task2_sentiment/shreya_akotiya/config.yaml` | `task2_sentiment/zoheb_waghu/configs/` (`_shared.yaml` + one per model) |
 | Checkpoints | `task2_sentiment/shreya_akotiya/checkpoints/{baseline_meanpool,exp_textcnn,exp_bilstm}.pt` | `task2_sentiment/zoheb_waghu/checkpoints/t2_m{1,2,3}_…_best.pt` |
-| Raw logs | `reproducibility/raw_logs/shreya_akotiya/task2_sentiment/task2_shreya_main_20260921_222011.log` | `reproducibility/raw_logs/zoheb_waghu/task2_sentiment/t2_m*_20260929-*.log` (+ `.jsonl`) |
+| Raw logs | `reproducibility/raw_logs/shreya_akotiya/task2_sentiment/task2_shreya_main_20260921_222011.log` | `reproducibility/raw_logs/zoheb_waghu/task2_sentiment/t2_m*_20261006-*.log` (+ `.jsonl`) |
 | Manifest | `reproducibility/manifests/shreya_akotiya/task2_shreya_main_20260921_222011.json` | `reproducibility/manifests/zoheb_waghu/task2_sentiment_manifest.md` |
 | Metrics | `metrics_report.csv`, `metrics_report_extended.csv`, `outputs/slice_metrics.csv`, `outputs/mcnemar.csv` | `metrics_report.csv`, `metrics_report_extended.csv` |
 | Plots | `outputs/plots/{eda,confusion_matrices,curves}.png` | `outputs/plots/{eda_overview,model_comparison}.png`, `outputs/confusion_matrices/confusion_and_calibration.png` |

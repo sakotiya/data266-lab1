@@ -16,7 +16,7 @@ compared side by side.
 | Task | shreya_akotiya | zoheb_waghu |
 |---|---|---|
 | **1 · GPT from scratch** | 12-layer deep-narrow GPT · **0.913 bits/char** · 79.9% top-1 | 4-layer shallow-wide GPT · 1.013 bits/char · 77.7% top-1 |
-| **2 · Yelp sentiment** | mean-pool 93.14% · TextCNN 94.35% · **BiLSTM 94.85%** | BiLSTM 93.46% · TextCNN 93.57% · **BiLSTM-attention 94.02%** |
+| **2 · Yelp sentiment** | mean-pool 93.14% · TextCNN 94.35% · **BiLSTM 94.85%** | BiLSTM 95.35% · TextCNN 95.02% · **BiLSTM-attention 95.53%** |
 | **3 · CycleGAN** | UNet · FID 97.9 (photo→Monet) / 102.8 · **Kaggle score −50.38 (team final)** | ResNet-9 · FID 98.9 / 103.2 · Kaggle score −50.72 |
 
 ### Hardware and training time
@@ -24,10 +24,10 @@ compared side by side.
 | Task | shreya_akotiya | zoheb_waghu |
 |---|---|---|
 | 1 · GPT | NVIDIA Tesla T4 16 GB (Google Colab) · 176 min | NVIDIA RTX 4090 24 GB · 6.4 min |
-| 2 · Sentiment | NVIDIA Tesla T4 16 GB (Google Colab) · 41 s / 248 s / 350 s (3 models) | NVIDIA RTX 4090 24 GB · 19 s / 17 s / 436 s (3 models) |
+| 2 · Sentiment | NVIDIA Tesla T4 16 GB (Google Colab) · 41 s / 248 s / 350 s (3 models) | NVIDIA A100 40 GB (Google Colab) · 227 s / 261 s / 3,684 s (3 models) |
 | 3 · CycleGAN | NVIDIA A100 40 GB (Google Colab) · 9.7 h | NVIDIA RTX 4090 24 GB · 6.7 h |
 
-Zoheb's machine: AMD Ryzen 9 7950X, 128 GB RAM. Full hardware details (software versions, peak
+Zoheb's machine for Tasks 1 and 3: AMD Ryzen 9 7950X, 128 GB RAM. Full hardware details (software versions, peak
 memory, throughput) are in each member's `results.md`. Training times are not comparable across
 GPUs.
 
@@ -50,10 +50,10 @@ GPUs.
   pretrained LMs). Negation words were kept during stopword removal.
 - Both members tested on the **same official 38K test set**, with full metrics: accuracy,
   P/R/F1, ROC-AUC, PR-AUC, MCC, Brier, ECE, bootstrap CIs, McNemar and per-slice robustness.
-- **Shreya:** mean-pool baseline → TextCNN → BiLSTM, trained on all 540K reviews.
-  **Zoheb:** BiLSTM baseline → TextCNN → BiLSTM with attention, trained on a 90K subsample.
-- Models that read word order beat bag-of-words, and long, mixed reviews are the hardest for
-  every model.
+- **Shreya:** mean-pool baseline → TextCNN → BiLSTM. **Zoheb:** BiLSTM baseline → TextCNN →
+  BiLSTM with attention. Both trained on all 540K reviews.
+- Models that read word order beat bag-of-words, more training data helped every model, and long,
+  mixed reviews are the hardest for every model.
 
 ### Task 3 — CycleGAN Monet ↔ photo (Kaggle)
 - Two generators + two discriminators, trained at 256px with adversarial, cycle-consistency and
