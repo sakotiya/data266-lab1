@@ -9,10 +9,15 @@ run:
 
 data:
   dataset: yelp_polarity   # confirmed: Yelp polarity
-  train_size: 100000       # subsample of the 560K train split; set null for full
-  val_fraction: 0.1        # held out of TRAIN. Official test split is touched once, at the end.
+  # Full 560K training split, matching shreya_akotiya, so the cross-member
+  # comparison in the report is not confounded by training-set size.
+  # (Was a 100K subsample; see results.md "Retrained at full scale".)
+  train_size: null         # null = the whole official train split
+  val_size: 20000          # absolute holdout from TRAIN, same budget as my teammate
+  val_fraction: 0.1        # fallback, only used when val_size is unset
   test_size: null          # null = full 38K test split
-  cache_dir: task2_sentiment/zoheb_waghu/data_processed
+  # cache keyed to the data setup: the 100K cache cannot be silently reused
+  cache_dir: task2_sentiment/zoheb_waghu/data_processed/full540k
 
 preprocess:
   lowercase: true

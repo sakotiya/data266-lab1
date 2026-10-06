@@ -115,7 +115,12 @@ def build_dataset(cfg: dict, log=None) -> dict:
     te_toks, te_y, te_f, te_raw = prepare(raw_test, "test")
 
     # validation carved out of TRAIN, stratified by label
-    n_val = int(len(tr_toks) * d["val_fraction"])
+    # `val_size` (absolute) takes priority over `val_fraction`, so the validation
+    # budget stays fixed when the training-set size changes - matching the
+    # teammate's 20,000-row holdout makes the two members' splits comparable.
+    n_val = int(d["val_size"]) if d.get("val_size") else int(len(tr_toks) * d["val_fraction"])
+    if n_val >= len(tr_toks):
+        raise ValueError(f"val_size {n_val} >= available training rows {len(tr_toks)}")
     order = rng.permutation(len(tr_toks))
     val_idx, train_idx = set(order[:n_val].tolist()), order[n_val:]
     va_toks = [tr_toks[i] for i in sorted(val_idx)]
