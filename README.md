@@ -15,8 +15,7 @@ task1_llm/          TinyStories, GPT from scratch (no prebuilt Transformer/atten
 task2_sentiment/    Yelp polarity, 3 models per member (no pretrained embeddings or LMs)
 task3_gan/          CycleGAN, Monet <-> photo, Kaggle submission
 reproducibility/    manifests/ (env + checkpoint mapping), raw_logs/ (unedited)
-report/             team_report.md (source) + DATA266_Lab1_Report_Team_32_draft.pdf
-                    (final: DATA266_Lab1_Report_Team_32.pdf)
+report/             DATA266_Lab1_Report_Team_32.pdf (final report) + team_report.md (its source)
 ```
 
 Per member, per task:
@@ -120,8 +119,9 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
       leaderboard, no public/private split; team rank 1). See `report/team_report.md` §3.3
 - [x] **shreya_akotiya Task 3 checkpoint** - fp16 generators committed
       (`task3_gan/shreya_akotiya/checkpoints/*_G_AB_fp16.pt`, `*_G_BA_fp16.pt`)
-- [ ] **Final report** - `report/team_report.md` covers all three tasks; export the final
-      `report/DATA266_Lab1_Report_Team_32.pdf`
+- [x] **Final report** - `report/DATA266_Lab1_Report_Team_32.pdf`, built from
+      `report/team_report.md`; all three tasks plus an appendix with each member's failure/error
+      snippets
 
 ## Data
 
@@ -239,7 +239,7 @@ anywhere in the repo.
 | Kaggle submission | `task3_gan/<member>/submission.csv` |
 | Raw training logs (unedited) | `reproducibility/raw_logs/<member>/<task>/` |
 | Manifests (versions, run -> checkpoint -> log) | `reproducibility/manifests/<member>/` |
-| Team report | `report/team_report.md`, `report/DATA266_Lab1_Report_Team_32_draft.pdf` |
+| Team report | `report/DATA266_Lab1_Report_Team_32.pdf` (source: `report/team_report.md`) |
 
 **Task 3 direction names.** The instructor's script and the team metrics use A = Monet,
 B = photo, so `A2B` = Monet -> photo and `B2A` = photo -> Monet (the Kaggle direction).
