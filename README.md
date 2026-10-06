@@ -52,8 +52,8 @@ GPUs.
   P/R/F1, ROC-AUC, PR-AUC, MCC, Brier, ECE, bootstrap CIs, McNemar and per-slice robustness.
 - **Shreya:** mean-pool baseline → TextCNN → BiLSTM. **Zoheb:** BiLSTM baseline → TextCNN →
   BiLSTM with attention. Both trained on all 540K reviews.
-- Models that read word order beat bag-of-words, more training data helped every model, and long,
-  mixed reviews are the hardest for every model.
+- Models that read word order beat bag-of-words, and long, mixed reviews are the hardest for
+  every model.
 
 ### Task 3 — CycleGAN Monet ↔ photo (Kaggle)
 - Two generators + two discriminators, trained at 256px with adversarial, cycle-consistency and

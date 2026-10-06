@@ -372,8 +372,8 @@ identical to it because the test set is exactly balanced.
 
 **Comparability notes**
 
-- ◆ **Same training data, different preprocessing.** Both members now train on all ~540,000 Yelp
-  training reviews, so training-set size no longer differs. The remaining cross-member
+- ◆ **Same training data, different preprocessing.** Both members train on all ~540,000 Yelp
+  training reviews, so training-set size is the same. The cross-member
   differences are the preprocessing and input setup: vocabulary (48,436 vs 30,000 words), maximum
   length (200 vs 256 tokens), embedding size, and stemming vs lemmatisation with contraction
   expansion (see §2.2). Within each member's column the three models share one setup and are
@@ -454,28 +454,24 @@ error rate.
 
 1. **Zoheb's BiLSTM-attention had the highest test accuracy at 95.53%.** Its confidence interval
    [0.9531, 0.9573] does not overlap Shreya's best model, the BiLSTM at 94.85% [0.9463, 0.9507].
-   Zoheb's BiLSTM-mean baseline (95.35%) is also above it. Both members now train on the same
+   Zoheb's BiLSTM-mean baseline (95.35%) is also above it. Both members train on the same
    540K reviews, so the gap comes from preprocessing and model setup (lemmatisation and contraction
    expansion, a 30K vocabulary, 256-token inputs) rather than training-set size, but these factors
    cannot be separated from each other with the current runs.
-2. **More training data clearly helped.** Zoheb retrained the same three models on all 540K
-   reviews instead of a 90K subsample, with the same model settings. Accuracy rose by about 1.5–1.9
-   points for every model (93.46% → 95.35%, 93.57% → 95.02%, 94.02% → 95.53%). This is the most
-   controlled comparison in Task 2, because the models and their hyperparameters were unchanged.
-3. **Keeping word order helped.** Shreya's mean-pooling baseline was the weakest of all six models
+2. **Keeping word order helped.** Shreya's mean-pooling baseline was the weakest of all six models
    at 93.14%, while both her TextCNN and BiLSTM performed better. Zoheb's baseline was already a
    BiLSTM, which reads word order.
-4. **TextCNN helps against a bag-of-words model, but not against a BiLSTM.** Shreya's TextCNN
+3. **TextCNN helps against a bag-of-words model, but not against a BiLSTM.** Shreya's TextCNN
    improved over her mean-pooling baseline by 1.2 points (p = 1.6e-24). Zoheb's TextCNN was
    significantly *worse* than his BiLSTM baseline by 0.3 points (p = 0.0015). Local phrase
    features add a lot when the baseline ignores word order, but a recurrent encoder already
    captures them and more.
-5. **Attention pooling gave a small but real gain.** Zoheb's attention BiLSTM beat his mean-pooling
+4. **Attention pooling gave a small but real gain.** Zoheb's attention BiLSTM beat his mean-pooling
    BiLSTM by 0.18 points (p = 0.034), at about 16 times the training time (3,684 s vs 227 s).
-6. **The probability outputs were generally useful.** All models had reasonably low Brier scores
+5. **The probability outputs were generally useful.** All models had reasonably low Brier scores
    and ECE values. Within each member's experiments, the model with the best accuracy also had the
    best Brier score.
-7. **Most models reached their best validation result early.** The models usually peaked within
+6. **Most models reached their best validation result early.** The models usually peaked within
    the first few epochs. This suggests that future improvements should focus more on the amount of
    data, input length, and model design than simply adding many more epochs.
 
@@ -489,7 +485,7 @@ error rate.
 
 **Weaknesses and limitations**
 
-- **Cross-member differences have more than one cause.** Training-set size is now the same, but
+- **Cross-member differences have more than one cause.** Training-set size is the same, but
   vocabulary, maximum length, embedding size, preprocessing (stemming vs lemmatisation) and
   hardware still differ between the two sets, so a cross-member gap cannot be attributed to any
   single factor.
