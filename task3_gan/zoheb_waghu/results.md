@@ -110,9 +110,13 @@ images per set, Inception-v3) - re-checked on these predictions, identical to th
 | Cycle-reconstruction L1 ([0, 1] pixels) | 0.0332 | 0.0398 |
 | LPIPS, input vs translation (AlexNet) | 0.354 | 0.378 |
 | Content cosine, input vs translation (Inception) | 0.797 | 0.772 |
-| Human audit (style / content / artifacts) | pending - 2 raters | pending |
-| Inter-rater agreement (Cohen's κ) | pending | pending |
+| Human audit (style / content / artifacts) ◇ | 3.17 / 4.57 / 4.63 | 3.37 / 4.47 / 4.83 |
+| Inter-rater agreement (Cohen's κ) ◇ | 0.1487 (63.3% exact, 100% within 1) | (same audit) |
 | Parameters / training time / images per s / peak memory | 28,285,832 / 24,082.6 s / 11.69 / 12.78 GB | (same run) |
+
+◇ The audit protocol, the two rounds it took, and why κ = 0.1487 understates agreement (both
+raters used only two of the five categories, so chance agreement is 50-61%; no disagreement
+exceeded one point) are in the **Human audit** section below.
 
 **Kaggle submission** ([submission.csv](submission.csv), the instructor's format: mean of both
 directions): **FID 101.026, MiFID 0.4114** → leaderboard score (FID + MiFID) / 2 = 50.72.
