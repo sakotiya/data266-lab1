@@ -33,7 +33,63 @@ overall, the largest gap of any slice for every one of the three models.
 | C. Near-threshold errors | 5 | wrong with \|p − 0.5\| ≤ 0.05 | `error_buckets` |
 | D. Worst-slice errors | 5 | wrong within `long_reviews` | `error_buckets` |
 
-## Annotation summary (SUPERSEDED - describes the 89,997-row model)
+## The 20 errors — measured attributes
+
+Extracted from the retrained 540K baseline into
+[outputs/error_review_t2_m1_baseline.md](outputs/error_review_t2_m1_baseline.md), which holds the
+full review text for each case. The columns below are measured; **error type and testable fix are
+mine to assign** and are filled in there and summarised here.
+
+| # | group | idx | p(pos) | true | tokens | truncated | excl | negation | error type | testable fix |
+|---|---|---|---:|---|---:|---|---:|---|---|---|
+| 1 | A | 29330 | 1.0000 | neg | 19 | no | 2 | no | | |
+| 2 | A | 5185 | 0.9998 | neg | 37 | no | 0 | yes | | |
+| 3 | A | 14825 | 0.9995 | neg | 141 | no | 1 | yes | | |
+| 4 | A | 2818 | 0.9992 | neg | 7 | no | 0 | no | | |
+| 5 | A | 27375 | 0.9992 | neg | 47 | no | 0 | no | | |
+| 6 | B | 22807 | 0.0001 | pos | 48 | no | 0 | yes | | |
+| 7 | B | 30793 | 0.0002 | pos | 45 | no | 0 | yes | | |
+| 8 | B | 29494 | 0.0003 | pos | 169 | no | 0 | yes | | |
+| 9 | B | 20061 | 0.0008 | pos | 311 | **yes** | 1 | yes | | |
+| 10 | B | 264 | 0.0008 | pos | 23 | no | 2 | yes | | |
+| 11 | C | 1604 | 0.4998 | pos | 96 | no | 0 | yes | | |
+| 12 | C | 7137 | 0.5009 | neg | 26 | no | 1 | yes | | |
+| 13 | C | 24722 | 0.5011 | neg | 77 | no | 0 | no | | |
+| 14 | C | 29611 | 0.5017 | neg | 36 | no | 0 | yes | | |
+| 15 | C | 439 | 0.4982 | pos | 213 | no | 1 | yes | | |
+| 16 | D | 439 | 0.4982 | pos | 213 | no | 1 | yes | | |
+| 17 | D | 1256 | 0.6371 | neg | 351 | **yes** | 1 | yes | | |
+| 18 | D | 2673 | 0.6890 | neg | 473 | **yes** | 6 | yes | | |
+| 19 | D | 3215 | 0.6739 | neg | 336 | **yes** | 9 | yes | | |
+| 20 | D | 3755 | 0.4907 | pos | 246 | no | 3 | yes | | |
+
+Error type vocabulary: `negation` · `sarcasm/irony` · `mixed sentiment` · `aspect confusion` ·
+`rating-text mismatch` · `domain term` · `length truncation` · `rare vocabulary / OOV` ·
+`label noise` · `other`
+
+**What the measured columns already show**, before any judgement is applied:
+
+- **4 of 20 exceed `max_len=256`** and are truncated — all four are in group D (worst slice,
+  `long_reviews`), cases 9, 17, 18 and 19. None of the confident false positives is truncated, so
+  truncation cannot explain group A.
+- **16 of 20 contain a negation token**, against 59% of the test set overall — negations are
+  over-represented among errors, which is evidence for the negation-handling decision mattering
+  rather than against it.
+- **Case 15 and case 16 are the same review** (test index 439): it is both a near-threshold error
+  and a worst-slice error. That is expected — the groups are selected independently — but it means
+  the 20 slots cover 19 distinct reviews.
+- Group D is **not** uniformly near-threshold: cases 17-19 sit at p = 0.64-0.69, so the model is
+  moderately confident and wrong on long reviews, not merely uncertain.
+
+## Annotation summary
+
+> **To be completed against the table above.** The counts and case-by-case reasoning below
+> describe the 20 errors of the **superseded 89,997-row model** — different reviews — and are kept
+> only because much of the reasoning is likely to apply again. Replace them once the new cases are
+> annotated.
+
+### Superseded summary (89,997-row model)
+
 
 | Error type | Count |
 |---|---:|

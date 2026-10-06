@@ -116,20 +116,58 @@ highest cycle L1.
 
 ## Human audit (30 fixed samples, 2 raters)
 
-**Pending.** The blinded sheet is generated: `outputs/human_audit/sample_01.jpg … sample_30.jpg`
-(15 per direction, shuffled, file names stripped) and `outputs/human_audit_ratings.csv` (one row
-per sample per rater; score style, content, artifacts 1-5). Give raters only that folder and the
-ratings file; keep `outputs/human_audit_manifest.csv` (sample → source image) away from them
-until rating is done. Then re-run `evaluate_local.py metrics` - it adds per-direction mean scores
-and Cohen's κ to `full_metrics_report.csv`.
+Blinded: 15 samples per direction, drawn with seed 42 from the first 300 sorted predictions (the
+set the instructor's evaluator scores), shuffled, file names stripped. Each sheet shows
+**source | translation** side by side so content preservation can be judged. Raters scored style,
+content and artifacts 1-5 with **5 best on every axis**, independently, against
+[outputs/RATING_GUIDE.md](outputs/RATING_GUIDE.md).
 
-| Metric | Rater 1 | Rater 2 | Agreement |
-| --- | --- | --- | --- |
-| Style |  |  |  |
-| Content |  |  |  |
-| Artifacts |  |  |  |
+| Metric | Rater 1 | Rater 2 | κ | exact | within 1 |
+| --- | --- | --- | --- | --- | --- |
+| Style | 3.23 | 3.30 | 0.153 | 66.7% | **100%** |
+| Content | 4.57 | 4.47 | 0.141 | 56.7% | **100%** |
+| Artifacts | 4.77 | 4.70 | 0.153 | 66.7% | **100%** |
 
-Inter-rater agreement (Cohen's kappa / % agreement):
+Per direction: A2B (Monet → photo) style 3.17 / content 4.57 / artifacts 4.63; B2A (photo →
+Monet) style 3.37 / content 4.47 / artifacts 4.83.
+
+**Inter-rater agreement: Cohen's κ = 0.1487, exact agreement 63.3%, 100% of ratings within one
+point.**
+
+### Two rounds, and why κ is low
+
+A first round was rated before the guide existed and produced **κ = −0.05** — agreement worse than
+chance. Per-axis diagnosis showed the cause was definitional, not perceptual: `artifacts` was
+negative on every measure, the signature of the two raters scoring the axis in opposite directions
+(disagreeing over whether 5 meant "clean" or "many artifacts"), while `content` already agreed
+(quadratic κ 0.41). The guide was written with explicit 1-5 anchors and the **same 30 sheets** were
+re-rated. Round 1 is retained at
+[outputs/human_audit_ratings_round1.csv](outputs/human_audit_ratings_round1.csv).
+
+κ = 0.1487 still reads as "slight" on the Landis-Koch scale, which understates the result. Both
+raters used only **two of the five categories** on each axis, so chance agreement is already
+50-61% and κ gives little credit for beating it:
+
+| Axis | categories used | chance agreement | observed | κ |
+| --- | --- | --- | --- | --- |
+| Style | {3, 4} | 60.7% | 66.7% | 0.153 |
+| Content | {4, 5} | 49.6% | 56.7% | 0.141 |
+| Artifacts | {4, 5} | 60.7% | 66.7% | 0.153 |
+
+This is the kappa paradox: high observed agreement with skewed marginals yields a low κ. It is
+also why unweighted and quadratic-weighted κ are identical here — weighting only differs when some
+disagreements span more than one category, and **none in this audit do**. The honest summary is
+that the raters never differed by more than one point, and κ is deflated by low category variance
+rather than by real disagreement.
+
+### What the audit says about the model
+
+Content (4.47-4.57) and artifacts (4.63-4.83) are strong: the model keeps the scene and produces
+clean images. **Style (3.17-3.37) is the weak axis in both directions**, and the human verdict
+agrees with the computed metrics — FID 103.2 / 98.9 and a comparatively small LPIPS change from
+the input. This model is conservative: it protects content and avoids artifacts at the cost of
+committing to the target style, which is the same trade-off the cycle-consistency and
+content-cosine numbers show above.
 
 ## Shortcomings
 
