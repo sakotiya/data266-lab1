@@ -115,8 +115,8 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 - [x] **Task 3 human audit** - done for both members: 30 blinded samples, 2 raters, shared
       rubric (`outputs/RATING_GUIDE.md`); Cohen's kappa 0.500 (shreya_akotiya) and 0.149
       (zoheb_waghu). See each member's `failure_analysis.md` and `report/team_report.md` §3.3
-- [x] **Task 3 Kaggle score and leaderboard rank** - recorded for both members (single
-      leaderboard, no public/private split; team rank 1). See `report/team_report.md` §3.3
+- [x] **Task 3 Kaggle submission** - done (single leaderboard, no public/private split). Our
+      final score is **-50.38**. See `report/team_report.md` §3.3
 - [x] **shreya_akotiya Task 3 checkpoint** - fp16 generators committed
       (`task3_gan/shreya_akotiya/checkpoints/*_G_AB_fp16.pt`, `*_G_BA_fp16.pt`)
 - [x] **Final report** - `report/DATA266_Lab1_Report_Team_32.pdf`, built from

@@ -56,9 +56,23 @@ The run did not produce NaN or Inf values. The generator loss was lowest around 
 
 Several difficult images also appeared in Zoheb's ResNet-9 failure list, including the dark Parliament scene, the coastal image, the building, and the sunset. This suggests that these images are difficult for CycleGAN generally, not only for my UNet. The tiled pattern in the night photos and the horizontal streaks in the sky were more specific to my model.
 
-## 6. Human audit status
+## 6. Human audit
 
-The required 30-image audit has not been completed yet. The `human_audit.py` script is ready to create 15 samples in each direction and a blinded rating sheet for two raters. The actual style, content, artifact, and Cohen's kappa values must be added after both raters finish scoring. I have left these values as pending rather than guessing them.
+The blinded audit is complete: 30 samples (15 per direction), two raters, scores 1-5 for style,
+content and artifacts (5 = best), using the rubric in `outputs/RATING_GUIDE.md`.
+
+| Mean score | Monet to photo | Photo to Monet |
+|---|---:|---:|
+| Style | 3.80 | 4.00 |
+| Content | 4.23 | 3.83 |
+| Artifacts (5 = none) | 4.23 | 4.20 |
+
+Inter-rater agreement: Cohen's kappa **0.500** (moderate), 67.8% exact agreement, 84.4% within one
+point. Details: `outputs/human_audit_summary.json`.
+
+The audit agrees with the failure cases above. Photo to Monet scores higher on style but lower on
+content, which fits the night photos that turn into tiled patterns. Artifacts score around 4.2 in
+both directions, because the tiling and the sky streaks appear in only some images.
 
 ## 7. Main conclusion
 

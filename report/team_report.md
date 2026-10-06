@@ -615,8 +615,7 @@ pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
 |---|---|---|
 | Submission FID / MiFID (mean of both directions) | 100.344 / 0.4124 | 101.026 / 0.4114 |
 | **Leaderboard score (FID + MiFID) / 2 ↓** | **50.38** | 50.72 |
-| Kaggle leaderboard score (as displayed) ‖ | **-50.3781** | -50.7186 |
-| **Team leaderboard rank** ‖ | **1** (PairProgramming_Team_32, 6 entries) | **1** (same team entry) |
+| Kaggle score (as displayed) ‖ | **-50.3781** (our final score) | -50.7186 |
 | Generator loss (final 10% of steps) | 2.439 | 2.970 |
 | Discriminator loss, D_A + D_B (final 10%) | 0.171 | 0.251 |
 | Cycle loss, unweighted (final 10%) | 0.080 | 0.132 |
@@ -647,14 +646,10 @@ pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
   spread across three categories, lowering chance agreement and lifting κ to 0.500 despite a
   *lower* within-1 rate (84.4% vs 100%). κ measures agreement relative to the rating
   distribution, so the honest cross-member comparison is the exact and within-1 percentages, not κ.
-- ‖ **Leaderboard scoring and what the rank reflects.** The competition reports a single
-  leaderboard computed on all the test data - there is no public/private split - and the score
-  is `-(FID + MiFID) / 2`, so a less negative number is better. The scores above are the two
-  members' presented models: Shreya's -50.3781 (FID 100.344, MiFID 0.4124) is the team's most
-  recent entry, and Zoheb's -50.7186 (FID 101.026, MiFID 0.4114) is the score his submission
-  file evaluates to. **The team's rank of 1 is held by an earlier entry scoring -39.7787**
-  (FID 79.154, MiFID 0.4036); Kaggle ranks a team by its best entry, not its latest, so the
-  standing is not attributable to either model described in section 3.2.
+- ‖ **Kaggle scoring.** The competition reports a single leaderboard computed on all the test
+  data (there is no public/private split), and the score is `-(FID + MiFID) / 2`, so a less
+  negative number is better. **Our team's final score is -50.38** (Shreya's model: FID 100.344,
+  MiFID 0.4124). Zoheb's model's submission evaluates to -50.72 (FID 101.026, MiFID 0.4114).
 - **FID across directions is not comparable.** A2B is compared with real photos and B2A with real
   Monet paintings, so the two directions have different reference sets. Compare each direction
   across the two members, not A2B against B2A.
@@ -764,8 +759,6 @@ clouds and skies.
   differ.
 - **Domain imbalance.** With 300 Monet paintings each seen about 23 times per epoch, the Monet
   discriminator can memorise them.
-- **Pending:** the blinded human audit (30 samples, 2 raters, Cohen's κ) and the Kaggle public and
-  private score and rank, for both members.
 
 **What the team would try next**
 

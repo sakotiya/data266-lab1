@@ -144,26 +144,34 @@ The low cycle error should also be interpreted carefully. A low reconstruction e
 The run ID contains "128" because the run tag was set before the run was switched to 256px; the
 log confirms 256 x 256 training.
 
-## 8. Human audit and Kaggle results still missing
+## 8. Human audit and Kaggle score
 
-The assignment requires a blinded audit of 30 images using two raters. The `human_audit.py` script is ready to create the 30-image sheet and rating file, but the raters' scores have not been entered yet. Therefore, the following values cannot be filled in honestly:
+**Human audit.** 30 blinded samples (15 per direction, seed 42, from the same first 300
+predictions the instructor's evaluator scores), each shown as source | translation. Two raters
+scored style, content and artifacts from 1 to 5 (5 = best) using the shared rubric in
+`outputs/RATING_GUIDE.md`. Ratings and results: `outputs/human_audit_ratings.csv`,
+`outputs/human_audit_summary.json`.
 
-| Audit result | Status |
-|---|---|
-| Style score | Pending two-rater audit |
-| Content score | Pending two-rater audit |
-| Artifact score | Pending two-rater audit |
-| Cohen's kappa | Pending two-rater audit |
-| Percentage agreement | Pending two-rater audit |
+| Mean score (1-5, both raters) | Monet to photo | Photo to Monet |
+|---|---:|---:|
+| Style | 3.80 | 4.00 |
+| Content | 4.23 | 3.83 |
+| Artifacts (5 = none) | 4.23 | 4.20 |
 
-The Kaggle public/private score and leaderboard rank are also not available in the current files. They should be added after the generated submission is uploaded to the class competition.
+| Agreement between the two raters | Style | Content | Artifacts | Mean |
+|---|---:|---:|---:|---:|
+| Cohen's kappa | 0.499 | 0.500 | 0.500 | **0.500** |
+| Exact agreement | 66.7% | 70.0% | 66.7% | 67.8% |
+| Within 1 point | 86.7% | 90.0% | 76.7% | 84.4% |
 
-The current metrics file correctly records the following items as `NOT_MEASURED`:
+A kappa of 0.50 is moderate agreement. The raters agreed exactly on about two thirds of the scores
+and were within one point on 84%. People rated Photo to Monet as slightly more convincing in style
+(4.00 vs 3.80) but less faithful in content (3.83 vs 4.23), which matches the metrics: Photo to Monet
+changes images more (LPIPS 0.304 vs 0.244) and keeps less content (content cosine 0.821 vs 0.861).
 
-- Human-audit scores.
-- Kaggle public score.
-- Kaggle private score.
-- Leaderboard rank.
+**Kaggle score.** The class competition has a single leaderboard on all the test data (no
+public/private split) and scores `-(FID + MiFID) / 2`, so a less negative score is better. Our
+final score is **-50.38** (FID 100.344, MiFID 0.4124).
 
 ## 9. Other runs
 
@@ -182,4 +190,4 @@ The original run performed best. Removing the outer skip connection appears to h
 
 The main limitations are the single random seed, the small number of Monet paintings, and the noisy 300-image FID evaluation. The domain sizes are also very different: there are 300 Monet paintings and 7,038 photos. This makes it easier for the Monet discriminator to memorize the training paintings.
 
-My next steps would be to keep the original UNet architecture, test the identity weight separately, and repeat the best setting with three seeds. I would also complete the human audit and submit the generated images to Kaggle so that the missing required results can be added.
+My next steps would be to keep the original UNet architecture, test the identity weight separately, and repeat the best setting with three seeds. I would also run a second, larger human audit to check whether people agree with the metrics on artifacts.
