@@ -467,7 +467,8 @@ error rate.
    features add a lot when the baseline ignores word order, but a recurrent encoder already
    captures them and more.
 4. **Attention pooling gave a small but real gain.** Zoheb's attention BiLSTM beat his mean-pooling
-   BiLSTM by 0.18 points (p = 0.034), at about 16 times the training time (3,684 s vs 227 s).
+   BiLSTM by 0.18 points (p = 0.034), at about 16 times the training time (3,684 s vs 227 s). Their
+   accuracy confidence intervals overlap, so the gain only shows up in the paired McNemar test.
 5. **The probability outputs were generally useful.** All models had reasonably low Brier scores
    and ECE values. Within each member's experiments, the model with the best accuracy also had the
    best Brier score.
