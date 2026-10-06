@@ -113,12 +113,15 @@ python -m ipykernel install --user --name data266-lab1 --display-name "DATA266 L
 - [x] **Metric headers decided** - Tasks 1-2 keep the team header plus
       `metrics_report_extended.csv`; Task 3 uses one row per direction for both members
       (see "Metrics schema" below)
-- [ ] **Task 3 human audit** - 30 fixed samples, 2 raters, Cohen's kappa (both members)
-- [ ] **Task 3 Kaggle public/private score and leaderboard rank** (both members)
+- [x] **Task 3 human audit** - done for both members: 30 blinded samples, 2 raters, shared
+      rubric (`outputs/RATING_GUIDE.md`); Cohen's kappa 0.500 (shreya_akotiya) and 0.149
+      (zoheb_waghu). See each member's `failure_analysis.md` and `report/team_report.md` §3.3
+- [x] **Task 3 Kaggle score and leaderboard rank** - recorded for both members (single
+      leaderboard, no public/private split; team rank 1). See `report/team_report.md` §3.3
 - [x] **shreya_akotiya Task 3 checkpoint** - fp16 generators committed
       (`task3_gan/shreya_akotiya/checkpoints/*_G_AB_fp16.pt`, `*_G_BA_fp16.pt`)
-- [ ] **Final report** - `report/team_report.md` covers Tasks 1-2; Task 3 section to add, then
-      export `report/DATA266_Lab1_Report_Team_32.pdf`
+- [ ] **Final report** - `report/team_report.md` covers all three tasks; export the final
+      `report/DATA266_Lab1_Report_Team_32.pdf`
 
 ## Data
 
@@ -190,14 +193,15 @@ On Colab the Task 1 and Task 2 notebooks look for the repo at `/content/drive/My
 by default; set the `LAB1_ROOT` environment variable to use a different location.
 
 **shreya_akotiya's Task 3** - data via Kaggle (see `task3_gan/data/README.md`; needs
-`~/.kaggle/kaggle.json` and a joined competition). Train in the first notebook, score with the
-instructor's method in the second, write the team-format metrics in the third:
+`~/.kaggle/kaggle.json` and a joined competition). Train in the first notebook, then run
+the evaluation (instructor's method -> `submission.csv`, team metrics -> `metrics_report.csv`)
+with `evaluate_local.py`, which executes the two evaluation notebooks in order:
 
 ```bash
 python task3_gan/shreya_akotiya/src/fetch_data.py
 jupyter lab task3_gan/shreya_akotiya/src/task3_cyclegan.ipynb            # train, translate, clean-fid metrics
-jupyter lab task3_gan/shreya_akotiya/src/part3_evaluation_shreya.ipynb   # instructor evaluator -> submission.csv
-jupyter lab task3_gan/shreya_akotiya/src/run1_team_metrics.ipynb         # team-format metrics_report.csv
+python task3_gan/shreya_akotiya/evaluate_local.py metrics                # both evaluation notebooks -> submission.csv, metrics_report.csv
+python task3_gan/shreya_akotiya/evaluate_local.py check                  # files complete and consistent
 python task3_gan/shreya_akotiya/src/human_audit.py make                  # blinded audit sheet for 2 raters
 python task3_gan/shreya_akotiya/src/human_audit.py score                 # rating means + Cohen's kappa
 ```
@@ -221,15 +225,15 @@ anywhere in the repo.
 | 1 | zoheb_waghu | **complete** (RTX 4090) | val loss 0.7019 · ppl 2.02 · bpc 1.013 · top-1 77.7% |
 | 2 | shreya_akotiya | **complete** | baseline 93.14% · TextCNN 94.35% · BiLSTM **94.85%** |
 | 2 | zoheb_waghu | **complete** (RTX 4090) | M1 93.46% · M2 93.57% (n.s.) · M3 **94.02%** |
-| 3 | shreya_akotiya | **trained** (A100 40GB); audit, Kaggle rank pending | FID A2B 102.8 · B2A 97.9 · submission FID 100.34 / MiFID 0.412 |
-| 3 | zoheb_waghu | **trained** (RTX 4090); audit, Kaggle rank pending | FID A2B 103.2 · B2A 98.9 · submission FID 101.03 / MiFID 0.411 |
+| 3 | shreya_akotiya | **complete** (A100 40GB) | FID A2B 102.8 · B2A 97.9 · submission FID 100.34 / MiFID 0.412 (score 50.38) · audit κ 0.500 |
+| 3 | zoheb_waghu | **complete** (RTX 4090) | FID A2B 103.2 · B2A 98.9 · submission FID 101.03 / MiFID 0.411 (score 50.72) · audit κ 0.149 |
 
 | What | Where |
 | --- | --- |
 | Write-up (architecture, hyperparameters, metrics, hardware) | `<task>/<member>/results.md` |
 | Failure / error analysis | `<task>/<member>/failure_analysis.md` |
 | Team-format metrics | `<task>/<member>/metrics_report.csv` |
-| Extended metrics | Tasks 1-2: `metrics_report_extended.csv` · Task 3: `full_metrics_report.csv` (zoheb_waghu); shreya_akotiya keeps the team file only |
+| Extended metrics | Tasks 1-2: `metrics_report_extended.csv` · Task 3: `full_metrics_report.csv` (both members; same team-schema rows as `metrics_report.csv`) |
 | Checkpoints | `<task>/<member>/checkpoints/` |
 | Plots, samples, predictions | `<task>/<member>/outputs/` |
 | Kaggle submission | `task3_gan/<member>/submission.csv` |
@@ -274,7 +278,7 @@ run writes both files from the same in-memory row, so they cannot drift.
 | --- | --- | --- |
 | 1 | 22 cols | `config_path`, `device`, `model_name` |
 | 2 | 31 cols | confusion-matrix cells (`tn`/`fp`/`fn`/`tp`), all 8 per-slice robustness columns, `split`, `config_path`, `device` |
-| 3 | 30 cols, **one row per direction** (A2B, B2A) | MiFID and other extras (zoheb_waghu's `full_metrics_report.csv`; shreya_akotiya's MiFID is in `submission.csv`) |
+| 3 | 30 cols, **one row per direction** (A2B, B2A) | MiFID (per direction in each member's `results.md`; mean in `submission.csv`) |
 
 **Decided:** the Task 2 team header stays as agreed; confusion matrices and per-slice metrics
 live in each member's extended CSV and `results.md`. Task 3 uses one row per direction for both
