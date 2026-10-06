@@ -1,0 +1,17 @@
+[    0.002s] run_start    run_id=t2_m3_bilstm_attn_20261006-212317 utc=2026-10-06T21:23:17.422428+00:00 git_commit=736c2e0 python=3.13.15 argv=task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m3_bilstm_attention.yaml hardware={'device': 'cuda', 'torch': '2.11.0+cu130', 'platform': 'Linux-6.6.122+-x86_64-with-glibc2.39', 'processor': 'x86_64', 'gpu_name': 'NVIDIA A100-SXM4-40GB', 'gpu_mem_gb': '42.4'}
+[    3.612s] data_cache   status=hit train_rows=539947 val_rows=20000 test_rows=38000 vocab_size=30000
+[    3.612s] eda          train_rows=539947 val_rows=20000 test_rows=38000 train_pos_frac=0.49986757959577516 test_pos_frac=0.5 vocab_size=30000 token_len_mean=69.95326578349356 token_len_median=51.0 token_len_p95=194.0 token_len_max=758 truncated_frac=0.02125764195374731 stopwords_removed=158 oov_rate_test=0.011531351586797614
+[    3.999s] model        name=bilstm_attention param_count=10441217
+[  618.719s] epoch        epoch=0 train_loss=0.16925 val_acc=0.9517 val_f1_macro=0.9517 val_roc_auc=0.9902
+[  618.779s] checkpoint   epoch=0 f1_macro=0.9517
+[ 1233.388s] epoch        epoch=1 train_loss=0.11548 val_acc=0.9545 val_f1_macro=0.95449 val_roc_auc=0.99077
+[ 1233.468s] checkpoint   epoch=1 f1_macro=0.95449
+[ 1848.962s] epoch        epoch=2 train_loss=0.1003 val_acc=0.956 val_f1_macro=0.956 val_roc_auc=0.99105
+[ 1849.032s] checkpoint   epoch=2 f1_macro=0.956
+[ 2464.634s] epoch        epoch=3 train_loss=0.08726 val_acc=0.9552 val_f1_macro=0.9552 val_roc_auc=0.99081
+[ 3079.138s] epoch        epoch=4 train_loss=0.07401 val_acc=0.9518 val_f1_macro=0.95177 val_roc_auc=0.99036
+[ 3689.412s] epoch        epoch=5 train_loss=0.05852 val_acc=0.9534 val_f1_macro=0.9534 val_roc_auc=0.98973
+[ 3689.412s] early_stop   epoch=5 patience=3
+[ 3709.062s] mcnemar      statistic=4.507028112449799 pvalue=0.03375584299123014 baseline_only_correct=464 experimental_only_correct=532 exact=False
+[ 3709.064s] metrics      run_id=t2_m3_bilstm_attn_20261006-212317 model_name=bilstm_attention config_path=task2_sentiment/zoheb_waghu/configs/m3_bilstm_attention.yaml checkpoint_id=t2_m3_bilstm_attn_20261006-212317_best.pt split=test accuracy=0.95529 precision_macro=0.95533 recall_macro=0.95529 f1_macro=0.95529 precision_micro=0.95529 recall_micro=0.95529 f1_micro=0.95529 precision_weighted=0.95533 recall_weighted=0.95529 f1_weighted=0.95529 tn=18064 fp=936 fn=763 tp=18237 roc_auc=0.99156 pr_auc=0.9917 mcc=0.91062 brier_score=0.03354 ece=0.00533 acc_ci_low=0.95313 acc_ci_high=0.95729 f1_macro_ci_low=0.95313 f1_macro_ci_high=0.95729 mcc_ci_low=0.90629 mcc_ci_high=0.91462 mcnemar_stat_vs_baseline=4.507 mcnemar_p_vs_baseline=3.376e-02 slice_short_f1_macro=0.95424 slice_short_error_rate=0.04491 slice_long_f1_macro=0.93959 slice_long_error_rate=0.05303 slice_negation_f1_macro=0.95178 slice_negation_error_rate=0.04512 slice_highpunct_f1_macro=0.96972 slice_highpunct_error_rate=0.02938 param_count=10441217 train_seconds=3684.3 examples_per_sec=879.32 peak_memory_gb=1.5286 device=cuda hardware=x86_64
+[ 3709.064s] run_end      status=ok wall_seconds=3709.064

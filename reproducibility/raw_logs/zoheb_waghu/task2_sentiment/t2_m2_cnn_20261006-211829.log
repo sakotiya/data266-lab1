@@ -1,0 +1,19 @@
+[    0.002s] run_start    run_id=t2_m2_cnn_20261006-211829 utc=2026-10-06T21:18:29.908144+00:00 git_commit=736c2e0 python=3.13.15 argv=task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m2_cnn_multikernel.yaml hardware={'device': 'cuda', 'torch': '2.11.0+cu130', 'platform': 'Linux-6.6.122+-x86_64-with-glibc2.39', 'processor': 'x86_64', 'gpu_name': 'NVIDIA A100-SXM4-40GB', 'gpu_mem_gb': '42.4'}
+[    3.499s] data_cache   status=hit train_rows=539947 val_rows=20000 test_rows=38000 vocab_size=30000
+[    3.499s] eda          train_rows=539947 val_rows=20000 test_rows=38000 train_pos_frac=0.49986757959577516 test_pos_frac=0.5 vocab_size=30000 token_len_mean=69.95326578349356 token_len_median=51.0 token_len_p95=194.0 token_len_max=758 truncated_frac=0.02125764195374731 stopwords_removed=158 oov_rate_test=0.011531351586797614
+[    3.788s] model        name=cnn_multikernel param_count=4135681
+[   43.775s] epoch        epoch=0 train_loss=0.18637 val_acc=0.9458 val_f1_macro=0.9458 val_roc_auc=0.9878
+[   43.803s] checkpoint   epoch=0 f1_macro=0.9458
+[   80.975s] epoch        epoch=1 train_loss=0.14523 val_acc=0.94425 val_f1_macro=0.94425 val_roc_auc=0.98861
+[  117.685s] epoch        epoch=2 train_loss=0.13365 val_acc=0.94825 val_f1_macro=0.94825 val_roc_auc=0.98931
+[  117.716s] checkpoint   epoch=2 f1_macro=0.94825
+[  154.679s] epoch        epoch=3 train_loss=0.12439 val_acc=0.94945 val_f1_macro=0.94945 val_roc_auc=0.98945
+[  154.707s] checkpoint   epoch=3 f1_macro=0.94945
+[  191.560s] epoch        epoch=4 train_loss=0.11844 val_acc=0.9508 val_f1_macro=0.9508 val_roc_auc=0.98936
+[  191.589s] checkpoint   epoch=4 f1_macro=0.9508
+[  228.393s] epoch        epoch=5 train_loss=0.11323 val_acc=0.94985 val_f1_macro=0.94985 val_roc_auc=0.98982
+[  265.447s] epoch        epoch=6 train_loss=0.10868 val_acc=0.94955 val_f1_macro=0.94955 val_roc_auc=0.98956
+[  265.447s] early_stop   epoch=6 patience=2
+[  283.283s] mcnemar      statistic=10.135794330916282 pvalue=0.0014541756518155079 baseline_only_correct=821 experimental_only_correct=696 exact=False
+[  283.285s] metrics      run_id=t2_m2_cnn_20261006-211829 model_name=cnn_multikernel config_path=task2_sentiment/zoheb_waghu/configs/m2_cnn_multikernel.yaml checkpoint_id=t2_m2_cnn_20261006-211829_best.pt split=test accuracy=0.95021 precision_macro=0.95022 recall_macro=0.95021 f1_macro=0.95021 precision_micro=0.95021 recall_micro=0.95021 f1_micro=0.95021 precision_weighted=0.95022 recall_weighted=0.95021 f1_weighted=0.95021 tn=18009 fp=991 fn=901 tp=18099 roc_auc=0.98962 pr_auc=0.98985 mcc=0.90043 brier_score=0.0371 ece=0.0044 acc_ci_low=0.948 acc_ci_high=0.95237 f1_macro_ci_low=0.948 f1_macro_ci_high=0.95237 mcc_ci_low=0.89602 mcc_ci_high=0.90478 mcnemar_stat_vs_baseline=10.1358 mcnemar_p_vs_baseline=1.454e-03 slice_short_f1_macro=0.95087 slice_short_error_rate=0.04825 slice_long_f1_macro=0.92752 slice_long_error_rate=0.06305 slice_negation_f1_macro=0.94768 slice_negation_error_rate=0.04889 slice_highpunct_f1_macro=0.96268 slice_highpunct_error_rate=0.03629 param_count=4135681 train_seconds=260.52 examples_per_sec=14507.99 peak_memory_gb=0.2198 device=cuda hardware=x86_64
+[  283.285s] run_end      status=ok wall_seconds=283.285
