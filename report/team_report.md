@@ -344,16 +344,16 @@ architecture and hyperparameter set.
 
 | Metric | S: mean-pool | S: TextCNN | S: BiLSTM | Z: BiLSTM-mean | Z: TextCNN | Z: BiLSTM-attn |
 |---|---|---|---|---|---|---|
-| Accuracy | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| Precision (macro) | 0.9315 | 0.9435 | **0.9485** | 0.9346 | 0.9359 | 0.9404 |
-| Recall (macro) | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (macro) | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (micro) | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| F1 (weighted) | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
-| ROC-AUC | 0.9793 | 0.9863 | **0.9891** | 0.9830 | 0.9836 | 0.9853 |
-| PR-AUC | 0.9787 | 0.9866 | **0.9894** | 0.9835 | 0.9840 | 0.9856 |
-| MCC | 0.8629 | 0.8870 | **0.8970** | 0.8693 | 0.8716 | 0.8806 |
-| Brier score | 0.0516 | 0.0430 | **0.0384** | 0.0489 | 0.0481 | 0.0449 |
+| Accuracy ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
+| Precision (macro) ◆ | 0.9315 | 0.9435 | **0.9485** | 0.9346 | 0.9359 | 0.9404 |
+| Recall (macro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
+| F1 (macro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
+| F1 (micro) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
+| F1 (weighted) ◆ | 0.9314 | 0.9435 | **0.9485** | 0.9346 | 0.9357 | 0.9402 |
+| ROC-AUC ◆ | 0.9793 | 0.9863 | **0.9891** | 0.9830 | 0.9836 | 0.9853 |
+| PR-AUC ◆ | 0.9787 | 0.9866 | **0.9894** | 0.9835 | 0.9840 | 0.9856 |
+| MCC ◆ | 0.8629 | 0.8870 | **0.8970** | 0.8693 | 0.8716 | 0.8806 |
+| Brier score ◆ | 0.0516 | 0.0430 | **0.0384** | 0.0489 | 0.0481 | 0.0449 |
 | ECE ‡ | **0.0046** | 0.0111 | 0.0086 | 0.0134 | 0.0054 | 0.0088 |
 | Confusion TN / FP | 17,795 / 1,205 | 17,850 / 1,150 | 18,091 / 909 | 17,766 / 1,234 | 17,963 / 1,037 | 18,046 / 954 |
 | Confusion FN / TP | 1,401 / 17,599 | 997 / 18,003 | 1,048 / 17,952 | 1,250 / 17,750 | 1,405 / 17,595 | 1,317 / 17,683 |
@@ -372,6 +372,16 @@ identical to it because the test set is exactly balanced.
 
 **Comparability notes**
 
+- ◆ **Quality metrics are not a clean architecture comparison across members.** Shreya trained on
+  **all 540,000** reviews, Zoheb on an **89,997** subsample — a 6× difference — and the vocabulary
+  cap, maximum sequence length and embedding size also differ (see §2.2). The three models *within*
+  each member's column are directly comparable to each other, because each member held their own
+  preprocessing and splits fixed; the comparison **across** the two columns confounds architecture
+  with training-set size, and the size difference is the larger effect. Treat a cross-member gap as
+  a combined result, not as evidence that one architecture is better.
+  A paired McNemar test between the two members' best models *would* settle it — both scored the
+  same official 38K test set — but it needs per-example predictions from both members, which are
+  currently saved for Zoheb only. See §2.6 "what the team would try next".
 - ¶ **Speed is not comparable across members.** Shreya trained on a Tesla T4 (Google Colab) and
   Zoheb on an RTX 4090. Training time also depends on training-set size (540K vs 90K reviews)
   and epoch count. Peak memory is comparable: both use `torch.cuda.max_memory_allocated`.
@@ -493,9 +503,15 @@ error rate.
 1. **A controlled cross-member test.** Train Zoheb's BiLSTM-attn on Shreya's full 540K split
    (or Shreya's BiLSTM on Zoheb's 90K split) to separate the effect of data size from the
    effect of architecture.
-2. **A paired McNemar test between the two best models.** Both members scored the same 38K test
-   reviews, so a paired test of Shreya's BiLSTM against Zoheb's BiLSTM-attn is possible once the
-   prediction files are aligned by row.
+2. **A paired McNemar test between the two best models**, which is now one step from being
+   runnable. Both members scored the same official 38K test reviews in the same order, so the test
+   is valid even though the training-set sizes differ — it conditions on the examples where the two
+   models disagree, instead of comparing two accuracies that carry different amounts of training
+   data. `task2_sentiment/cross_member_mcnemar.py` performs it; it needs Shreya's best model's
+   per-example test probabilities exported once (Zoheb's are already committed as
+   `test_probs_t2_m3_bilstm_attn.npy`), and the script prints the one-line export to add. It will
+   answer "is one setup better on this test set", not "is one architecture better" — the data-size
+   confound in §2.4 ◆ still applies.
 3. **A hierarchical or sentence-level encoder** for long, mixed reviews. Both error reviews
    identify mixed sentiment as a leading error type, and the long-review slice is the weakest
    for all six models.
