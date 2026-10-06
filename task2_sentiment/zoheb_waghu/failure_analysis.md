@@ -1,7 +1,15 @@
 # Task 2 - Error review (20 errors, manual)
 
-Model under review: **M1 BiLSTM-mean (baseline)**, run `t2_m1_baseline_20260929-211318` (RTX 4090)
-Test accuracy 0.93463 · macro-F1 0.93463 · MCC 0.86926 · Brier 0.04891
+Model under review: **M1 BiLSTM-mean (baseline)**, run `t2_m1_baseline_20261006-210947` (Colab A100)
+Test accuracy 0.95350 · macro-F1 0.95350 · MCC 0.90703 · Brier 0.03499 · ECE 0.01002
+
+> **Re-extraction pending annotation.** These 20 errors were re-extracted from the retrained
+> 540K model (`t2_m1_baseline_20261006-210947`); the extraction is in
+> [outputs/error_review_t2_m1_baseline.md](outputs/error_review_t2_m1_baseline.md) with the error
+> type and testable fix blank for each case. They are **different reviews** from the 20 analysed
+> below, which came from the superseded 89,997-row model, so the annotation counts and case
+> references in "Annotation summary" do not describe this model and must be redone against the new
+> extraction. The measured figures on this page are already updated.
 
 The 20 errors - five confident false positives, five confident false negatives, five
 near-threshold errors, and five from the worst robustness slice - are extracted **with the raw
@@ -13,7 +21,7 @@ Each extracted error is manually annotated with an error type, a testable interv
 metric expected to move. The labels describe the most plausible cause visible in the displayed
 review; they are hypotheses to test, not additional ground-truth annotations.
 
-Worst slice (selected automatically): **`long_reviews`** - macro-F1 0.9151 against 0.9346
+Worst slice (selected automatically): **`long_reviews`** - macro-F1 0.9408 against 0.9535
 overall, the largest gap of any slice for every one of the three models.
 
 ## Group summary
@@ -25,7 +33,7 @@ overall, the largest gap of any slice for every one of the three models.
 | C. Near-threshold errors | 5 | wrong with \|p − 0.5\| ≤ 0.05 | `error_buckets` |
 | D. Worst-slice errors | 5 | wrong within `long_reviews` | `error_buckets` |
 
-## Annotation summary
+## Annotation summary (SUPERSEDED - describes the 89,997-row model)
 
 | Error type | Count |
 |---|---:|
@@ -54,7 +62,10 @@ show appropriate uncertainty when positive and negative evidence compete.
 The worst slice partly shares the same mixed-sentiment cause, but review length adds a distinct
 failure. Two of its five examples exceed `max_len=256`, so the decisive closing text may never
 reach the encoder. The other long-review cases contain many clauses whose evidence is diluted by
-mean pooling. This matches the measured long-review macro-F1 of 0.9151, 1.95 points below overall.
+mean pooling. This matched the measured long-review macro-F1 of 0.9151, 1.95 points below overall **on the
+89,997-row model**. On the retrained 540K model that gap narrows to 1.27 points (0.9408 vs
+0.9535), and the baseline is now the *best* of the three models on long reviews - so the
+length-truncation mechanism argued here needs re-testing rather than assuming it carries over.
 
 **First intervention:** test a chunked hierarchical sentence encoder over up to 512 tokens,
 holding the data split and optimiser fixed. It addresses both dominant mechanisms: sentence
@@ -70,9 +81,9 @@ assignment you make:
 
 | Signal | Value |
 |---|---|
-| `long_reviews` macro-F1 vs overall | 0.9151 vs 0.9346 |
-| `contains_negation` macro-F1 vs overall | 0.9294 vs 0.9346 |
-| Reviews truncated at `max_len=256` | 2.19% |
-| Test OOV rate | 1.28% |
-| ECE / Brier (calibration) | 0.01341 / 0.04891 |
+| `long_reviews` macro-F1 vs overall | 0.9408 vs 0.9535 (gap 1.27 pts, was 1.95 at 90K) |
+| `contains_negation` macro-F1 vs overall | 0.9508 vs 0.9535 (gap 0.27 pts, was 0.52) |
+| Reviews truncated at `max_len=256` | 2.13% |
+| Test OOV rate | 1.15% |
+| ECE / Brier (calibration) | 0.01002 / 0.03499 |
 | Negation words deliberately kept from the stopword list | 39 |
