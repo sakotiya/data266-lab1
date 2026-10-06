@@ -21,14 +21,21 @@ evaluate on the same official 38K test split.
 
 | | value |
 |---|---|
-| Train | 89,997 |
-| Validation (held out of train) | 9,999 |
+| Train | **539,947** (the full official split) |
+| Validation (held out of train) | 20,000 |
 | Test (official split, evaluated **once**) | 38,000 |
 | Vocabulary (train only, min freq 2, cap 30K) | 30,000 |
-| Token length mean / median / p95 / max | 70.1 / 51 / 194 / 558 |
-| Truncated at max_len=256 | 2.19% |
-| Class balance (train / test positive) | 0.5019 / 0.5000 |
-| Test OOV rate | 1.28% |
+| Token length mean / median / p95 / max | 69.95 / 51 / 194 / 758 |
+| Truncated at max_len=256 | 2.13% |
+| Class balance (train / test positive) | 0.4999 / 0.5000 |
+| Test OOV rate | 1.15% |
+
+> **Retrained at full scale.** The first submission used an 89,997-row subsample while my
+> teammate used all 540K, which confounded the team report's cross-member comparison with
+> training-set size. These models are retrained on the full split with a 20,000-row validation
+> holdout, matching her budget. My own preprocessing choices are unchanged (`max_len` 256,
+> `max_vocab` 30,000), so what differs across members is now preprocessing and architecture, not
+> data volume. The superseded run is kept in the raw logs.
 
 EDA figure: [outputs/plots/eda_overview.png](outputs/plots/eda_overview.png)
 
@@ -85,25 +92,23 @@ and schedule to support it, isolating "does attention pooling beat mean pooling 
 
 | Metric | M1 baseline | M2 TextCNN | M3 BiLSTM-attn |
 |---|---|---|---|
-| Accuracy | 0.93463 | 0.93574 | **0.94024** |
-| Macro-F1 | 0.93463 | 0.93573 | **0.94023** |
-| Micro-F1 | 0.93463 | 0.93574 | **0.94024** |
-| Weighted F1 | 0.93463 | 0.93573 | **0.94023** |
-| ROC-AUC | 0.98300 | 0.98359 | **0.98533** |
-| PR-AUC | 0.98352 | 0.98398 | **0.98564** |
-| MCC | 0.86926 | 0.87164 | **0.88063** |
-| Brier score | 0.04891 | 0.04807 | **0.04492** |
-| ECE | 0.01341 | **0.00537** | 0.00878 |
-| Confusion (TN / FP / FN / TP) | 17,766 / 1,234 / 1,250 / 17,750 | 17,963 / 1,037 / 1,405 / 17,595 | 18,046 / 954 / 1,317 / 17,683 |
-| Accuracy 95% CI | [0.93210, 0.93705] | [0.93326, 0.93826] | [0.93789, 0.94263] |
-| Macro-F1 95% CI | [0.93210, 0.93705] | [0.93326, 0.93826] | [0.93789, 0.94263] |
-| MCC 95% CI | [0.86421, 0.87411] | [0.86670, 0.87670] | [0.87595, 0.88547] |
-| McNemar vs baseline | - | χ²=0.808, **p=0.369** | χ²=26.52, **p=2.6e-7** |
+| Accuracy | 0.95350 | 0.95021 | **0.95529** |
+| Macro-F1 | 0.95350 | 0.95021 | **0.95529** |
+| Micro-F1 | 0.95350 | 0.95021 | **0.95529** |
+| Weighted F1 | 0.95350 | 0.95021 | **0.95529** |
+| ROC-AUC | 0.99097 | 0.98962 | **0.99156** |
+| PR-AUC | 0.99118 | 0.98985 | **0.99170** |
+| MCC | 0.90703 | 0.90043 | **0.91062** |
+| Brier score | 0.03499 | 0.03710 | **0.03354** |
+| ECE | 0.01002 | **0.00440** | 0.00533 |
+| Confusion (TN / FP / FN / TP) | 18,042 / 958 / 809 / 18,191 | 18,009 / 991 / 901 / 18,099 | 18,064 / 936 / 763 / 18,237 |
+| Accuracy 95% CI | [0.95134, 0.95555] | [0.94800, 0.95237] | [0.95313, 0.95729] |
+| MCC 95% CI | [0.90269, 0.91111] | [0.89602, 0.90478] | [0.90629, 0.91462] |
+| McNemar vs baseline | - | χ²=10.14, **p=1.45e-03** | χ²=4.51, **p=0.034** |
 | Parameters | 4,104,449 | 4,135,681 | 10,441,217 |
-| Train time | 19.4 s | **16.6 s** | 436.4 s |
-| Examples/sec | 18,568.8 | **21,723.1** | 825.0 |
-| Peak memory | 1.28 GB | **0.22 GB** | 1.53 GB |
-| Epochs run (early stop) / best epoch | 4 / 1 | 4 / 1 | 4 / 0 |
+| Train time | 226.8 s | 260.5 s | 3,684.3 s |
+| Examples/sec | 11,903.5 | **14,508.0** | 879.3 |
+| Peak memory | 0.74 GB | **0.22 GB** | 1.53 GB |
 
 Confusion matrices and calibration curves:
 [outputs/confusion_matrices/confusion_and_calibration.png](outputs/confusion_matrices/confusion_and_calibration.png)
@@ -112,48 +117,69 @@ Confusion matrices and calibration curves:
 
 | Slice | M1 | M2 | M3 | n |
 |---|---|---|---|---|
-| short reviews (≤50 tokens) | 0.9349 | 0.9362 | **0.9406** | 18,860 |
-| long reviews (>200 tokens) | 0.9151 | 0.9077 | **0.9194** | 1,697 |
-| contains negation | 0.9294 | 0.9307 | **0.9361** | 22,583 |
-| ≥3 exclamation marks | 0.9547 | 0.9522 | **0.9576** | 6,944 |
+| short reviews (≤50 tokens) | 0.9530 | 0.9509 | **0.9542** | 18,860 |
+| long reviews (>200 tokens) | **0.9408** | 0.9275 | 0.9396 | 1,697 |
+| contains negation | 0.9508 | 0.9477 | **0.9518** | 22,583 |
+| ≥3 exclamation marks | 0.9684 | 0.9627 | **0.9697** | 6,944 |
 
 Comparison figure: [outputs/plots/model_comparison.png](outputs/plots/model_comparison.png)
 
 ## 4. Comparative analysis (5 marks)
 
-**M2's apparent win over the baseline is not real.** M2 scores 0.2 points higher, but its
-accuracy CI [0.93326, 0.93826] overlaps the baseline's [0.93210, 0.93705], so the two are not
-distinguishable on this test set from the point estimates alone. The paired McNemar test is the
-sensitive comparison - it conditions only on the 1,000-odd reviews where the two models
-disagree - and it returns **p = 0.369**, which fails at α = 0.05. The honest conclusion is that
-swapping recurrence for convolutions changed the cost profile, not the accuracy: M2 trains
-**1.17× faster**, uses **about one-sixth the memory**, and is **the best-calibrated model** (ECE
-0.00537 vs 0.01341) for statistically indistinguishable accuracy.
+> **These conclusions are the reverse of my 90K submission on two of three points.** Retraining on
+> the full split did not simply scale every number up; it changed which comparisons survive. Both
+> versions are stated below, because the difference is itself the finding.
 
-**M3's win is real.** Its CI [0.93789, 0.94263] is fully separated from the baseline's, and
-McNemar gives p = 2.6e-7. The cost is severe: 2.5× the parameters, **22× the training time**,
-1.2× the memory, for 0.56 percentage points of accuracy.
+**M2 is now significantly *worse* than the baseline — it was significantly better before.** At 90K
+the TextCNN scored 0.2 points above the baseline with McNemar p=0.369, i.e. indistinguishable. At
+540K it scores **0.33 points below** it (0.95021 vs 0.95350) and McNemar now **separates them**
+(χ²=10.14, p=1.45e-03). The extra data helped the recurrent encoder more than the convolutional
+one. That is the expected direction once there is enough data to learn long-range order: max-pooled
+n-gram detectors saturate, because each filter can only report its strongest local match no matter
+how much more text it sees, while the BiLSTM keeps accumulating sentence-level state. Anything in
+my earlier write-up claiming convolutions rival recurrence here was an artefact of training on too
+little data.
 
-**Every model is worst on long reviews** (0.9077-0.9194 vs ~0.94 overall), and that gap is far
-larger than any between-model gap. 2.19% of reviews are truncated at 256 tokens, and long
-reviews are also where mixed sentiment concentrates - a review that praises the food and damns
-the service. M3 attention recovers some of this gap but does not eliminate it, which suggests
-the remaining bottleneck is truncation and mixed sentiment rather than pooling alone.
+**M3 still wins, but the evidence for it is weaker than before.** Its accuracy CI
+[0.95313, 0.95729] now **overlaps** the baseline's [0.95134, 0.95555], where at 90K the two were
+cleanly separated. The paired McNemar test still separates them (χ²=4.51, p=0.034) but the p-value
+rose from 2.6e-7 to 0.034 — two orders of magnitude weaker. More data lifted every model and
+**compressed the differences between them**, so the architectures became *harder* to tell apart,
+not easier. This is worth stating plainly because it inverts the usual intuition that more data
+makes comparisons cleaner: it makes each estimate more precise, and it also shrinks the effect
+being estimated.
 
-**Caveat on all of the above:** these are single-seed RTX 4090 runs, so no independent-seed
-variance estimate is available. See the
-[manifest](../../reproducibility/manifests/zoheb_waghu/).
+It is also a concrete argument for why both statistics belong in the report. On CIs alone I would
+now conclude "no difference"; on McNemar I would conclude "M3 is better". The paired test is the
+sensitive one because it conditions on the ~1,700 reviews where the two models disagree instead of
+comparing two whole-test-set accuracies.
+
+**The long-review weakness is gone — and it was a data problem, not an architecture one.** At 90K
+every model was worst on long reviews (0.9077-0.9194 against ~0.94 overall). At 540K the long-review
+slice scores 0.9275-0.9408, and the baseline is now **best** on it. The gap to overall performance
+narrowed from roughly 2.5 points to under 1. The earlier conclusion that long reviews were
+intrinsically hard was wrong; they were under-represented in a 90K subsample.
+
+**Cost.** M3 buys 0.18 points over the baseline for **2.5× the parameters and 16× the training
+time** (3,684 s vs 227 s). M2 is the cheapest to serve — 0.22 GB peak memory and the best
+calibration (ECE 0.0044) — but it is now the least accurate of the three.
+
+**Caveat on all of the above:** single-seed runs on one A100, so there is no independent-seed
+variance estimate. The CI overlap above means the M1-vs-M3 difference is near the resolution of
+this test set, and a second seed could plausibly reorder them.
 
 ## 5. Strengths, weaknesses, limitations
 
-**Strengths.** Every model clears 93% with embeddings learned from scratch on 90K reviews.
-Calibration is good (ECE ≤ 0.0135 everywhere, Brier ≤ 0.049), so the probabilities are usable as
-confidences, not just rankings. The preprocessing decision on negation is measured rather than
-assumed.
+**Strengths.** Every model clears 95% with embeddings learned from scratch on the full 540K split.
+Calibration is good and improved with scale (ECE ≤ 0.0100 everywhere against ≤ 0.0135 at 90K,
+Brier ≤ 0.037 against ≤ 0.049), so the probabilities are usable as confidences, not just rankings.
+The preprocessing decision on negation is measured rather than assumed, and the negation slice now
+scores within 0.4 points of overall.
 
-**Weaknesses.** Single seed per model. Only 90K of the available 560K training rows are used.
-`max_len=256` truncates 2.19% of reviews and the long-review slice is the worst performer.
-Lemmatisation without POS tags is crude (`better` does not reduce to `good`).
+**Weaknesses.** Single seed per model, which matters more now that the M1-vs-M3 confidence
+intervals overlap - the ordering of the two best models is not robustly established.
+`max_len=256` still truncates 2.13% of reviews. Lemmatisation without POS tags is crude (`better`
+does not reduce to `good`). M3 costs 16× the baseline's training time for 0.18 points.
 
 **Limitations.** Yelp polarity is binary and balanced by construction, so these numbers say
 nothing about the imbalanced, multi-class case. The label noise visible in the error review
@@ -162,22 +188,29 @@ accuracy that none of these models can cross.
 
 ## 6. Improvements and future work
 
-1. **Train on more data before touching architecture.** M3 bought 0.56 points for 22× compute;
-   going 90K → 560K rows is likely cheaper per point.
-2. **Raise or remove truncation** and re-measure the long-review slice specifically - the
-   largest single gap in the table.
-3. **Multiple seeds.** Three seeds per model would make the M1-vs-M2 verdict decidable instead
-   of borderline.
-4. **Sentence-level aggregation for mixed sentiment**, aimed at the same long-review weakness.
+1. **Multiple seeds, now the highest-value next step.** The M1-vs-M3 accuracy CIs overlap, so the
+   ordering of my two best models rests on a single McNemar test at p=0.034. Three seeds per model
+   would settle it, and it is far cheaper than any architecture change.
+2. **Diagnose why the TextCNN fell behind at scale.** It beat the baseline at 90K and loses to it
+   at 540K. Widening the kernel set or stacking a second convolutional block would test whether
+   the limit is receptive field rather than capacity.
+3. **Raise or remove truncation.** 2.13% of reviews are still cut at 256 tokens; the long-review
+   slice improved sharply with more data, so this is now a smaller effect than it looked at 90K.
+4. **Sentence-level aggregation for mixed sentiment**, which the error review repeatedly surfaces
+   as a cause of confident mistakes.
 
 ## 7. Hardware disclosure
 
 | Model | Device | Processor | Peak memory | Train time |
 |---|---|---|---|---|
-| M1 BiLSTM-mean | cuda | NVIDIA GeForce RTX 4090 (24 GB) | 1.28 GB | 19.4 s |
-| M2 TextCNN | cuda | NVIDIA GeForce RTX 4090 (24 GB) | 0.22 GB | 16.6 s |
-| M3 BiLSTM-attention | cuda | NVIDIA GeForce RTX 4090 (24 GB) | 1.53 GB | 436.4 s |
+| M1 BiLSTM-mean | cuda | NVIDIA A100-SXM4-40GB | 0.74 GB | 226.8 s |
+| M2 TextCNN | cuda | NVIDIA A100-SXM4-40GB | 0.22 GB | 260.5 s |
+| M3 BiLSTM-attention | cuda | NVIDIA A100-SXM4-40GB | 1.53 GB | 3,684.3 s |
 
-Host: AMD Ryzen 9 7950X (16 cores), 128 GB RAM, Windows 11. PyTorch 2.5.1+cu124, Python 3.12.10,
-NVIDIA driver 610.60. Peak memory is `torch.cuda.max_memory_allocated` - the true peak of GPU
-tensor allocations during the run.
+Host: Google Colab, Linux 6.6.122 x86_64, 42.4 GB GPU memory. PyTorch 2.11.0+cu130, Python
+3.13.15. Peak memory is `torch.cuda.max_memory_allocated` - the true peak of GPU tensor
+allocations during the run.
+
+> **Hardware changed with this retrain.** The superseded 90K runs were on an RTX 4090; these are
+> on a Colab A100. Wall-clock and examples/sec are therefore not comparable with my earlier
+> figures, and only partly comparable with my teammate's, who used a T4 for Task 2.

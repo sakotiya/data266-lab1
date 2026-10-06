@@ -116,7 +116,8 @@ images per set, Inception-v3) - re-checked on these predictions, identical to th
 
 **Kaggle submission** ([submission.csv](submission.csv), the instructor's format: mean of both
 directions): **FID 101.026, MiFID 0.4114** → leaderboard score (FID + MiFID) / 2 = 50.72.
-Public / private score and rank: pending submission.
+The competition reports a single leaderboard computed on all the test data, so there is no
+public/private split; the score as displayed is **-50.7186**.
 
 At the final checkpoint, B2A has numerically lower FID and KID than A2B. That does not establish
 that one direction is better. A2B is compared with real photos and B2A with real Monet images, so
@@ -160,13 +161,12 @@ imported solely in [evaluate_local.py](evaluate_local.py), which never writes an
 | Scoring | `-(FID + MiFID) / 2`, one leaderboard over **all** test data (no public/private split) |
 | My submission | FID 101.0258, MiFID 0.4114 → **-50.7186** |
 | Team's most recent entry (shreya_akotiya) | FID 100.3438, MiFID 0.4124 → -50.3781 |
-| **Team rank** | **1** (6 entries) |
 
-**What the rank reflects.** Kaggle ranks a team by its **best** entry, not its latest. The team's
-best is an earlier entry scoring **-39.7787** (FID 79.154), which is neither my model nor the
-`submission.csv` currently committed by my teammate. The rank-1 standing is therefore a team
-result that is not attributable to the model documented on this page, and I report my own
-submission's score separately above rather than claiming the leaderboard score as my model's.
+**On leaderboard rank.** The team agreed to report the submission score rather than a rank. Kaggle
+ranks a team by its best entry, not its latest, so a rank would not describe the model documented
+on this page - it would describe whichever earlier entry happens to be the team's best. The score
+above is my own model's, computed by the instructor's evaluator from `submission.csv`, which is
+the direct inference output of checkpoint `t3_baseline_20260929-235720_final.pt`.
 
 ## Human audit (blinded, 30 samples, 2 raters)
 
