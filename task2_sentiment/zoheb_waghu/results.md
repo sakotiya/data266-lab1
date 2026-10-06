@@ -30,13 +30,6 @@ evaluate on the same official 38K test split.
 | Class balance (train / test positive) | 0.4999 / 0.5000 |
 | Test OOV rate | 1.15% |
 
-> **Retrained at full scale.** The first submission used an 89,997-row subsample while my
-> teammate used all 540K, which confounded the team report's cross-member comparison with
-> training-set size. These models are retrained on the full split with a 20,000-row validation
-> holdout, matching her budget. My own preprocessing choices are unchanged (`max_len` 256,
-> `max_vocab` 30,000), so what differs across members is now preprocessing and architecture, not
-> data volume. The superseded run is kept in the raw logs.
-
 EDA figure: [outputs/plots/eda_overview.png](outputs/plots/eda_overview.png)
 
 Malformed handling: rows with null/empty text, text shorter than 3 characters, labels outside
@@ -126,39 +119,24 @@ Comparison figure: [outputs/plots/model_comparison.png](outputs/plots/model_comp
 
 ## 4. Comparative analysis (5 marks)
 
-> **These conclusions are the reverse of my 90K submission on two of three points.** Retraining on
-> the full split did not simply scale every number up; it changed which comparisons survive. Both
-> versions are stated below, because the difference is itself the finding.
-
-**M2 is now significantly *worse* than the baseline — it was significantly better before.** At 90K
-the TextCNN scored 0.2 points above the baseline with McNemar p=0.369, i.e. indistinguishable. At
-540K it scores **0.33 points below** it (0.95021 vs 0.95350) and McNemar now **separates them**
-(χ²=10.14, p=1.45e-03). The extra data helped the recurrent encoder more than the convolutional
-one. That is the expected direction once there is enough data to learn long-range order: max-pooled
+**M2 is significantly *worse* than the baseline.** The TextCNN scores **0.33 points below** it
+(0.95021 vs 0.95350) and McNemar **separates them** (χ²=10.14, p=1.45e-03). With this much data the
+recurrent encoder makes better use of it than the convolutional one. That is the expected direction
+once there is enough data to learn long-range order: max-pooled
 n-gram detectors saturate, because each filter can only report its strongest local match no matter
-how much more text it sees, while the BiLSTM keeps accumulating sentence-level state. Anything in
-my earlier write-up claiming convolutions rival recurrence here was an artefact of training on too
-little data.
+how much more text it sees, while the BiLSTM keeps accumulating sentence-level state.
 
-**M3 still wins, but the evidence for it is weaker than before.** Its accuracy CI
-[0.95313, 0.95729] now **overlaps** the baseline's [0.95134, 0.95555], where at 90K the two were
-cleanly separated. The paired McNemar test still separates them (χ²=4.51, p=0.034) but the p-value
-rose from 2.6e-7 to 0.034 — two orders of magnitude weaker. More data lifted every model and
-**compressed the differences between them**, so the architectures became *harder* to tell apart,
-not easier. This is worth stating plainly because it inverts the usual intuition that more data
-makes comparisons cleaner: it makes each estimate more precise, and it also shrinks the effect
-being estimated.
+**M3 wins, but narrowly.** Its accuracy CI [0.95313, 0.95729] **overlaps** the baseline's
+[0.95134, 0.95555]. The paired McNemar test still separates them (χ²=4.51, p=0.034), so the gain is
+real but small: on the full training set all three models are close together.
 
 It is also a concrete argument for why both statistics belong in the report. On CIs alone I would
 now conclude "no difference"; on McNemar I would conclude "M3 is better". The paired test is the
 sensitive one because it conditions on the ~1,700 reviews where the two models disagree instead of
 comparing two whole-test-set accuracies.
 
-**The long-review weakness is gone — and it was a data problem, not an architecture one.** At 90K
-every model was worst on long reviews (0.9077-0.9194 against ~0.94 overall). At 540K the long-review
-slice scores 0.9275-0.9408, and the baseline is now **best** on it. The gap to overall performance
-narrowed from roughly 2.5 points to under 1. The earlier conclusion that long reviews were
-intrinsically hard was wrong; they were under-represented in a 90K subsample.
+**Long reviews are only slightly harder.** The long-review slice scores 0.9275-0.9408 against
+0.950-0.955 overall, a gap of about 1.3-2.3 points, and the baseline is **best** on it.
 
 **Cost.** M3 buys 0.18 points over the baseline for **2.5× the parameters and 16× the training
 time** (3,684 s vs 227 s). M2 is the cheapest to serve — 0.22 GB peak memory and the best
@@ -171,8 +149,7 @@ this test set, and a second seed could plausibly reorder them.
 ## 5. Strengths, weaknesses, limitations
 
 **Strengths.** Every model clears 95% with embeddings learned from scratch on the full 540K split.
-Calibration is good and improved with scale (ECE ≤ 0.0100 everywhere against ≤ 0.0135 at 90K,
-Brier ≤ 0.037 against ≤ 0.049), so the probabilities are usable as confidences, not just rankings.
+Calibration is good (ECE ≤ 0.0100 and Brier ≤ 0.037 everywhere), so the probabilities are usable as confidences, not just rankings.
 The preprocessing decision on negation is measured rather than assumed, and the negation slice now
 scores within 0.4 points of overall.
 
@@ -191,11 +168,10 @@ accuracy that none of these models can cross.
 1. **Multiple seeds, now the highest-value next step.** The M1-vs-M3 accuracy CIs overlap, so the
    ordering of my two best models rests on a single McNemar test at p=0.034. Three seeds per model
    would settle it, and it is far cheaper than any architecture change.
-2. **Diagnose why the TextCNN fell behind at scale.** It beat the baseline at 90K and loses to it
-   at 540K. Widening the kernel set or stacking a second convolutional block would test whether
+2. **Diagnose why the TextCNN falls behind the baseline.** Widening the kernel set or stacking a second convolutional block would test whether
    the limit is receptive field rather than capacity.
-3. **Raise or remove truncation.** 2.13% of reviews are still cut at 256 tokens; the long-review
-   slice improved sharply with more data, so this is now a smaller effect than it looked at 90K.
+3. **Raise or remove truncation.** 2.13% of reviews are still cut at 256 tokens; measure the
+   effect on the long-review slice.
 4. **Sentence-level aggregation for mixed sentiment**, which the error review repeatedly surfaces
    as a cause of confident mistakes.
 
@@ -211,6 +187,5 @@ Host: Google Colab, Linux 6.6.122 x86_64, 42.4 GB GPU memory. PyTorch 2.11.0+cu1
 3.13.15. Peak memory is `torch.cuda.max_memory_allocated` - the true peak of GPU tensor
 allocations during the run.
 
-> **Hardware changed with this retrain.** The superseded 90K runs were on an RTX 4090; these are
-> on a Colab A100. Wall-clock and examples/sec are therefore not comparable with my earlier
-> figures, and only partly comparable with my teammate's, who used a T4 for Task 2.
+> Wall-clock and examples/sec are only partly comparable with my teammate's, who used a T4 for
+> Task 2.
