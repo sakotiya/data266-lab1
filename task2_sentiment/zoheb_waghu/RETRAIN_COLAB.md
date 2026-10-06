@@ -16,47 +16,60 @@ Cache lives in `data_processed/full540k/`, so the old 100K cache cannot be silen
 
 ## Run
 
+**Simplest route — open the notebook in Colab and run all cells.**
+
+[`src/task2_sentiment.ipynb`](src/task2_sentiment.ipynb) section 0 now clones the repo, installs
+the dependencies, trains all three models in order, and generates the figures and error review.
+Everything below section 0 then reports the results, so one top-to-bottom execution both trains
+and produces the deliverable notebook-with-outputs.
+
+Section 0 is guarded by `IN_COLAB = "google.colab" in sys.modules`, so off Colab it prints a skip
+message and the notebook stays a pure reporting document.
+
+> **Pick a GPU runtime first** (Runtime → Change runtime type → A100). The setup cell prints the
+> GPU name, or `NONE` if you forgot.
+
+> **If a model fails partway**, re-run only cell 0.2 after fixing it — the preprocessing cache and
+> the finished models' outputs are kept. The training cell stops on the first failure rather than
+> continuing, so the later sections never report a mix of old and new runs.
+
+### Equivalent, as separate shell commands
+
+Prefer this if you want each model in its own cell, so a disconnect only costs one model:
+
 ```python
-# 1. repo + deps
 !git clone https://github.com/sakotiya/data266-lab1.git
 %cd data266-lab1
 !pip -q install datasets nltk statsmodels
 import nltk; [nltk.download(p, quiet=True) for p in ("stopwords","wordnet","omw-1.4","punkt")]
-
 import os; os.environ["LAB1_ROOT"] = "/content/data266-lab1"
 ```
 
 ```python
-# 2. train all three. The BASELINE MUST RUN FIRST - the two experimental runs read its saved
-#    test predictions to compute the paired McNemar test against it.
-#    The first run also builds the shared preprocessing cache (~540K reviews, lemmatised:
-#    allow ~10-15 min); the other two reuse it.
-for m in ["m1_baseline_bilstm", "m2_cnn_multikernel", "m3_bilstm_attention"]:
-    !python task2_sentiment/zoheb_waghu/src/train.py \
-        --config task2_sentiment/zoheb_waghu/configs/{m}.yaml
+# baseline FIRST - the experimental runs read its predictions for McNemar
+!python task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml
+```
+```python
+!python task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m2_cnn_multikernel.yaml
+```
+```python
+!python task2_sentiment/zoheb_waghu/src/train.py --config task2_sentiment/zoheb_waghu/configs/m3_bilstm_attention.yaml
+```
+```python
+!python task2_sentiment/zoheb_waghu/src/plots.py        --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml
+!python task2_sentiment/zoheb_waghu/src/error_review.py --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml --model t2_m1_baseline
 ```
 
-```python
-# 3. figures + the 20-error extraction
-!python task2_sentiment/zoheb_waghu/src/plots.py \
-    --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml
-!python task2_sentiment/zoheb_waghu/src/error_review.py \
-    --config task2_sentiment/zoheb_waghu/configs/m1_baseline_bilstm.yaml --model t2_m1_baseline
-```
+### Getting the results back
 
-```python
-# 4. export the best model's test predictions for the CROSS-MEMBER paired test
-#    (task2_sentiment/cross_member_mcnemar.py). Zoheb's side is written automatically by
-#    train.py as test_probs_<tag>.npy; shreya_akotiya still needs to export hers.
-!ls task2_sentiment/zoheb_waghu/outputs/*.npy
-```
+Commit from Colab, or download:
 
-```python
-# 5. bring the results back - commit from Colab, or download these:
-#    task2_sentiment/zoheb_waghu/metrics_report.csv
-#    task2_sentiment/zoheb_waghu/metrics_report_extended.csv
-#    task2_sentiment/zoheb_waghu/outputs/           (plots, probs, error review, history)
-#    reproducibility/raw_logs/zoheb_waghu/task2_sentiment/   (the evidence trail)
+```
+task2_sentiment/zoheb_waghu/metrics_report.csv
+task2_sentiment/zoheb_waghu/metrics_report_extended.csv
+task2_sentiment/zoheb_waghu/outputs/                      (plots, probs, error review, history)
+task2_sentiment/zoheb_waghu/src/task2_sentiment.ipynb     (with its new outputs)
+reproducibility/raw_logs/zoheb_waghu/task2_sentiment/     (the evidence trail - required)
 ```
 
 ## Expected cost
