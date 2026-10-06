@@ -638,7 +638,9 @@ pix2pix, and Zoheb used the ResNet-9 generator from the CycleGAN paper.
   produced κ = −0.05 (zoheb_waghu) and κ = −0.04 (shreya_akotiya) — agreement *worse than chance*,
   caused by the raters applying different definitions rather than seeing different things. After
   the rubric was written with explicit 1–5 anchors, the same sheets were re-rated, giving the
-  figures above. Round 1 of each is retained as evidence.
+  figures above. zoheb_waghu's round-1 ratings are kept as evidence
+  (`task3_gan/zoheb_waghu/outputs/human_audit_ratings_round1.csv`, `human_audit_summary_round1.json`);
+  the round-1 ratings for shreya_akotiya's audit are not in the repo.
   **κ is not comparable between the two members, but the raw agreement is.** Same raters, same
   rubric, same source images, yet κ differs threefold. zoheb_waghu's raters agreed more *tightly*
   — never more than one point apart on any sample — but clustered their scores into two adjacent
