@@ -246,7 +246,8 @@ the temperature increased, but the semantic problems became more noticeable at T
 
 ### 1.6 Individual failure analyses
 
-Full write-ups with verbatim snippets are in each member's folder:
+The generated-text snippets for every case are reproduced in **Appendix A**. Full write-ups are in
+each member's folder:
 
 - `task1_llm/shreya_akotiya/failure_analysis.md`:
     1. semantic contradiction (greedy);
@@ -507,7 +508,8 @@ error rate.
 
 Each member manually reviewed 20 errors from one of their own models: 5 confident false
 positives, 5 confident false negatives, 5 near-threshold errors and 5 slice-specific errors.
-Each error has a type and a testable fix.
+Each error has a type and a testable fix. All 40 reviews, with the review text, are in
+**Appendix B**.
 
 | | **shreya_akotiya** | **zoheb_waghu** |
 |---|---|---|
@@ -780,7 +782,8 @@ clouds and skies.
 
 ### 3.6 Individual failure analyses
 
-Full write-ups with sample IDs, LPIPS and cycle values are in each member's folder:
+Failure-case images for both members are in **Appendix C**. Full write-ups with sample IDs, LPIPS
+and cycle values are in each member's folder:
 
 - `task3_gan/shreya_akotiya/failure_analysis.md`: 14 failure cases (8 photo → Monet, 6 Monet →
   photo), the cycle-consistency check including the steganography finding, training stability,
@@ -803,6 +806,137 @@ Full write-ups with sample IDs, LPIPS and cycle values are in each member's fold
 | Evaluated images | `outputs/pred_A2B/` (photo → Monet, 300), `outputs/pred_B2A/` (Monet → photo, 300) | `outputs/pred_B2A/` (photo → Monet, 300), `outputs/pred_A2B/` (Monet → photo, 300) |
 | Plots | `outputs/plots/loss_curves.png`, `failure_candidates_{B2A,A2B}.jpg` | `outputs/plots/training_curves_…png`, `translation_examples.jpg`, `failure_candidates.jpg` |
 | Evaluation code | `src/part3_evaluation_shreya.ipynb`, `src/run1_team_metrics.ipynb`, `src/human_audit.py` | `evaluate_local.py`, `src/snapshot_sweep.py` |
+
+---
+
+## Appendix — Individual failure and error analyses (verbatim excerpts)
+
+Brief §6.6 asks for each member's failure/error analysis with the actual snippets attached. This
+appendix reproduces them from each member's `failure_analysis.md` (Tasks 1 and 3) and error review
+(Task 2). Review texts are shortened with "…"; full texts and observations are in the linked files.
+
+### A. Task 1 — generated-text failure cases
+
+**shreya_akotiya** (`task1_llm/shreya_akotiya/failure_analysis.md`)
+
+*Case 1 — Semantic contradiction* (greedy decoding). Failure type: Semantic incoherence / contradiction.
+
+```text
+Lily said, "Yes, please!" Her mom said, "Yes, I can play with you." Lily was 
+happy to hear that her mom was sad.
+```
+
+*Case 2 — Pronoun confusion and reference collapse* (T=0.5). Failure type: Pronoun/reference confusion.
+
+```text
+At the park, Lily saw a boy crying. She asked him what was wrong. He said he 
+was lost and he wanted to play with him. Lily didn't want to share his toy 
+friends with her friends. She said he would help him find his toy friends.
+```
+
+*Case 3 — Non-word generation at high temperature* (T=1.0). Failure type: Spelling breakdown / non-word generation.
+
+```text
+Once upon a time, there was a princess who was very cheerful. She crept for 
+quickly and strets, but the pray still wouldn't like something more.
+```
+
+**zoheb_waghu** (`task1_llm/zoheb_waghu/failure_analysis.md`)
+
+*Case 1 — Phrase-level repetition loop* (prompt `Once upon a time` (greedy)). Failure type: Repetition at the phrase and clause level.
+
+```text
+They saw a big box of cars and a big box. The box was so happy and the box was so happy to see the box.
+Lily was so happy that she had been so brave and she was so happy to have her box before. She was happy to have her box before and she was proud of herself.
+```
+
+*Case 2 — High-temperature word corruption and semantic breakdown* (prompt `Once upon a time` (temperature 1.2)). Failure type: Invalid words and loss of semantic coherence.
+
+```text
+Once upon a time, there was a little girl who loved very melty. She wanted a new hidden aboven the ground and said "Bob! MPleaf!" Her pocket seemed sad to melt. Lily loved to. One day, the sun came across a face of the shiny things. He approached it and cheered. He had the things she, spreadying to eat them.
+"Uh-ohw, Lily! Grump! Don't be careful now and hurt!" he screamed.
+```
+
+*Case 3 — Story-boundary confusion* (prompt `The little girl` (greedy)). Failure type: Loss of discourse coherence through an unintended story restart.
+
+```text
+The little girl was so happy to have her friends to help her friends and they all laughed and smiled. They had lots of fun together and the little girl was happy to have a new friend to play with.
+
+Once upon a time, there was a little girl named Lily. She loved to play outside in the sunshine. One day, she went to the park with her mommy. She saw a big box of colors and she wanted to play with it.
+```
+
+### B. Task 2 — manual error reviews (20 errors per member)
+
+**shreya_akotiya** — BiLSTM (`task2_sentiment/shreya_akotiya/failure_analysis.md`); last group = reviews containing a negation
+
+| # | Group | Review text (excerpt) | True | p(pos) | Error type | Proposed fix |
+|---|---|---|---|---|---|---|
+| 1 | confident FP | Wow love the place and everything is very clean and new! Great place to come and relax worth a try! | neg | 0.999 | Rating-text mismatch | Check for 1-2 star ratings with positive language (sarcasm detection) |
+| 2 | confident FP | Though I'm a Copper enthusiast... Maharani was fine enough... The Tikka Masala was spicy and pretty good, but it wasn't as thick and saucy as i like. | neg | 0.999 | Mixed sentiment | Add phrase-level sentiment aggregation; "but" clauses often flip polarity |
+| 3 | confident FP | NOTE: This was a 4-star review, but the food quality and ESPECIALLY customer service have gone down the tubes. | neg | 0.999 | Temporal shift | Model sees historical praise, misses "have gone down"; add recency weighting |
+| 4 | confident FP | Do you believe in Yin and Yang?... The couple who was seated five minutes after you were. See how they're now eating something? | neg | 0.999 | Sarcasm/irony | Rhetorical questions + comparison to others = complaint; hard to fix without pragmatics |
+| 5 | confident FP | Like Clay P... I too love pancakes... they did a respectable job. It is definitely a worthwhile destination for a pancake lover. | neg | 0.998 | Faint praise | "respectable" and "worthwhile" are lukewarm; fine-tune on graded sentiment |
+| 6 | confident FN | EDIT: They really did change the service up since I last posted this. Horrible service. Used to be my favorite pizza... | pos | 0.0001 | Temporal shift (update) | "EDIT" signals revision; model fixates on "Horrible service" from old review |
+| 7 | confident FN | This place is so much better since they changed owners... It was horrible. Now its much better. | pos | 0.0001 | Negation of past | "was horrible" dominates; model misses "now much better" inversion |
+| 8 | confident FN | The food is crap. I'm not trying to be mean, but it really is horrible... Taco Bell's nachos are like manna from heaven compared to the sad mess Barney's serves. | pos | 0.0008 | Label noise | This reads negative; likely mislabeled in dataset |
+| 9 | confident FN | Ever wonder what to do if you have lots of extra garbage... This waste facility allows Phoenix residents to dump bulk trash for free once a month. | pos | 0.001 | Domain term | "garbage", "trash", "dump" trigger negative; actually informational positive |
+| 10 | confident FN | TERRIBLE SERVICE, RUDE WAITERS WITH A PISS POOR ATTITUDE! WOULD EAT HERE AGAIN! A++++ | pos | 0.001 | Sarcasm | All-caps negative words; the sarcastic "WOULD EAT HERE AGAIN! A++++" is missed |
+| 11 | near threshold | It gets the job done. What do you want, it's a Sbarro's... My only beef with Sbarro's is really a beef with the food court | neg | 0.500 | Low-info review | Neutral/functional language; model has no strong signal |
+| 12 | near threshold | Well i hate to be the bearer of bad news...but these doughnuts are average at best... I think i will stick to my Krispy Cremes | neg | 0.500 | Comparative | Negative is implicit via comparison to competitor; add comparative features |
+| 13 | near threshold | I must have been there on a bad night... there were not actually any people there. Even the free bottle of vodka did not help | neg | 0.501 | Hedged negative | "must have been" hedges; model uncertain |
+| 14 | near threshold | This is the new occupant... The beef was pretty good, and so was the noodle... but since it comes mixed with noodles and then a whole bunch of rice, I really felt meat-d… | pos | 0.499 | Mixed with complaint | Positive phrases + "but" clause tips it |
+| 15 | near threshold | We orders crepes and cheese fondue... The crepes are nice. I don't like the taste of the cheese fondue | pos | 0.498 | Split verdict | Half positive, half negative; model splits the difference |
+| 16 | slice: negation | It was Anniversary time! But we didn't want to spend a ton of money... They do seem treated well but I wonder if they would be happier | pos | – | Negation scope | "didn't want to spend" scopes over intent, not experience; parse negation targets |
+| 17 | slice: negation | This review is for the pharmacy only. You do not need to be a member... Cost for a 90 day supply is around $25. Contrast this to $45 at Walmart | pos | – | Informational negation | "do not need" is a benefit, not complaint; distinguish negation of requirement |
+| 18 | slice: negation | So, after getting hosed on my room rate last year... Never use i4vegas. Ever... SouthPointe matched the lower price | pos | – | Negation of competitor | Negative is about competitor, not subject; coreference resolution needed |
+| 19 | slice: negation | gasp. 1/2 star docked... they don't let you modify any of the standard burgers... they only let you take off toppings | pos | – | Negation signals limitation | Complaint about policy but overall positive; need aspect-level sentiment |
+| 20 | slice: negation | I've just been forced to concede that, despite still not digging their ordering process, their food is just too good to disrespect with a 2 star review. | pos | – | Concessive structure | "despite not digging" is subordinate; main clause is positive. Parse syntax |
+
+**zoheb_waghu** — BiLSTM-mean baseline (`task2_sentiment/zoheb_waghu/outputs/error_review_t2_m1_baseline.md`); last group = long reviews (> 200 tokens)
+
+| # | Group | Review text (excerpt) | True | p(pos) | Error type | Proposed fix |
+|---|---|---|---|---|---|---|
+| 1 | confident FP | Wow love the place and everything is very clean and new! Great place to come and relax worth a try! Cheers, Eric Van Nguyen Visited April 2012 | neg | 1.0000 | rating-text mismatch | Manually audit and correct rating/text mismatches in the training labels, then retrain. |
+| 2 | confident FP | What I love about Rubios' is that they always have beer. Always. That is all I love though... | neg | 0.9993 | mixed sentiment | Add sentence-level attention so the final limiting clause ("all I love though") can outweigh the opening prai… |
+| 3 | confident FP | This is the neighborhood Foodland that has the bare necessities needed to sustain a pantry or for when the next snowstorm of the century is a day away and you only have… | neg | 0.9991 | mixed sentiment | Encode sentences separately and aggregate their polarity instead of mean-pooling all tokens equally. |
+| 4 | confident FP | Updated... they stopped serving Malibu Rum last year so it's no surprise they've closed and changed the theme of the place. MRB REJECT!! Prior Review: Ahhhh. Happy hour… | neg | 0.9991 | mixed sentiment | Preserve paragraph/update boundaries and give the newest review update more weight than the older positive re… |
+| 5 | confident FP | Attended the @SpaFitFinder launch party, with @spacephx. I can't say much about the place, other than, even taking into consideration the number of people present, it fe… | neg | 0.9987 | mixed sentiment | Use aspect-level pooling to separate the negative venue assessment from praise of one drink and one employee. |
+| 6 | confident FN | EDIT: They really did change the service up since I last posted this. Horrible service. Used to be my favorite pizza in the city (at a reasonable price), but I'm rethink… | pos | 0.0001 | rating-text mismatch | Audit rating/text consistency and train with a noise-robust loss or remove confirmed mismatches. |
+| 7 | confident FN | This place is so much better since they changed owners. My wife and I went when it was the old owners, it was terrible. We waited forever and the food never came before… | pos | 0.0004 | mixed sentiment | Add temporal discourse features so "better since they changed owners" outweighs complaints about the former o… |
+| 8 | confident FN | I won't say what spilled on my floor carpets, but their vacuums can REALLY suck! Thank goodness because I thought my carpet in my truck was ruined. | pos | 0.0006 | domain term | Train with subword features or character n-grams so idiomatic product praise such as "vacuums can REALLY suck… |
+| 9 | confident FN | It was Anniversary time! But we didn't' want to spend a ton of money on food or booze. Plus, were weren't interested in going to a show at the time. So, what to do? Aqua… | pos | 0.0006 | mixed sentiment | Use sentence-level attention trained to emphasize the concluding recommendation over descriptive complaints. |
+| 10 | confident FN | its an enjoyable atmosphere for all 21+ (: The beer is Delicious and so is the food - However I unfortunately, can not say the same about the HELP.The service was terrib… | pos | 0.0007 | mixed sentiment | Add aspect-aware aggregation so positive food/atmosphere evidence can be evaluated separately from negative s… |
+| 11 | near threshold | great cheap gas station!! I'm always putting in gas for my road trips downtown! :) they even have cones that separate lines so that cars don't get into crazy turning acc… | pos | 0.4998 | domain term | Add character/subword n-gram features for sparse venue terms such as Costco, gas, cones, and road-trip langua… |
+| 12 | near threshold | I came here with my boyfriend's family (who are Mauritian) on a Sunday night for his mom's birthday dinner. The decor is decent, nothing too outstanding. Although the pl… | neg | 0.5003 | mixed sentiment | Replace mean pooling with sentence-level attention that can emphasize the repeated service failures over neut… |
+| 13 | near threshold | I called \""Anyime Garage Doors\"" because there is a man in my gated community who works there and I always see his truck. I'm real big on supporting local business's.… | neg | 0.5006 | mixed sentiment | Use hierarchical pooling to emphasize the final complaint and quoted-price reversal over the positive local-b… |
+| 14 | near threshold | I wish I could give this place Minus 5 stars! This place was a huge waste of time. It's basically a bar in a large freezer. And minus 5 degrees is actually measured in C… | neg | 0.5008 | sarcasm/irony | Preserve punctuation and rating expressions such as "minus 5 stars" as explicit features. |
+| 15 | near threshold | This company was great! I was given a 3hr time frame and they showed up in less than 2hrs! I wasn't there when they got there because I had no way to get there and they… | pos | 0.4989 | mixed sentiment | Add contrast-aware sentence aggregation so the positive service assessment outweighs unrelated negative event… |
+| 16 | slice: long review | Port Authority (formerly known as PATransit, or \""PAT\"") operates a fairly extensive network of buses and (in the South Hills) light rail. Instead of running school bu… | pos | 0.3450 | length truncation | Raise `max_len` from 256 to 512 and retrain while holding all other settings fixed. |
+| 17 | slice: long review | I don't much like the look of this place - I never would have ventured in were it not for the positive yelp reviews - but they serve some pretty good pizza. I have eaten… | pos | 0.1887 | mixed sentiment | Use sentence-level attention to discount the negative appearance/opening clause after the review pivots to pr… |
+| 18 | slice: long review | Thoroughly impressed with this airport. Not that I'm some great world traveler, but all the more reason. See, when I booked my virgin transatlantic flight (yes, virgin w… | pos | 0.0960 | negation | Add an explicit negation-scope feature so phrases such as "not that" and "wouldn't drive me" are not treated… |
+| 19 | slice: long review | I booked a stay at Hotel San Carlos for one night through Groupon for $76 after taxes. Most other hotels in the area go for $120-300, so finding this deal was awesome. M… | pos | 0.3064 | mixed sentiment | Use hierarchical sentence pooling so the overall stay assessment is not diluted by individual complaints in a… |
+| 20 | slice: long review | What era is this? That was my first thought as I stepped into this restaurant. Mirrored ceilings, velvet upholstered chairs, cheetah print fabric -- it was like I was in… | neg | 0.9505 | length truncation | Raise `max_len` to 512 or use chunked hierarchical encoding so the closing negative verdict is retained. |
+
+### C. Task 3 — image failure cases
+
+Each row shows **source | translation | cycle reconstruction**, with LPIPS (how much the image
+changed) and cycle L1. Full grids (15 cases per direction) are in each member's `outputs/plots/`.
+
+**shreya_akotiya — photo → Monet, "most changed" cases.** Night and low-light photos collapse into a
+repeated blue-grey tiled pattern, yet the reconstruction restores them almost exactly (cycle L1
+0.013–0.021): the hidden-information ("steganography") behaviour discussed in §3.5.
+
+<img src="figures/t3_shreya_most_changed_B2A.jpg" style="width:62%">
+
+**shreya_akotiya — Monet → photo, "most changed" cases.** Hazy paintings turn very dark or
+high-contrast, and flat skies pick up horizontal streak artifacts.
+
+<img src="figures/t3_shreya_most_changed_A2B.jpg" style="width:62%">
+
+**zoheb_waghu — failure candidates (both directions).** Least changed, most changed and worst-cycle
+cases, including the hue shifts (orange clouds → cyan, storm sky → teal) specific to the ResNet-9.
+
+<img src="../task3_gan/zoheb_waghu/outputs/plots/failure_candidates.jpg" style="width:80%">
 
 ---
 
