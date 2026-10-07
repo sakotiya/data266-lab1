@@ -519,21 +519,20 @@ error rate.
 
 Each member manually reviewed 20 errors from one of their own models: 5 confident false
 positives, 5 confident false negatives, 5 near-threshold errors and 5 slice-specific errors.
-Each error has a type and a testable fix. All 40 reviews, with the review text, are in
+Each error gets a type and a testable fix. All 40 reviews, with the review text, are in
 **Appendix B**.
 
 | | **shreya_akotiya** | **zoheb_waghu** |
 |---|---|---|
-| Model reviewed | BiLSTM (best, 94.85%) | BiLSTM-mean baseline (93.46%) |
+| Model reviewed | BiLSTM (best, 94.85%) | BiLSTM-mean baseline (95.35%) |
 | Slice used for the last 5 | reviews containing a negation | long reviews (> 200 tokens), the worst slice |
-| Most common error types | mixed sentiment / split verdicts, temporal shifts ("EDIT: now much better"), negation scope (negation of a competitor, a requirement or a past state), sarcasm | **mixed sentiment (12 of 20)**, rating-text mismatch (2), domain term (2), length truncation (2), negation (1), sarcasm (1) |
-| Proposed fix | phrase- or aspect-level sentiment aggregation; parse negation scope; recency weighting | chunked hierarchical sentence encoder over up to 512 tokens, measured on long-review macro-F1 |
+| Most common error types | mixed sentiment / split verdicts, temporal shifts ("EDIT: now much better"), negation scope (negation of a competitor, a requirement or a past state), sarcasm | being annotated in `failure_analysis.md` |
+| Proposed fix | phrase- or aspect-level sentiment aggregation; parse negation scope; recency weighting | being annotated in `failure_analysis.md` |
 | Full write-up | `task2_sentiment/shreya_akotiya/failure_analysis.md` | `task2_sentiment/zoheb_waghu/failure_analysis.md`, `outputs/error_review_t2_m1_baseline.md` |
 
-Both reviews reach the same conclusion from different models. The remaining errors are mostly
-**discourse-level**: mixed or changing sentiment within one review, sarcasm, and negations whose
-scope is not the review's subject. A single pooled vector cannot represent these. Both members
-also found label noise, which no model can fix.
+In Shreya's review the remaining errors are mostly **discourse-level**: mixed or changing
+sentiment within one review, sarcasm, and negations whose scope is not the review's subject. A
+single pooled vector cannot represent these. Label noise also appears, which no model can fix.
 
 ### 2.8 Evidence
 
@@ -896,30 +895,30 @@ Once upon a time, there was a little girl named Lily. She loved to play outside 
 | 19 | slice: negation | gasp. 1/2 star docked... they don't let you modify any of the standard burgers... they only let you take off toppings | pos | – | Negation signals limitation | Complaint about policy but overall positive; need aspect-level sentiment |
 | 20 | slice: negation | I've just been forced to concede that, despite still not digging their ordering process, their food is just too good to disrespect with a 2 star review. | pos | – | Concessive structure | "despite not digging" is subordinate; main clause is positive. Parse syntax |
 
-**zoheb_waghu** — BiLSTM-mean baseline (`task2_sentiment/zoheb_waghu/outputs/error_review_t2_m1_baseline.md`); last group = long reviews (> 200 tokens)
+**zoheb_waghu** — BiLSTM-mean baseline, 95.35% (`task2_sentiment/zoheb_waghu/outputs/error_review_t2_m1_baseline.md`); last group = long reviews (> 200 tokens). Error types and fixes are being annotated in `failure_analysis.md`.
 
-| # | Group | Review text (excerpt) | True | p(pos) | Error type | Proposed fix |
+| # | Group | Review text (excerpt) | True | p(pos) | Tokens | Negation |
 |---|---|---|---|---|---|---|
-| 1 | confident FP | Wow love the place and everything is very clean and new! Great place to come and relax worth a try! Cheers, Eric Van Nguyen Visited April 2012 | neg | 1.0000 | rating-text mismatch | Manually audit and correct rating/text mismatches in the training labels, then retrain. |
-| 2 | confident FP | What I love about Rubios' is that they always have beer. Always. That is all I love though... | neg | 0.9993 | mixed sentiment | Add sentence-level attention so the final limiting clause ("all I love though") can outweigh the opening prai… |
-| 3 | confident FP | This is the neighborhood Foodland that has the bare necessities needed to sustain a pantry or for when the next snowstorm of the century is a day away and you only have… | neg | 0.9991 | mixed sentiment | Encode sentences separately and aggregate their polarity instead of mean-pooling all tokens equally. |
-| 4 | confident FP | Updated... they stopped serving Malibu Rum last year so it's no surprise they've closed and changed the theme of the place. MRB REJECT!! Prior Review: Ahhhh. Happy hour… | neg | 0.9991 | mixed sentiment | Preserve paragraph/update boundaries and give the newest review update more weight than the older positive re… |
-| 5 | confident FP | Attended the @SpaFitFinder launch party, with @spacephx. I can't say much about the place, other than, even taking into consideration the number of people present, it fe… | neg | 0.9987 | mixed sentiment | Use aspect-level pooling to separate the negative venue assessment from praise of one drink and one employee. |
-| 6 | confident FN | EDIT: They really did change the service up since I last posted this. Horrible service. Used to be my favorite pizza in the city (at a reasonable price), but I'm rethink… | pos | 0.0001 | rating-text mismatch | Audit rating/text consistency and train with a noise-robust loss or remove confirmed mismatches. |
-| 7 | confident FN | This place is so much better since they changed owners. My wife and I went when it was the old owners, it was terrible. We waited forever and the food never came before… | pos | 0.0004 | mixed sentiment | Add temporal discourse features so "better since they changed owners" outweighs complaints about the former o… |
-| 8 | confident FN | I won't say what spilled on my floor carpets, but their vacuums can REALLY suck! Thank goodness because I thought my carpet in my truck was ruined. | pos | 0.0006 | domain term | Train with subword features or character n-grams so idiomatic product praise such as "vacuums can REALLY suck… |
-| 9 | confident FN | It was Anniversary time! But we didn't' want to spend a ton of money on food or booze. Plus, were weren't interested in going to a show at the time. So, what to do? Aqua… | pos | 0.0006 | mixed sentiment | Use sentence-level attention trained to emphasize the concluding recommendation over descriptive complaints. |
-| 10 | confident FN | its an enjoyable atmosphere for all 21+ (: The beer is Delicious and so is the food - However I unfortunately, can not say the same about the HELP.The service was terrib… | pos | 0.0007 | mixed sentiment | Add aspect-aware aggregation so positive food/atmosphere evidence can be evaluated separately from negative s… |
-| 11 | near threshold | great cheap gas station!! I'm always putting in gas for my road trips downtown! :) they even have cones that separate lines so that cars don't get into crazy turning acc… | pos | 0.4998 | domain term | Add character/subword n-gram features for sparse venue terms such as Costco, gas, cones, and road-trip langua… |
-| 12 | near threshold | I came here with my boyfriend's family (who are Mauritian) on a Sunday night for his mom's birthday dinner. The decor is decent, nothing too outstanding. Although the pl… | neg | 0.5003 | mixed sentiment | Replace mean pooling with sentence-level attention that can emphasize the repeated service failures over neut… |
-| 13 | near threshold | I called \""Anyime Garage Doors\"" because there is a man in my gated community who works there and I always see his truck. I'm real big on supporting local business's.… | neg | 0.5006 | mixed sentiment | Use hierarchical pooling to emphasize the final complaint and quoted-price reversal over the positive local-b… |
-| 14 | near threshold | I wish I could give this place Minus 5 stars! This place was a huge waste of time. It's basically a bar in a large freezer. And minus 5 degrees is actually measured in C… | neg | 0.5008 | sarcasm/irony | Preserve punctuation and rating expressions such as "minus 5 stars" as explicit features. |
-| 15 | near threshold | This company was great! I was given a 3hr time frame and they showed up in less than 2hrs! I wasn't there when they got there because I had no way to get there and they… | pos | 0.4989 | mixed sentiment | Add contrast-aware sentence aggregation so the positive service assessment outweighs unrelated negative event… |
-| 16 | slice: long review | Port Authority (formerly known as PATransit, or \""PAT\"") operates a fairly extensive network of buses and (in the South Hills) light rail. Instead of running school bu… | pos | 0.3450 | length truncation | Raise `max_len` from 256 to 512 and retrain while holding all other settings fixed. |
-| 17 | slice: long review | I don't much like the look of this place - I never would have ventured in were it not for the positive yelp reviews - but they serve some pretty good pizza. I have eaten… | pos | 0.1887 | mixed sentiment | Use sentence-level attention to discount the negative appearance/opening clause after the review pivots to pr… |
-| 18 | slice: long review | Thoroughly impressed with this airport. Not that I'm some great world traveler, but all the more reason. See, when I booked my virgin transatlantic flight (yes, virgin w… | pos | 0.0960 | negation | Add an explicit negation-scope feature so phrases such as "not that" and "wouldn't drive me" are not treated… |
-| 19 | slice: long review | I booked a stay at Hotel San Carlos for one night through Groupon for $76 after taxes. Most other hotels in the area go for $120-300, so finding this deal was awesome. M… | pos | 0.3064 | mixed sentiment | Use hierarchical sentence pooling so the overall stay assessment is not diluted by individual complaints in a… |
-| 20 | slice: long review | What era is this? That was my first thought as I stepped into this restaurant. Mirrored ceilings, velvet upholstered chairs, cheetah print fabric -- it was like I was in… | neg | 0.9505 | length truncation | Raise `max_len` to 512 or use chunked hierarchical encoding so the closing negative verdict is retained. |
+| 1 | confident FP | Wow love the place and everything is very clean and new! Great place to come and relax worth a try! Cheers, Eric Van Nguyen Visited April 2012 | neg | 1.0000 | 19 | no |
+| 2 | confident FP | Like Clay P who posted before me, I too love pancakes. Though I love chocolate chip pancakes. But like Clay I did not love the ones that I got a the Original Pancake Hou… | neg | 0.9998 | 37 | yes |
+| 3 | confident FP | Do you believe in Yin and Yang? The ancient Asian philosophy suggesting polar opposites are interrelated? If you don't, then you best start believing in it if you're hea… | neg | 0.9995 | 141 | yes |
+| 4 | confident FP | House Margs are good cheap and big. Just how I like my men. | neg | 0.9992 | 7 | no |
+| 5 | confident FP | We had dinner here for four. Had an artichoke appetizer with pita chips, club sandwich and shared a huge sundae for dessert. The service was awesome; space impressive. B… | neg | 0.9992 | 47 | no |
+| 6 | confident FN | EDIT: They really did change the service up since I last posted this. Horrible service. Used to be my favorite pizza in the city (at a reasonable price), but I'm rethink… | pos | 0.0001 | 48 | yes |
+| 7 | confident FN | This place is so much better since they changed owners. My wife and I went when it was the old owners, it was terrible. We waited forever and the food never came before… | pos | 0.0002 | 45 | yes |
+| 8 | confident FN | UPDATED. My initial very frustrated and dramatic review read as follows: Bililng practices are at best negligent and at worst fraudulent. I started going to the studio p… | pos | 0.0003 | 169 | yes |
+| 9 | confident FN | Ever wonder what to do if you have lots of extra garbage or recyclables and either can't fit them all in your bins or missed bulk trash pickup day? Alternatively, are yo… | pos | 0.0008 | 311 | yes |
+| 10 | confident FN | Says they deliver on here... Wrong & wrong again & should not be checked! I like Applebee's & thought the delivery was something new for the Pittsburgh area... Don't kno… | pos | 0.0008 | 23 | yes |
+| 11 | near threshold | I have to like this place.. this is where my engagement ring was bought.. well, it was put together.. because the story Im told by my very creative fiance, is that he wa… | pos | 0.4998 | 96 | yes |
+| 12 | near threshold | Whoa...... International??? This tiny, efficient airport does not have much more to offer than that. No restaurants, a few cheap shops. I guess they know all the action… | neg | 0.5009 | 26 | yes |
+| 13 | near threshold | We went to the 1030 showing, it was pretty good but we expected a lot more out of the Garth and the Wynn for a $143 a ticket. He may have just been tired because it was… | neg | 0.5011 | 77 | no |
+| 14 | near threshold | The food here was good, but the prices are outrageous. I am by no means stingy, and I was expecting to pay a little more for a gourmet pizza... But $17 for a 12\"" diame… | neg | 0.5017 | 36 | yes |
+| 15 | near threshold | Thoroughly impressed with this airport. Not that I'm some great world traveler, but all the more reason. See, when I booked my virgin transatlantic flight (yes, virgin w… | pos | 0.4982 | 213 | yes |
+| 16 | slice: long review | Thoroughly impressed with this airport. Not that I'm some great world traveler, but all the more reason. See, when I booked my virgin transatlantic flight (yes, virgin w… | pos | 0.4982 | 213 | yes |
+| 17 | slice: long review | What era is this? That was my first thought as I stepped into this restaurant. Mirrored ceilings, velvet upholstered chairs, cheetah print fabric -- it was like I was in… | neg | 0.6371 | 351 | yes |
+| 18 | slice: long review | 12/03/12 Hmm... I could've sworn I had written a review of this place before. At the very least, I uploaded a few pics of our breakfast here many months ago. Took my Mom… | neg | 0.6890 | 473 | yes |
+| 19 | slice: long review | We went out with the Central AZ Jeepers the other night to do a night run of the Maggie Mine Trail. The plan was to start up at Bumble Bee, come south to Black Canyon Ci… | neg | 0.6739 | 336 | yes |
+| 20 | slice: long review | I've been getting used (it takes 21 days for it to become a habit? the experts say) to my new diet now (low-sodium), and have been going to Trader Joe's for the past six… | pos | 0.4907 | 246 | yes |
 
 ### C. Task 3 — image failure cases
 
